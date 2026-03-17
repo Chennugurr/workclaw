@@ -22,9 +22,9 @@ if (!projectId) {
 
 // 2. Create a metadata object - optional
 const metadata = {
-  name: 'AppKit',
-  description: 'AppKit Solana Example',
-  url: 'https://example.com', // origin must match your domain & subdomain
+  name: 'Workclaw',
+  description: 'AI Training Work Platform',
+  url: typeof window !== 'undefined' ? window.location.origin : 'https://workclaw-production.up.railway.app',
   icons: ['https://avatars.githubusercontent.com/u/179229932'],
 };
 

@@ -1,269 +1,307 @@
 'use client';
 
-import dayjs from 'dayjs';
-import numeral from 'numeral';
-import Image from 'next/image';
 import Link from 'next/link';
 import {
-  Briefcase,
-  Bookmark,
-  Bell,
-  MapPin,
+  Target,
+  ClipboardList,
   DollarSign,
+  GraduationCap,
+  TrendingUp,
+  Star,
   ChevronRight,
+  ArrowRight,
+  Shield,
+  Zap,
+  BarChart3,
 } from 'lucide-react';
 import { useAppState } from '@/store';
-import { CURRENCY } from '@/constants';
 import useAppSWR from '@/hooks/use-app-swr';
-import usePaginateSWR from '@/hooks/use-paginate-swr';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import JobPositionBadge from '@/components/job-position-badge';
-import ProposalStatusBadge from '@/components/proposal-status-badge';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import OnboardingWizard from '@/components/onboarding-wizard';
+
+const TIER_LABELS = {
+  NEW: 'New',
+  VERIFIED: 'Verified',
+  SKILLED: 'Skilled',
+  TRUSTED: 'Trusted',
+  EXPERT: 'Expert',
+  ELITE_REVIEWER: 'Elite Reviewer',
+};
+
+const TIER_COLORS = {
+  NEW: 'bg-gray-100 text-gray-700',
+  VERIFIED: 'bg-blue-100 text-blue-700',
+  SKILLED: 'bg-purple-100 text-purple-700',
+  TRUSTED: 'bg-green-100 text-green-700',
+  EXPERT: 'bg-orange-100 text-orange-700',
+  ELITE_REVIEWER: 'bg-yellow-100 text-yellow-700',
+};
 
 export default function PageContent() {
   const user = useAppState((s) => s.user);
-  const { data: analytics } = useAppSWR(`/analytics/candidates/${user.id}`);
-  const { data: proposals, isLoading } = usePaginateSWR(`/search/proposals`, {
-    params: {
-      limit: 5,
-      userId: user.id,
-    },
-  });
+  const tier = user?.tier || 'NEW';
+  const onboardingComplete = user?.onboardingComplete;
+
+  const { data: analytics } = useAppSWR(
+    user?.id ? `/contributors/${user.id}/analytics` : null
+  );
+
+  const overview = analytics?.overview || {};
+
+  // Show onboarding wizard if not complete
+  if (!onboardingComplete && !user?.profile) {
+    return (
+      <div>
+        <h1 className='text-2xl font-bold mb-2'>Welcome to Workclaw</h1>
+        <p className='text-gray-500 mb-8'>
+          Let&apos;s set up your contributor profile so you can start earning.
+        </p>
+        <OnboardingWizard />
+      </div>
+    );
+  }
 
   return (
     <>
       <h1 className='text-2xl font-bold mb-2'>
-        Hello, {user.profile.firstName}
+        Welcome back, {user.profile?.firstName || 'Contributor'}
       </h1>
       <p className='text-gray-500 mb-6'>
-        Here is your daily activities and job alerts
+        Here&apos;s your activity overview and available opportunities.
       </p>
 
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-6'>
-        <Card className='bg-blue-50'>
-          <CardContent className='p-6 flex justify-between items-center'>
-            <div>
-              <p className='text-3xl font-bold'>
-                {analytics?.totalProposals || 0}
-              </p>
-              <p className='text-gray-500'>Applied jobs</p>
-            </div>
-            <div className='bg-white p-3 rounded-lg'>
-              <Briefcase className='h-6 w-6 text-blue-500' />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className='bg-yellow-50'>
-          <CardContent className='p-6 flex justify-between items-center'>
-            <div>
-              <p className='text-3xl font-bold'>0</p>
-              <p className='text-gray-500'>Favorite jobs</p>
-            </div>
-            <div className='bg-white p-3 rounded-lg'>
-              <Bookmark className='h-6 w-6 text-yellow-500' />
+      {/* Stats Cards */}
+      <div className='grid grid-cols-1 md:grid-cols-4 gap-4 mb-6'>
+        <Card>
+          <CardContent className='p-5'>
+            <div className='flex justify-between items-start'>
+              <div>
+                <p className='text-sm text-gray-500'>Total Earnings</p>
+                <p className='text-2xl font-bold mt-1'>
+                  ${(overview.totalEarnings || 0).toFixed(2)}
+                </p>
+                <p className='text-xs text-gray-400 mt-1'>Lifetime</p>
+              </div>
+              <div className='bg-green-50 p-2 rounded-lg'>
+                <DollarSign className='h-5 w-5 text-green-600' />
+              </div>
             </div>
           </CardContent>
         </Card>
-        <Card className='bg-green-50'>
-          <CardContent className='p-6 flex justify-between items-center'>
-            <div>
-              <p className='text-3xl font-bold'>0</p>
-              <p className='text-gray-500'>Job Alerts</p>
+        <Card>
+          <CardContent className='p-5'>
+            <div className='flex justify-between items-start'>
+              <div>
+                <p className='text-sm text-gray-500'>Tasks Approved</p>
+                <p className='text-2xl font-bold mt-1'>{overview.approvedSubmissions || 0}</p>
+                <p className='text-xs text-gray-400 mt-1'>
+                  of {overview.totalSubmissions || 0} submitted
+                </p>
+              </div>
+              <div className='bg-blue-50 p-2 rounded-lg'>
+                <ClipboardList className='h-5 w-5 text-blue-600' />
+              </div>
             </div>
-            <div className='bg-white p-3 rounded-lg'>
-              <Bell className='h-6 w-6 text-green-500' />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className='p-5'>
+            <div className='flex justify-between items-start'>
+              <div>
+                <p className='text-sm text-gray-500'>Acceptance Rate</p>
+                <p className='text-2xl font-bold mt-1'>
+                  {overview.totalSubmissions > 0
+                    ? `${(overview.acceptanceRate * 100).toFixed(0)}%`
+                    : '--'}
+                </p>
+                <p className='text-xs text-gray-400 mt-1'>Approval rate</p>
+              </div>
+              <div className='bg-purple-50 p-2 rounded-lg'>
+                <TrendingUp className='h-5 w-5 text-purple-600' />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className='p-5'>
+            <div className='flex justify-between items-start'>
+              <div>
+                <p className='text-sm text-gray-500'>Contributor Level</p>
+                <Badge className={`mt-1 ${TIER_COLORS[tier]}`}>
+                  {TIER_LABELS[tier]}
+                </Badge>
+              </div>
+              <div className='bg-orange-50 p-2 rounded-lg'>
+                <Star className='h-5 w-5 text-orange-600' />
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <Card className='bg-red-500 text-white mb-6'>
-        <CardContent className='p-6 flex flex-col md:flex-row justify-between items-center'>
-          <div className='flex items-center mb-4 md:mb-0'>
-            <Image
-              src='/placeholder.svg?height=50&width=50'
-              alt='Profile'
-              width={50}
-              height={50}
-              className='rounded-full mr-4'
-            />
-            <div>
-              <h2 className='text-xl font-bold'>
-                Your profile editing is not completed.
-              </h2>
-              <p>Complete your profile editing & build your custom Resume</p>
+      {/* 30-Day Earnings Chart */}
+      {analytics?.dailyEarnings && Object.keys(analytics.dailyEarnings).length > 0 && (
+        <Card className='mb-6'>
+          <CardContent className='p-6'>
+            <h2 className='text-lg font-semibold mb-4 flex items-center gap-2'>
+              <BarChart3 className='h-5 w-5' />
+              Earnings — Last 30 Days
+            </h2>
+            <div className='flex items-end gap-1 h-32'>
+              {getLast30Days().map((day) => {
+                const amount = analytics.dailyEarnings[day] || 0;
+                const maxVal = Math.max(...Object.values(analytics.dailyEarnings), 1);
+                const height = amount > 0 ? Math.max(4, (amount / maxVal) * 100) : 0;
+                return (
+                  <div key={day} className='flex-1 flex flex-col items-center justify-end' title={`${day}: $${amount.toFixed(2)}`}>
+                    <div
+                      className='w-full bg-green-500 rounded-t min-w-[4px]'
+                      style={{ height: `${height}%` }}
+                    />
+                  </div>
+                );
+              })}
             </div>
-          </div>
-          <Button variant='secondary' className='whitespace-nowrap'>
-            Edit Profile
-            <ChevronRight className='ml-2 h-4 w-4' />
-          </Button>
-        </CardContent>
-      </Card>
+            <div className='flex justify-between text-xs text-gray-400 mt-2'>
+              <span>30 days ago</span>
+              <span>Today</span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-      <div className='flex justify-between items-center mb-4'>
-        <h2 className='text-xl font-bold'>Recently Applied</h2>
-        <Button variant='link' className='text-blue-500' asChild>
-          <Link href='/app/contributor/my-tasks'>
-            View all
-            <ChevronRight className='ml-2 h-4 w-4' />
-          </Link>
-        </Button>
-      </div>
-
-      <div className='hidden md:block overflow-x-auto'>
-        <div className='min-w-[800px] lg:min-w-full'>
-          <table className='w-full'>
-            <thead>
-              <tr className='bg-gray-100'>
-                <th className='text-left p-4 font-semibold text-gray-600'>
-                  Job
-                </th>
-                <th className='text-left p-4 font-semibold text-gray-600'>
-                  Date Applied
-                </th>
-                <th className='text-left p-4 font-semibold text-gray-600'>
-                  Status
-                </th>
-                <th className='text-left p-4 font-semibold text-gray-600'>
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {proposals?.map((item) => (
-                <tr
-                  key={item.id}
-                  className='border-b hover:bg-blue-50 hover:border hover:border-blue-200'
-                >
-                  <td className='p-4'>
-                    <div className='flex items-center'>
-                      {item.job.org.logo ? (
-                        <img
-                          src={item.job.org.logo}
-                          alt={`${item.job.org.name} logo`}
-                          className='w-12 h-12 rounded-md mr-3 object-cover'
-                        />
-                      ) : (
-                        <div className='bg-gray-200 rounded-md p-2 mr-3'>
-                          <Briefcase className='w-8 h-8 text-gray-600' />
-                        </div>
-                      )}
-                      <div className='min-w-0 flex-1'>
-                        <div className='flex items-center'>
-                          <p className='font-semibold text-gray-800 truncate mr-2'>
-                            {item.job.title}
-                          </p>
-                          <JobPositionBadge position={item.job.position} />
-                        </div>
-                        <div className='flex items-center text-sm text-gray-500 mt-1'>
-                          {item.job.location && (
-                            <>
-                              <MapPin className='flex-shrink-0 w-4 h-4 mr-1' />
-                              <span className='truncate mr-2'>
-                                {item.job.location}
-                              </span>
-                            </>
-                          )}
-                          {item.job.budget && (
-                            <>
-                              <DollarSign className='flex-shrink-0 w-4 h-4 mr-1' />
-                              <span className='truncate'>
-                                {numeral(item.job.budget).format(`0,0.00a`)}{' '}
-                                {CURRENCY[item.job.currency]}
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className='p-4 text-gray-500 truncate'>
-                    {dayjs(item.createdAt).format('MMM D, YYYY HH:mm')}
-                  </td>
-                  <td className='p-4'>
-                    <ProposalStatusBadge status={item.status} />
-                  </td>
-                  <td className='p-4'>
-                    <Button
-                      variant='link'
-                      className='text-blue-600 font-semibold whitespace-nowrap'
-                      asChild
-                    >
-                      <Link href={`/app/contributor/opportunities/${item.job.id}`}>
-                        View Details
-                      </Link>
-                    </Button>
-                  </td>
-                </tr>
+      {/* Per-Project Quality Scores */}
+      {analytics?.projectScores?.length > 0 && (
+        <Card className='mb-6'>
+          <CardContent className='p-6'>
+            <h2 className='text-lg font-semibold mb-4'>Project Quality Scores</h2>
+            <div className='space-y-4'>
+              {analytics.projectScores.map((ps) => (
+                <div key={ps.projectId} className='space-y-2'>
+                  <div className='flex items-center justify-between text-sm'>
+                    <span className='font-medium'>{ps.projectTitle}</span>
+                    <span className='text-gray-500'>{(ps.overallScore * 100).toFixed(0)}% overall</span>
+                  </div>
+                  <Progress value={ps.overallScore * 100} className='h-2' />
+                  <div className='flex gap-4 text-xs text-gray-500'>
+                    <span>Accept: {(ps.acceptanceRate * 100).toFixed(0)}%</span>
+                    <span>Gold: {(ps.goldTaskAccuracy * 100).toFixed(0)}%</span>
+                    <span>Speed: {(ps.speedScore * 100).toFixed(0)}%</span>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Onboarding Progress (if new user) */}
+      {tier === 'NEW' && (
+        <Card className='mb-6 border-gray-900'>
+          <CardContent className='p-6'>
+            <div className='flex items-start justify-between mb-4'>
+              <div>
+                <h2 className='text-lg font-semibold'>Get started</h2>
+                <p className='text-sm text-gray-500'>Complete these steps to unlock paid work.</p>
+              </div>
+              <Badge variant='outline'>1 of 3</Badge>
+            </div>
+            <div className='space-y-3'>
+              <div className='flex items-center gap-3'>
+                <div className='h-6 w-6 rounded-full bg-green-100 flex items-center justify-center'>
+                  <Shield className='h-3.5 w-3.5 text-green-600' />
+                </div>
+                <span className='text-sm line-through text-gray-400'>Create your profile</span>
+              </div>
+              <div className='flex items-center gap-3'>
+                <div className='h-6 w-6 rounded-full bg-gray-100 flex items-center justify-center'>
+                  <GraduationCap className='h-3.5 w-3.5 text-gray-400' />
+                </div>
+                <Link href='/app/contributor/screenings' className='text-sm text-gray-900 hover:underline'>
+                  Pass your first screening test
+                </Link>
+                <ArrowRight className='h-3.5 w-3.5 text-gray-400' />
+              </div>
+              <div className='flex items-center gap-3'>
+                <div className='h-6 w-6 rounded-full bg-gray-100 flex items-center justify-center'>
+                  <Zap className='h-3.5 w-3.5 text-gray-400' />
+                </div>
+                <span className='text-sm text-gray-500'>Complete your first task</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Quick Actions */}
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
+        <Card className='hover:shadow-md transition-shadow'>
+          <Link href='/app/contributor/opportunities'>
+            <CardContent className='p-6 flex items-center justify-between'>
+              <div className='flex items-center gap-4'>
+                <div className='bg-gray-100 p-3 rounded-lg'>
+                  <Target className='h-6 w-6 text-gray-700' />
+                </div>
+                <div>
+                  <h3 className='font-semibold'>Browse Opportunities</h3>
+                  <p className='text-sm text-gray-500'>Find projects matching your skills</p>
+                </div>
+              </div>
+              <ChevronRight className='h-5 w-5 text-gray-400' />
+            </CardContent>
+          </Link>
+        </Card>
+        <Card className='hover:shadow-md transition-shadow'>
+          <Link href='/app/contributor/screenings'>
+            <CardContent className='p-6 flex items-center justify-between'>
+              <div className='flex items-center gap-4'>
+                <div className='bg-gray-100 p-3 rounded-lg'>
+                  <GraduationCap className='h-6 w-6 text-gray-700' />
+                </div>
+                <div>
+                  <h3 className='font-semibold'>Take Screenings</h3>
+                  <p className='text-sm text-gray-500'>Prove your expertise, unlock better work</p>
+                </div>
+              </div>
+              <ChevronRight className='h-5 w-5 text-gray-400' />
+            </CardContent>
+          </Link>
+        </Card>
       </div>
 
-      <div className='md:hidden space-y-4'>
-        {proposals?.map((item) => (
-          <Card key={item.id} className='hover:border-2 hover:border-blue-200'>
-            <CardContent className='p-4'>
-              <div className='flex items-start'>
-                {item.job.org.logo ? (
-                  <img
-                    src={item.job.org.logo}
-                    alt={`${item.job.org.name} logo`}
-                    className='w-12 h-12 rounded-md mr-3 object-cover'
-                  />
-                ) : (
-                  <div className='bg-gray-200 rounded-md p-2 mr-3'>
-                    <Briefcase className='w-8 h-8 text-gray-600' />
-                  </div>
-                )}
-                <div className='flex-grow'>
-                  <div className='flex items-center flex-wrap'>
-                    <p className='font-semibold text-gray-800 mr-2'>
-                      {item.job.title}
-                    </p>
-                    <JobPositionBadge position={item.job.position} />
-                  </div>
-                  <div className='flex items-center text-sm text-gray-500 mt-1 flex-wrap'>
-                    {item.job.location && (
-                      <div className='flex items-center mr-2 mb-1'>
-                        <MapPin className='w-4 h-4 mr-1' />
-                        <span>{item.job.location}</span>
-                      </div>
-                    )}
-                    {item.job.budget && (
-                      <div className='flex items-center mb-1'>
-                        <DollarSign className='w-4 h-4 mr-1' />
-                        <span>
-                          {numeral(item.job.budget).format(`0,0.00a`)}{' '}
-                          {CURRENCY[item.job.currency]}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className='mt-3 flex justify-between items-center'>
-                <div>
-                  <p className='text-sm text-gray-500'>Applied on</p>
-                  <p className='font-semibold'>
-                    {dayjs(item.createdAt).format('MMM D, YYYY HH:mm')}
-                  </p>
-                </div>
-                <ProposalStatusBadge status={item.status} />
-              </div>
-              <Button
-                className='w-full mt-3 bg-blue-600 text-white hover:bg-blue-700'
-                asChild
-              >
-                <Link href={`/app/contributor/opportunities/${item.job.id}`}>View Details</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {/* Empty State for Tasks */}
+      {(!overview.totalSubmissions || overview.totalSubmissions === 0) && (
+        <Card>
+          <CardContent className='p-8 text-center'>
+            <ClipboardList className='h-12 w-12 text-gray-300 mx-auto mb-4' />
+            <h3 className='text-lg font-semibold text-gray-700 mb-2'>No active tasks yet</h3>
+            <p className='text-sm text-gray-500 mb-4 max-w-md mx-auto'>
+              Pass a screening test and apply to a project to start receiving tasks.
+              Your completed tasks and earnings will show up here.
+            </p>
+            <Button asChild>
+              <Link href='/app/contributor/opportunities'>
+                Browse Opportunities
+                <ArrowRight className='ml-2 h-4 w-4' />
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </>
   );
+}
+
+function getLast30Days() {
+  const days = [];
+  const now = new Date();
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    days.push(d.toISOString().slice(0, 10));
+  }
+  return days;
 }

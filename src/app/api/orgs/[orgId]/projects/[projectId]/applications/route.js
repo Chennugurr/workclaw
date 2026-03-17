@@ -1,86 +1,119 @@
 import { z } from 'zod';
 import jsend from 'jsend';
 import { NextResponse } from 'next/server';
-import { middleware } from '@/api/middleware';
+import { middleware, ROLE } from '@/api/middleware';
 import prisma from '@/lib/prisma';
 
-const bodySchema = z.object({
-  budget: z.number().positive().optional(),
-  statement: z.string().min(1),
+/**
+ * GET /api/orgs/:orgId/projects/:projectId/applications
+ * List applications for a project (customer view).
+ */
+export const GET = middleware(
+  async (req, { params }) => {
+    const { orgId, projectId } = await params;
+    const url = new URL(req.url);
+    const status = url.searchParams.get('status');
+    const page = parseInt(url.searchParams.get('page') || '1', 10);
+    const limit = parseInt(url.searchParams.get('limit') || '50', 10);
+    const skip = (page - 1) * limit;
+
+    const project = await prisma.project.findFirst({
+      where: { id: projectId, orgId },
+      select: { id: true },
+    });
+    if (!project) {
+      return NextResponse.json(jsend.fail({ message: 'Project not found' }), { status: 404 });
+    }
+
+    const where = { projectId };
+    if (status) where.status = status;
+
+    const [applications, total] = await Promise.all([
+      prisma.application.findMany({
+        where,
+        include: {
+          user: {
+            select: {
+              id: true,
+              address: true,
+              tier: true,
+              profile: {
+                select: { firstName: true, lastName: true, pfp: true },
+              },
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.application.count({ where }),
+    ]);
+
+    return NextResponse.json(
+      jsend.success({
+        data: applications,
+        pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+      })
+    );
+  },
+  {
+    requireAuth: true,
+    role: { roles: [ROLE.ORGANIZATION.MEMBER] },
+  }
+);
+
+const applySchema = z.object({
+  note: z.string().optional(),
 });
 
+/**
+ * POST /api/orgs/:orgId/projects/:projectId/applications
+ * Apply to a project (contributor).
+ */
 export const POST = middleware(
   async (req, { params }) => {
-    const { orgId, projectId } = params;
-    const { budget, statement } = req.dto;
+    const { orgId, projectId } = await params;
+    const { note } = req.dto;
 
-    // Check if the job belongs to the specified organization
-    const job = await prisma.project.findUnique({
-      where: { id: projectId, status: 'OPEN' },
+    const project = await prisma.project.findFirst({
+      where: { id: projectId, orgId, status: { in: ['OPEN', 'INVITE_ONLY'] } },
+      select: { id: true },
     });
 
-    if (!job || job.orgId !== orgId) {
+    if (!project) {
       return NextResponse.json(
-        jsend.fail({ message: 'Job not found in this organization' }),
+        jsend.fail({ message: 'Project not found or not accepting applications' }),
         { status: 404 }
       );
     }
 
-    // Check if the user has already submitted a proposal for this job
-    const existingProposal = await prisma.application.findUnique({
-      where: {
-        userId_projectId: {
-          userId: req.user.id,
-          projectId,
-        },
-      },
+    const existing = await prisma.application.findUnique({
+      where: { userId_projectId: { userId: req.user.id, projectId } },
     });
 
-    if (existingProposal) {
+    if (existing) {
       return NextResponse.json(
-        jsend.fail({
-          message: 'You have already submitted a proposal for this job',
-        }),
+        jsend.fail({ message: 'You have already applied to this project' }),
         { status: 409 }
       );
     }
 
-    const newProposal = await prisma.application.create({
+    const application = await prisma.application.create({
       data: {
         userId: req.user.id,
         projectId,
-        budget: budget ?? job.budget,
-        statement,
-        status: 'APPLIED', // Assuming the initial status is APPLIED
+        note: note || null,
+        status: 'PENDING',
       },
       include: {
         user: {
-          select: {
-            id: true,
-            address: true,
-            profile: true,
-          },
-        },
-        job: {
-          select: {
-            id: true,
-            title: true,
-            orgId: true,
-          },
+          select: { id: true, address: true, tier: true },
         },
       },
     });
 
-    return NextResponse.json(jsend.success(newProposal), { status: 201 });
+    return NextResponse.json(jsend.success(application), { status: 201 });
   },
-  (error, defaultErrorHandler) => {
-    if (error.code === 'P2003') {
-      return NextResponse.json(
-        jsend.fail({ message: 'Invalid job ID or user ID' }),
-        { status: 400 }
-      );
-    }
-    return defaultErrorHandler();
-  },
-  { requireAuth: true, bodySchema }
+  { requireAuth: true, bodySchema: applySchema }
 );

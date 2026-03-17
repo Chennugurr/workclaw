@@ -1,10 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { MapPin, Phone, Mail, Briefcase } from 'lucide-react';
+import { toast } from 'sonner';
+import { Shield, Bell, Globe } from 'lucide-react';
+import axios from '@/lib/axios';
+import { useAppState } from '@/store';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Card, CardContent } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import {
   Select,
   SelectContent,
@@ -12,164 +17,131 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
-import FeatureComingSoon from '@/components/feature-coming-soon';
+
+const TIMEZONES = [
+  'UTC', 'America/New_York', 'America/Chicago', 'America/Denver',
+  'America/Los_Angeles', 'Europe/London', 'Europe/Berlin', 'Europe/Paris',
+  'Asia/Tokyo', 'Asia/Shanghai', 'Asia/Kolkata', 'Asia/Singapore',
+  'Australia/Sydney', 'Pacific/Auckland',
+];
 
 export default function PageContent() {
-  const [profilePrivacy, setProfilePrivacy] = useState(true);
-  const [resumePrivacy, setResumePrivacy] = useState(false);
+  const user = useAppState((s) => s.user);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [timezone, setTimezone] = useState(user?.profile?.timezone || 'UTC');
+  const [notifications, setNotifications] = useState({
+    taskAssigned: true,
+    reviewCompleted: true,
+    payoutUpdates: true,
+    tierUpgrade: true,
+    announcements: true,
+  });
 
-  // TODO: impl page
-  return <FeatureComingSoon />;
+  const toggleNotif = (key) => {
+    setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const savePreferences = async () => {
+    setIsSubmitting(true);
+    try {
+      await axios.patch(`/users/${user.id}/profile`, {
+        timezone,
+        notificationPreferences: notifications,
+      });
+      toast.success('Account preferences saved');
+    } catch {
+      toast.error('Failed to save preferences');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className='space-y-8'>
       <section>
-        <h2 className='text-2xl font-semibold mb-4'>Contact Info</h2>
-        <div className='space-y-4'>
-          <div>
-            <Label htmlFor='mapLocation'>Map Location</Label>
-            <div className='relative'>
-              <MapPin className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' />
-              <Input
-                id='mapLocation'
-                className='pl-10'
-                placeholder='Enter your location'
-              />
-            </div>
-          </div>
-          <div>
-            <Label htmlFor='phone'>Phone</Label>
-            <div className='flex'>
-              <Select>
-                <SelectTrigger className='w-[100px]'>
-                  <SelectValue placeholder='+880' />
+        <h2 className='text-xl font-semibold mb-4 flex items-center gap-2'>
+          <Globe className='h-5 w-5' />
+          Regional Settings
+        </h2>
+        <Card>
+          <CardContent className='p-5 space-y-4'>
+            <div>
+              <Label>Timezone</Label>
+              <Select value={timezone} onValueChange={setTimezone}>
+                <SelectTrigger className='mt-1 w-full max-w-sm'>
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='+880'>+880</SelectItem>
-                  <SelectItem value='+1'>+1</SelectItem>
-                  <SelectItem value='+44'>+44</SelectItem>
+                  {TIMEZONES.map((tz) => (
+                    <SelectItem key={tz} value={tz}>{tz}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-              <div className='relative flex-grow ml-2'>
-                <Phone className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' />
-                <Input
-                  id='phone'
-                  className='pl-10'
-                  placeholder='Phone number..'
+              <p className='text-xs text-gray-500 mt-1'>
+                Used for task deadlines and scheduling.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <Separator />
+
+      <section>
+        <h2 className='text-xl font-semibold mb-4 flex items-center gap-2'>
+          <Bell className='h-5 w-5' />
+          Notification Preferences
+        </h2>
+        <Card>
+          <CardContent className='p-5 space-y-4'>
+            {[
+              { key: 'taskAssigned', label: 'Task Assigned', desc: 'When a new task is assigned to you' },
+              { key: 'reviewCompleted', label: 'Review Completed', desc: 'When your submission is reviewed' },
+              { key: 'payoutUpdates', label: 'Payout Updates', desc: 'Payout approvals and completions' },
+              { key: 'tierUpgrade', label: 'Tier Upgrades', desc: 'When you reach a new contributor tier' },
+              { key: 'announcements', label: 'Platform Announcements', desc: 'General platform updates' },
+            ].map((item) => (
+              <div key={item.key} className='flex items-center justify-between'>
+                <div>
+                  <Label>{item.label}</Label>
+                  <p className='text-xs text-gray-500'>{item.desc}</p>
+                </div>
+                <Switch
+                  checked={notifications[item.key]}
+                  onCheckedChange={() => toggleNotif(item.key)}
                 />
               </div>
-            </div>
-          </div>
-          <div>
-            <Label htmlFor='email'>Email</Label>
-            <div className='relative'>
-              <Mail className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' />
-              <Input
-                id='email'
-                type='email'
-                className='pl-10'
-                placeholder='Email address'
-              />
-            </div>
-          </div>
-        </div>
-        <Button className='mt-4'>Save Changes</Button>
+            ))}
+          </CardContent>
+        </Card>
       </section>
 
-      <Separator className='my-8' />
+      <Separator />
 
       <section>
-        <h2 className='text-2xl font-semibold mb-4'>Notification</h2>
-        <div className='space-y-2'>
-          <div className='flex items-center'>
-            <Checkbox id='shortlisted' />
-            <label htmlFor='shortlisted' className='ml-2'>
-              Notify me when employers shortlisted me
-            </label>
-          </div>
-          <div className='flex items-center'>
-            <Checkbox id='savedProfile' />
-            <label htmlFor='savedProfile' className='ml-2'>
-              Notify me when employers saved my profile
-            </label>
-          </div>
-          <div className='flex items-center'>
-            <Checkbox id='jobsExpire' />
-            <label htmlFor='jobsExpire' className='ml-2'>
-              Notify me when my applied jobs are expire
-            </label>
-          </div>
-          <div className='flex items-center'>
-            <Checkbox id='rejected' defaultChecked />
-            <label htmlFor='rejected' className='ml-2'>
-              Notify me when employers rejected me
-            </label>
-          </div>
-          <div className='flex items-center'>
-            <Checkbox id='jobAlerts' defaultChecked />
-            <label htmlFor='jobAlerts' className='ml-2'>
-              Notify me when i have up to 5 job alerts
-            </label>
-          </div>
-        </div>
-      </section>
-
-      <Separator className='my-8' />
-
-      <section>
-        <h2 className='text-2xl font-semibold mb-4'>Job Alerts</h2>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          <div>
-            <Label htmlFor='role'>Role</Label>
-            <div className='relative'>
-              <Briefcase className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' />
-              <Input id='role' className='pl-10' placeholder='Your job roles' />
+        <h2 className='text-xl font-semibold mb-4 flex items-center gap-2'>
+          <Shield className='h-5 w-5' />
+          Security
+        </h2>
+        <Card>
+          <CardContent className='p-5'>
+            <div className='flex items-center justify-between'>
+              <div>
+                <p className='font-medium'>Connected Wallet</p>
+                <p className='text-sm text-gray-500 font-mono'>
+                  {user?.address
+                    ? `${user.address.slice(0, 6)}...${user.address.slice(-4)}`
+                    : 'No wallet connected'}
+                </p>
+              </div>
             </div>
-          </div>
-          <div>
-            <Label htmlFor='location'>Location</Label>
-            <div className='relative'>
-              <MapPin className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' />
-              <Input
-                id='location'
-                className='pl-10'
-                placeholder='City, state, country name'
-              />
-            </div>
-          </div>
-        </div>
-        <Button className='mt-4'>Save Changes</Button>
+          </CardContent>
+        </Card>
       </section>
 
-      <Separator className='my-8' />
-
-      <section className='grid grid-cols-1 md:grid-cols-2 gap-8'>
-        <div>
-          <h2 className='text-2xl font-semibold mb-4'>Profile Privacy</h2>
-          <div className='flex items-center justify-between'>
-            <Label htmlFor='profilePrivacy'>Your profile is public now</Label>
-            <Switch
-              id='profilePrivacy'
-              checked={profilePrivacy}
-              onCheckedChange={setProfilePrivacy}
-            />
-          </div>
-        </div>
-        <div>
-          <h2 className='text-2xl font-semibold mb-4'>Resume Privacy</h2>
-          <div className='flex items-center justify-between'>
-            <Label htmlFor='resumePrivacy'>Your resume is private now</Label>
-            <Switch
-              id='resumePrivacy'
-              checked={resumePrivacy}
-              onCheckedChange={setResumePrivacy}
-            />
-          </div>
-        </div>
-      </section>
+      <Button onClick={savePreferences} disabled={isSubmitting}>
+        {isSubmitting ? 'Saving...' : 'Save Preferences'}
+      </Button>
     </div>
   );
 }

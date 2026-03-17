@@ -5,14 +5,7 @@ import { useLayoutEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import {
-  // CloudUpload,
-  Link,
-  // FileText,
-  // MoreVertical,
-  // Pencil,
-  // Trash2,
-} from 'lucide-react';
+import { Link } from 'lucide-react';
 import axios from '@/lib/axios';
 import { ACTIONS } from '@/store/constants';
 import { useAppDispatch, useAppState } from '@/store';
@@ -26,13 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-// import { Card, CardContent } from '@/components/ui/card';
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuTrigger,
-// } from '@/components/ui/dropdown-menu';
 import {
   Form,
   FormField,
@@ -76,12 +62,6 @@ export default function PageContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const user = useAppState((s) => s.user);
   const dispatch = useAppDispatch();
-  // const [resumes, setResumes] = useState([
-  //   { name: 'Professional Resume', size: '3.5 MB' },
-  //   { name: 'Product Designer', size: '4.7 MB' },
-  //   { name: 'Visual Designer', size: '1.3 MB' },
-  // ]);
-
   const form = useForm({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -149,26 +129,6 @@ export default function PageContent() {
           <section>
             <h2 className='text-2xl font-semibold mb-4'>Basic Information</h2>
             <div className='grid grid-cols-1 gap-6'>
-              {/* TODO: impl profile picture upload */}
-              {/* <div className='col-span-1'>
-                <Label htmlFor='profile-picture'>Profile Picture</Label>
-                <div className='mt-2 border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-center'>
-                  <CloudUpload className='w-12 h-12 text-gray-400 mb-2' />
-                  <p className='text-sm font-medium'>
-                    Browse photo or drop here
-                  </p>
-                  <p className='text-xs text-gray-500 mt-1'>
-                    A photo larger than 400 pixels work best. Max photo size 5
-                    MB.
-                  </p>
-                  <input
-                    id='profile-picture'
-                    type='file'
-                    className='hidden'
-                    accept='image/*'
-                  />
-                </div>
-              </div> */}
               <div className='space-y-4'>
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
                   <FormField
@@ -341,63 +301,6 @@ export default function PageContent() {
               </div>
             </div>
           </section>
-
-          {/* TODO: impl resumes */}
-          {/* <section>
-            <h2 className='text-2xl font-semibold mb-4'>Your CV/Resume</h2>
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-              {resumes.map((resume, index) => (
-                <Card key={index}>
-                  <CardContent className='p-4 flex items-center justify-between'>
-                    <div className='flex items-center'>
-                      <FileText className='w-8 h-8 text-blue-500 mr-3' />
-                      <div>
-                        <p className='font-medium'>{resume.name}</p>
-                        <p className='text-sm text-gray-500'>{resume.size}</p>
-                      </div>
-                    </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant='ghost' size='icon'>
-                          <MoreVertical className='h-4 w-4' />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align='end'>
-                        <DropdownMenuItem>
-                          <Pencil className='mr-2 h-4 w-4' /> Edit Resume
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className='text-red-600'>
-                          <Trash2 className='mr-2 h-4 w-4' /> Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </CardContent>
-                </Card>
-              ))}
-              <Card>
-                <CardContent className='p-4 flex items-center justify-center h-full'>
-                  <label
-                    htmlFor='add-resume'
-                    className='cursor-pointer flex flex-col items-center'
-                  >
-                    <div className='w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mb-2'>
-                      <span className='text-blue-500 text-xl font-bold'>+</span>
-                    </div>
-                    <p className='font-medium'>Add CV/Resume</p>
-                    <p className='text-sm text-gray-500'>
-                      Browse file or drop here, only pdf
-                    </p>
-                    <input
-                      id='add-resume'
-                      type='file'
-                      className='hidden'
-                      accept='.pdf'
-                    />
-                  </label>
-                </CardContent>
-              </Card>
-            </div>
-          </section> */}
 
           <Button type='submit' className='w-full sm:w-auto mt-6' disabled={isSubmitting}>
             {isSubmitting ? 'Saving...' : 'Save Changes'}

@@ -1,34 +1,22 @@
 'use client';
 
-import _ from 'lodash';
-import Case from 'case';
-import dayjs from 'dayjs';
 import { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { mutate } from 'swr';
-// import { zeroAddress } from 'viem';
-// import { readContract } from 'viem/actions';
-// import { useClient, useWriteContract } from 'wagmi';
-import { ProposalStatus } from '@prisma/client';
-import Markdown from 'markdown-to-jsx';
-import {
-  MoreHorizontal,
-  Filter,
-  ArrowUpDown,
-  MessageCircleMore,
-  DollarSign,
-} from 'lucide-react';
+import dayjs from 'dayjs';
 import { toast } from 'sonner';
+import {
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Ban,
+  MoreHorizontal,
+  Shield,
+} from 'lucide-react';
 import axios from '@/lib/axios';
 import { useAppState } from '@/store';
-import { CONTRACT, CURRENCY, TOAST_IDS } from '@/constants';
-import { parseBudget } from '@/lib/budget';
 import useAppSWR from '@/hooks/use-app-swr';
-import { nanoIdToInt } from '@/lib/utils/nanoid';
-import usePaginateSWR from '@/hooks/use-paginate-swr';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,73 +24,85 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Pagination from '@/components/pagination';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import ProposalStatusBadge from '@/components/proposal-status-badge';
 
-const STATUSES = _.map(_.values(ProposalStatus), (status) => ({
-  value: status,
-  label: Case.title(status),
-}));
+const STATUS_CONFIG = {
+  PENDING: { label: 'Pending', color: 'bg-yellow-100 text-yellow-700', icon: Clock },
+  APPROVED: { label: 'Approved', color: 'bg-green-100 text-green-700', icon: CheckCircle2 },
+  REJECTED: { label: 'Rejected', color: 'bg-red-100 text-red-700', icon: XCircle },
+  SUSPENDED: { label: 'Suspended', color: 'bg-gray-100 text-gray-600', icon: Ban },
+};
+
+const TIER_COLORS = {
+  NEW: 'text-gray-500',
+  VERIFIED: 'text-blue-500',
+  SKILLED: 'text-green-500',
+  TRUSTED: 'text-purple-500',
+  EXPERT: 'text-orange-500',
+  ELITE_REVIEWER: 'text-red-500',
+};
 
 export default function PageContent({ params }) {
   const { organization: org } = useAppState();
-  const { data: jobAnalytics, isLoading } = useAppSWR(
-    `/analytics/jobs/${params.id}`
+  const [tab, setTab] = useState('PENDING');
+
+  const { data: applications, isLoading, mutate } = useAppSWR(
+    org?.selected?.id
+      ? `/orgs/${org.selected.id}/projects/${params.id}/applications?status=${tab}`
+      : null
   );
 
-  const statusCounts = jobAnalytics?.proposals || {
-    total: 0,
-    applied: 0,
-    withdrawn: 0,
-    shortlisted: 0,
-    archived: 0,
-    hired: 0,
+  const handleStatusChange = async (applicationId, newStatus) => {
+    try {
+      const res = await axios.patch(
+        `/orgs/${org.selected.id}/projects/${params.id}/applications/${applicationId}/status`,
+        { status: newStatus }
+      );
+      if (res.data.status === 'success') {
+        toast.success(`Application ${newStatus.toLowerCase()}`);
+        mutate();
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.data?.message || 'Failed to update');
+    }
   };
+
+  const appList = applications?.data || applications || [];
 
   return (
     <>
-      <div className='flex justify-between items-center mb-6'>
-        <h1 className='text-3xl font-bold text-gray-900'>
-          Job Applications ({statusCounts.total})
-        </h1>
-        <div className='flex space-x-2'>
-          <Button variant='outline' disabled={isLoading}>
-            <Filter className='mr-2 h-4 w-4' />
-            Filter
-          </Button>
-          <Button disabled={isLoading}>
-            <ArrowUpDown className='mr-2 h-4 w-4' />
-            Sort
-          </Button>
-        </div>
-      </div>
+      <h1 className='text-2xl font-bold mb-6'>Applications</h1>
 
-      <Tabs defaultValue={STATUSES[0].value} className='mb-6'>
-        <TabsList className='flex-wrap h-auto'>
-          {STATUSES.map((status) => (
-            <TabsTrigger
-              key={status.value}
-              value={status.value}
-              disabled={isLoading}
-            >
-              {status.label} ({statusCounts[status.value.toLowerCase()]})
-            </TabsTrigger>
+      <Tabs value={tab} onValueChange={setTab}>
+        <TabsList>
+          {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
+            <TabsTrigger key={key} value={key}>{cfg.label}</TabsTrigger>
           ))}
         </TabsList>
-        {STATUSES.map((status) => (
-          <TabsContent key={status.value} value={status.value}>
-            <ApplicationList
-              orgId={org.selected.id}
-              jobId={params.id}
-              status={status.value}
-            />
+
+        {Object.keys(STATUS_CONFIG).map((status) => (
+          <TabsContent key={status} value={status}>
+            {isLoading ? (
+              <div className='space-y-3 mt-4'>
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className='h-20 bg-gray-100 rounded-lg animate-pulse' />
+                ))}
+              </div>
+            ) : appList.length > 0 ? (
+              <div className='space-y-3 mt-4'>
+                {appList.map((app) => (
+                  <ApplicationCard
+                    key={app.id}
+                    application={app}
+                    currentStatus={status}
+                    onStatusChange={handleStatusChange}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className='text-sm text-gray-400 text-center py-8 mt-4'>
+                No {STATUS_CONFIG[status].label.toLowerCase()} applications.
+              </p>
+            )}
           </TabsContent>
         ))}
       </Tabs>
@@ -110,293 +110,75 @@ export default function PageContent({ params }) {
   );
 }
 
-function ApplicationList({ orgId, jobId, status }) {
-  const {
-    data: proposals,
-    isLoading,
-    pagination,
-    mutate,
-  } = usePaginateSWR(`/search/proposals`, {
-    params: {
-      limit: 9,
-      orgId: orgId,
-      jobId: jobId,
-      status: status,
-    },
-  });
+function ApplicationCard({ application, currentStatus, onStatusChange }) {
+  const profile = application.user?.profile;
+  const name = profile
+    ? `${profile.firstName} ${profile.lastName}`
+    : application.user?.address?.slice(0, 8) + '...';
+  const tier = application.user?.tier || 'NEW';
+  const statusCfg = STATUS_CONFIG[application.status];
+  const StatusIcon = statusCfg?.icon || Clock;
 
-  if (isLoading) return <div>Loading...</div>;
-
-  return (
-    <>
-      <div className='grid md:grid-cols-2 xl:grid-cols-3 gap-6 mb-6'>
-        {proposals?.map((proposal) => (
-          <ApplicantCard
-            key={proposal.id}
-            proposal={proposal}
-            mutate={mutate}
-          />
-        ))}
-      </div>
-
-      {pagination && pagination.totalPages > 1 && (
-        <div className='flex justify-center items-center mt-6'>
-          <Pagination pagination={pagination} />
-        </div>
-      )}
-    </>
-  );
-}
-
-function ApplicantCard({ proposal, mutate: mutateProposals }) {
-  // const client = useClient();
-  // const { writeContractAsync } = useWriteContract();
-  const [isLoading, setIsLoading] = useState(false);
-
-  const getAvailableStatuses = (status) => {
-    switch (status) {
-      case ProposalStatus.APPLIED:
-        return [ProposalStatus.SHORTLISTED, ProposalStatus.ARCHIVED];
-      case ProposalStatus.SHORTLISTED:
-        return [ProposalStatus.APPLIED, ProposalStatus.ARCHIVED];
-      case ProposalStatus.ARCHIVED:
-        return [ProposalStatus.APPLIED, ProposalStatus.SHORTLISTED];
-      default:
-        return [];
-    }
-  };
-
-  const handleStatusChange = async (status) => {
-    setIsLoading(true);
-    const toastId = toast.loading('Updating status...', {
-      id: TOAST_IDS.UPDATE_PROPOSAL_STATUS,
-    });
-    try {
-      const response = await axios.patch(
-        `/orgs/${proposal.job.org.id}/jobs/${proposal.job.id}/proposals/${proposal.id}/status`,
-        { status }
-      );
-
-      if (response.data.status === 'success') {
-        toast.success(`Proposal status updated to ${Case.title(status)}`, {
-          id: toastId,
-        });
-        mutate(`/analytics/jobs/${proposal.job.id}`);
-        mutateProposals();
-      } else {
-        throw new Error('Failed to update status');
-      }
-    } catch (error) {
-      console.error('Error updating proposal status:', error);
-      toast.error(
-        error?.response?.data?.message ||
-          'Failed to update status. Please try again.',
-        { id: toastId }
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDepositAndHire = async () => {
-    setIsLoading(true);
-    const toastId = toast.loading('Processing deposit and hire...', {
-      id: TOAST_IDS.DEPOSIT_AND_HIRE,
-    });
-    try {
-      const jobIdAsInt = nanoIdToInt(proposal.job.id);
-      const currency = proposal.job.currency;
-      // const isETH = currency === 'ETH';
-
-      // // Read contract state
-      // const exists = await readContract(client, {
-      //   ...CONTRACT.ESCROW,
-      //   functionName: 'jobExists',
-      //   args: [jobIdAsInt],
-      // });
-
-      // if (exists) {
-      //   const released = await readContract(client, {
-      //     ...CONTRACT.ESCROW,
-      //     functionName: 'jobReleased',
-      //     args: [jobIdAsInt],
-      //   });
-
-      //   if (!released) {
-      //     // Check if job details match
-      //     const storedAmount = await readContract(client, {
-      //       ...CONTRACT.ESCROW,
-      //       functionName: 'mapJobToAmount',
-      //       args: [jobIdAsInt],
-      //     });
-      //     const storedAssetIn = await readContract(client, {
-      //       ...CONTRACT.ESCROW,
-      //       functionName: 'mapJobToAssetIn',
-      //       args: [jobIdAsInt],
-      //     });
-
-      //     const amount = parseBudget(proposal.job.budget, currency);
-      //     const assetIn = isETH ? zeroAddress : CONTRACT.TOKEN.address;
-
-      //     if (storedAmount !== amount || storedAssetIn !== assetIn) {
-      //       toast.error('Job details do not match. Please contact support.', {
-      //         id: toastId,
-      //       });
-      //       return;
-      //     }
-
-      //     // Job exists, is not released, and details match, just change status
-      //     await handleStatusChange(ProposalStatus.HIRED);
-      //     return;
-      //   }
-      // }
-
-      // // Validate and deposit
-      // const amount = parseBudget(
-      //   proposal.budget || proposal.job.budget,
-      //   currency
-      // );
-      // if (isETH) {
-      //   await writeContractAsync({
-      //     ...CONTRACT.ESCROW,
-      //     functionName: 'depositETH',
-      //     args: [proposal.user.address, jobIdAsInt],
-      //     value: amount,
-      //   });
-      // } else {
-      //   await writeContractAsync({
-      //     ...CONTRACT.ESCROW,
-      //     functionName: 'depositERC20',
-      //     args: [
-      //       CONTRACT.TOKEN.address,
-      //       proposal.user.address,
-      //       amount,
-      //       jobIdAsInt,
-      //       [CONTRACT.TOKEN.address],
-      //     ],
-      //   });
-      // }
-
-      toast.success('Deposit successful', { id: toastId });
-
-      // Change status after successful deposit
-      await handleStatusChange(ProposalStatus.HIRED);
-    } catch (error) {
-      console.error('Error in deposit and hire:', error);
-      toast.error('Failed to deposit and hire. Please try again.', {
-        id: toastId,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const availableActions = [];
+  if (currentStatus === 'PENDING') {
+    availableActions.push({ label: 'Approve', status: 'APPROVED' });
+    availableActions.push({ label: 'Reject', status: 'REJECTED' });
+  } else if (currentStatus === 'APPROVED') {
+    availableActions.push({ label: 'Suspend', status: 'SUSPENDED' });
+  } else if (currentStatus === 'REJECTED' || currentStatus === 'SUSPENDED') {
+    availableActions.push({ label: 'Approve', status: 'APPROVED' });
+  }
 
   return (
     <Card>
-      <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-        <CardTitle className='text-sm font-medium'>
-          <Link
-            href={`/app/customer/contributors/${proposal.user.id}`}
-            className='hover:underline'
-          >
-            {`${proposal.user.profile.firstName} ${proposal.user.profile.lastName}`}
-          </Link>
-        </CardTitle>
-        {![ProposalStatus.WITHDRAWN, ProposalStatus.HIRED].includes(
-          proposal.status
-        ) && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant='ghost' size='sm' disabled={isLoading}>
-                <MoreHorizontal className='h-4 w-4' />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align='end'>
-              {_.map(getAvailableStatuses(proposal.status), (status) => (
-                <DropdownMenuItem
-                  key={status}
-                  onSelect={() => handleStatusChange(status)}
-                  disabled={isLoading}
-                >
-                  <ProposalStatusBadge status={status} />
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
-      </CardHeader>
-      <CardContent>
-        <div className='flex items-center space-x-4'>
-          <Image
-            src={
-              proposal.user.profile.pfp || '/placeholder.svg?height=50&width=50'
-            }
-            alt={`${proposal.user.profile.firstName} ${proposal.user.profile.lastName}`}
-            width={50}
-            height={50}
-            className='rounded-full'
-          />
-          <div>
-            <p className='text-sm font-medium text-gray-900'>
-              <Link
-                href={`/app/customer/contributors/${proposal.user.id}`}
-                className='hover:underline'
-              >
-                {proposal.user.profile.title}
-              </Link>
-            </p>
-            <p className='text-sm text-gray-500'>
-              Applied: {dayjs(proposal.createdAt).format('MMM D, YYYY')}
-            </p>
+      <CardContent className='p-4'>
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center gap-3'>
+            <div className='h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center text-sm font-medium'>
+              {profile?.firstName?.[0]}{profile?.lastName?.[0]}
+            </div>
+            <div>
+              <p className='font-medium'>{name}</p>
+              <div className='flex items-center gap-2 text-xs text-gray-500'>
+                <span className={TIER_COLORS[tier]}>
+                  <Shield className='h-3 w-3 inline mr-0.5' />
+                  {tier}
+                </span>
+                <span>Applied {dayjs(application.createdAt).format('MMM D, YYYY')}</span>
+              </div>
+              {application.note && (
+                <p className='text-xs text-gray-400 mt-1 line-clamp-1'>{application.note}</p>
+              )}
+            </div>
+          </div>
+
+          <div className='flex items-center gap-2'>
+            <Badge className={`text-xs ${statusCfg.color}`}>
+              <StatusIcon className='h-3 w-3 mr-1' />
+              {statusCfg.label}
+            </Badge>
+
+            {availableActions.length > 0 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant='ghost' size='icon'>
+                    <MoreHorizontal className='h-4 w-4' />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align='end'>
+                  {availableActions.map((action) => (
+                    <DropdownMenuItem
+                      key={action.status}
+                      onClick={() => onStatusChange(application.id, action.status)}
+                    >
+                      {action.label}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
-        <div className='mt-2'>
-          <ProposalStatusBadge status={proposal.status} />
-        </div>
-        {(proposal.user.profile.education ||
-          proposal.user.profile.experience) && (
-          <ul className='text-sm text-gray-600 space-y-1 mt-4'>
-            {proposal.user.profile.education && (
-              <li>Education: {Case.title(proposal.user.profile.education)}</li>
-            )}
-            {proposal.user.profile.experience && (
-              <li>
-                Experience: {Case.title(proposal.user.profile.experience)}
-              </li>
-            )}
-          </ul>
-        )}
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              variant='outline'
-              size='sm'
-              className='w-full mt-4'
-              disabled={isLoading}
-            >
-              <MessageCircleMore className='mr-2 h-4 w-4' /> Statement
-            </Button>
-          </DialogTrigger>
-          <DialogContent className='sm:max-w-xl'>
-            <DialogHeader>
-              <DialogTitle>
-                {proposal.user.profile.firstName}&apos;s Statement
-              </DialogTitle>
-            </DialogHeader>
-            <Markdown className='prose'>{`${`**Budget:** ${proposal.budget || proposal.job.budget} ${CURRENCY[proposal.job.currency]}`}\n\n${proposal.statement}`}</Markdown>
-          </DialogContent>
-        </Dialog>
-        {proposal.status === ProposalStatus.SHORTLISTED && (
-          <Button
-            variant='default'
-            size='sm'
-            className='w-full mt-4'
-            onClick={handleDepositAndHire}
-            disabled={isLoading}
-          >
-            <DollarSign className='mr-2 h-4 w-4' /> Deposit and Hire
-          </Button>
-        )}
       </CardContent>
     </Card>
   );

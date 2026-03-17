@@ -1,10 +1,13 @@
-# Use the official Bun image as the base
-FROM oven/bun:1 as base
+# ---- Dependencies ----
+FROM oven/bun:1 AS deps
+WORKDIR /app
+COPY package.json bun.lockb* ./
+RUN bun install --frozen-lockfile
 
-# Set the working directory
+# ---- Builder ----
+FROM oven/bun:1 AS builder
 WORKDIR /app
 
-# Add build arguments for all env variables
 ARG DATABASE_URL
 ARG DIRECT_URL
 ARG JWT_SECRET
@@ -12,7 +15,6 @@ ARG JWT_REFRESH_SECRET
 ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_PROJECT_ID
 
-# Set environment variables
 ENV DATABASE_URL=$DATABASE_URL
 ENV DIRECT_URL=$DIRECT_URL
 ENV JWT_SECRET=$JWT_SECRET
@@ -20,26 +22,29 @@ ENV JWT_REFRESH_SECRET=$JWT_REFRESH_SECRET
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_PROJECT_ID=$NEXT_PUBLIC_PROJECT_ID
 
-# Install OpenSSL
 RUN apt-get update -y && apt-get install -y openssl
 
-# Copy package.json and bun.lockb (if it exists)
-COPY package.json bun.lockb* ./
-
-# Install dependencies
-RUN bun install --frozen-lockfile
-
-# Copy the rest of the application code
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma client
 RUN bunx prisma generate
-
-# Build the Next.js application
 RUN bun run build
 
-# Expose the port the app runs on
-EXPOSE 3000
+# ---- Runner ----
+FROM oven/bun:1-slim AS runner
+WORKDIR /app
 
-# Start the application
-CMD ["bun", "run", "start"]
+ENV NODE_ENV=production
+
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+
+# Copy standalone output
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+
+EXPOSE 3000
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["bun", "server.js"]

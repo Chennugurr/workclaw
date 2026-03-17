@@ -37,6 +37,7 @@ import {
 import deepFreeze from '@/lib/deep-freeze';
 import { cn } from '@/lib/utils';
 import OrganizationSwitcher from '@/components/organization-switcher';
+import NotificationCenter from '@/components/notification-center';
 import { useAppState } from '@/store';
 
 const MENU = deepFreeze({
@@ -133,6 +134,82 @@ const MENU = deepFreeze({
       },
     ],
   },
+  reviewer: {
+    main: [
+      { name: 'Queue', href: '/app/reviewer/queue' },
+    ],
+    side: [
+      {
+        icon: <ClipboardList className='h-5 w-5 mr-3' />,
+        name: 'Review Queue',
+        href: '/app/reviewer/queue',
+      },
+      {
+        icon: <BarChart3 className='h-5 w-5 mr-3' />,
+        name: 'Stats',
+        href: '/app/reviewer/stats',
+      },
+      {
+        icon: <Settings className='h-5 w-5 mr-3' />,
+        name: 'Settings',
+        href: '/app/reviewer/settings',
+      },
+    ],
+  },
+  admin: {
+    main: [
+      { name: 'Dashboard', href: '/app/admin/dashboard' },
+      { name: 'Users', href: '/app/admin/users' },
+      { name: 'Projects', href: '/app/admin/projects' },
+    ],
+    side: [
+      {
+        icon: <Layers className='h-5 w-5 mr-3' />,
+        name: 'Dashboard',
+        href: '/app/admin/dashboard',
+      },
+      {
+        icon: <Users className='h-5 w-5 mr-3' />,
+        name: 'Users',
+        href: '/app/admin/users',
+      },
+      {
+        icon: <FolderKanban className='h-5 w-5 mr-3' />,
+        name: 'Projects',
+        href: '/app/admin/projects',
+      },
+      {
+        icon: <ClipboardList className='h-5 w-5 mr-3' />,
+        name: 'Task Queues',
+        href: '/app/admin/tasks',
+      },
+      {
+        icon: <CreditCard className='h-5 w-5 mr-3' />,
+        name: 'Payouts',
+        href: '/app/admin/payouts',
+      },
+      {
+        icon: <Shield className='h-5 w-5 mr-3' />,
+        name: 'Fraud',
+        href: '/app/admin/fraud',
+      },
+      {
+        icon: <Bell className='h-5 w-5 mr-3' />,
+        name: 'Announcements',
+        href: '/app/admin/announcements',
+      },
+      {
+        icon: <BarChart3 className='h-5 w-5 mr-3' />,
+        name: 'Analytics',
+        href: '/app/admin/analytics',
+      },
+      {
+        icon: <ClipboardList className='h-5 w-5 mr-3' />,
+        name: 'Audit Log',
+        href: '/app/admin/audit',
+      },
+    ],
+  },
 });
 
 export default function AppLayout({ children }) {
@@ -142,9 +219,15 @@ export default function AppLayout({ children }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menu = useMemo(() => {
     let menu;
-    if (pathname.startsWith('/app/customer')) {
+    if (pathname.startsWith('/app/admin')) {
+      menu = MENU.admin;
+      setDashboardType('admin');
+    } else if (pathname.startsWith('/app/customer')) {
       menu = MENU.customer;
       setDashboardType('customer');
+    } else if (pathname.startsWith('/app/reviewer')) {
+      menu = MENU.reviewer;
+      setDashboardType('reviewer');
     } else {
       menu = MENU.contributor;
       setDashboardType('contributor');
@@ -167,7 +250,9 @@ export default function AppLayout({ children }) {
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   const switchProfile = (profile) => {
-    if (profile === 'customer') router.replace('/app/customer/dashboard');
+    if (profile === 'admin') router.replace('/app/admin/dashboard');
+    else if (profile === 'customer') router.replace('/app/customer/dashboard');
+    else if (profile === 'reviewer') router.replace('/app/reviewer/queue');
     else router.replace('/app/contributor/dashboard');
   };
 
@@ -219,8 +304,8 @@ export default function AppLayout({ children }) {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant='ghost' className='flex items-center'>
-                    <span className='text-gray-600'>
-                      {dashboardType === 'contributor' ? 'Contributor' : 'Customer'}
+                    <span className='text-gray-600 capitalize'>
+                      {dashboardType}
                     </span>
                     <ChevronDown className='h-4 w-4 text-gray-600 ml-1' />
                   </Button>
@@ -232,6 +317,14 @@ export default function AppLayout({ children }) {
                   <DropdownMenuItem onSelect={() => switchProfile('customer')}>
                     Customer
                   </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => switchProfile('reviewer')}>
+                    Reviewer
+                  </DropdownMenuItem>
+                  {user?.role === 'ADMIN' && (
+                    <DropdownMenuItem onSelect={() => switchProfile('admin')}>
+                      Admin
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -257,6 +350,7 @@ export default function AppLayout({ children }) {
                 />
               </div>
 
+              {authenticated && <NotificationCenter />}
               <appkit-button balance='hide' />
             </div>
           </div>

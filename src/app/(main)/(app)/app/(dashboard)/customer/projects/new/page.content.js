@@ -1,7 +1,7 @@
 'use client';
 
-import JobForm from '@/components/forms/job';
+import ProjectWizard from '@/components/forms/job';
 
 export default function PageContent() {
-  return <JobForm />;
+  return <ProjectWizard />;
 }

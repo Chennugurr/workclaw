@@ -1,180 +1,142 @@
 import { z } from 'zod';
 import jsend from 'jsend';
 import { NextResponse } from 'next/server';
-import { JobStatus } from '@prisma/client';
 import { middleware, ROLE } from '@/api/middleware';
 import prisma from '@/lib/prisma';
 
-const jobUpdateSchema = z.object({
+const projectUpdateSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   description: z.string().optional(),
-  duration: z.number().int().positive().optional().or(z.literal(null)),
-  position: z
-    .enum(['FULL_TIME', 'PART_TIME', 'CONTRACT', 'TEMPORARY', 'INTERNSHIP'])
-    .optional(),
-  experience: z
-    .enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT'])
-    .optional(),
-  location: z.string().max(255).optional(),
-  skills: z
-    .array(
-      z.object({
-        name: z.string(),
-        level: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT']),
-      })
-    )
-    .optional(),
+  taskType: z.enum([
+    'SINGLE_RESPONSE_RATING', 'PAIRWISE_COMPARISON', 'MULTI_RESPONSE_RANKING',
+    'LABEL_CLASSIFICATION', 'TEXT_ANNOTATION', 'CODE_REVIEW',
+    'FACTUALITY_VERIFICATION', 'SAFETY_REVIEW', 'SCAM_CLASSIFICATION',
+    'CONTRACT_VALIDATION', 'RESEARCH_GRADING', 'AGENT_EVALUATION',
+    'PROMPT_WRITING', 'TRANSLATION_REVIEW',
+  ]).optional(),
+  domain: z.array(z.string()).optional(),
+  chainTags: z.array(z.string()).optional(),
+  modelOrUseCase: z.string().optional().nullable(),
+  payModel: z.enum(['PER_TASK', 'HOURLY']).optional(),
+  rateAmount: z.number().positive().optional(),
+  difficulty: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT']).optional(),
+  qualityThreshold: z.number().min(0).max(1).optional(),
+  qualityBonusEligible: z.boolean().optional(),
+  capacity: z.number().int().positive().optional().nullable(),
+  taskVolume: z.number().int().positive().optional().nullable(),
+  goldTaskRatio: z.number().min(0).max(1).optional(),
+  startDate: z.string().datetime().optional().nullable(),
+  endDate: z.string().datetime().optional().nullable(),
+  status: z.enum(['DRAFT', 'SCREENING_SETUP', 'INVITE_ONLY', 'OPEN', 'PAUSED', 'FULL', 'ARCHIVED']).optional(),
+  visibility: z.enum(['PUBLIC', 'PRIVATE', 'INVITE_ONLY']).optional(),
+  regionLimits: z.array(z.string()).optional(),
+  languageLimits: z.array(z.string()).optional(),
+  requiredTier: z.enum(['NEW', 'VERIFIED', 'SKILLED', 'TRUSTED', 'EXPERT', 'ELITE_REVIEWER']).optional(),
+  reviewPolicy: z.string().optional().nullable(),
+  disputeRules: z.string().optional().nullable(),
+  payoutRules: z.string().optional().nullable(),
 });
 
-export const PATCH = middleware(
+/**
+ * GET /api/orgs/:orgId/projects/:projectId
+ * Get project details for customer management.
+ */
+export const GET = middleware(
   async (req, { params }) => {
-    const { orgId, projectId } = params;
-    const updateData = req.dto;
+    const { orgId, projectId } = await params;
 
-    // First, update the job without skills
-    let job = await prisma.project.update({
-      where: { id: projectId, orgId, status: JobStatus.OPEN },
-      data: {
-        ...updateData,
-        skills: undefined,
-      },
+    const project = await prisma.project.findFirst({
+      where: { id: projectId, orgId },
       include: {
-        org: true,
-        skills: {
-          include: {
-            skill: true,
-          },
+        _count: { select: { applications: true, tasks: true, taskBatches: true } },
+        taskBatches: { orderBy: { createdAt: 'desc' }, take: 5 },
+        screenings: { select: { id: true, title: true, status: true, domain: true } },
+        reviewerAssignments: {
+          include: { user: { select: { id: true, profile: { select: { firstName: true, lastName: true } } } } },
         },
       },
     });
 
-    // If skills are provided in the update, handle them separately
-    if (updateData.skills) {
-      // Get the current skill association IDs
-      const currentSkillAssociationIds = job.skills.map((skill) => skill.id);
-
-      // Identify skill association IDs to remove (present in current but not in update)
-      const skillAssociationIdsToRemove = currentSkillAssociationIds.filter(
-        (id) => !updateData.skills.some((skill) => skill.id === id)
-      );
-
-      // Remove skill associations that are no longer present
-      await prisma.skillAssociation.deleteMany({
-        where: {
-          id: {
-            in: skillAssociationIdsToRemove,
-          },
-        },
-      });
-
-      // Update or create skills
-      const skills = await prisma.skill.findMany({
-        where: {
-          name: {
-            in: updateData.skills.map((skill) => skill.name),
-          },
-        },
-      });
-      for (const skill of skills) {
-        const association = updateData.skills.find(
-          (s) => s.name === skill.name
-        );
-        await prisma.skillAssociation.upsert({
-          where: {
-            projectId_skillId: {
-              projectId,
-              skillId: skill.id,
-            },
-          },
-          update: {
-            level: association.level,
-          },
-          create: {
-            level: association.level,
-            ownerType: 'PROJECT',
-            job: {
-              connect: {
-                id: projectId,
-              },
-            },
-            skill: {
-              connectOrCreate: {
-                where: { name: skill.name },
-                create: { name: skill.name },
-              },
-            },
-          },
-        });
-      }
-
-      // Fetch the updated job with new skills
-      const updatedJobWithSkills = await prisma.project.findUnique({
-        where: { id: projectId },
-        include: {
-          org: true,
-          skills: {
-            include: {
-              skill: true,
-            },
-          },
-        },
-      });
-
-      job = updatedJobWithSkills;
+    if (!project) {
+      return NextResponse.json(jsend.fail({ message: 'Project not found' }), { status: 404 });
     }
 
-    return NextResponse.json(jsend.success(job));
+    return NextResponse.json(jsend.success(project));
+  },
+  {
+    requireAuth: true,
+    role: { roles: [ROLE.ORGANIZATION.MEMBER] },
+  }
+);
+
+/**
+ * PATCH /api/orgs/:orgId/projects/:projectId
+ * Update project.
+ */
+export const PATCH = middleware(
+  async (req, { params }) => {
+    const { orgId, projectId } = await params;
+    const updateData = { ...req.dto };
+
+    // Convert date strings to Date objects
+    if (updateData.startDate) updateData.startDate = new Date(updateData.startDate);
+    if (updateData.endDate) updateData.endDate = new Date(updateData.endDate);
+
+    const project = await prisma.project.update({
+      where: { id: projectId, orgId },
+      data: updateData,
+      include: {
+        _count: { select: { applications: true, tasks: true, taskBatches: true } },
+      },
+    });
+
+    return NextResponse.json(jsend.success(project));
   },
   (error, defaultErrorHandler) => {
     if (error.code === 'P2025') {
-      return NextResponse.json(jsend.fail({ message: 'Job not found' }), {
-        status: 404,
-      });
-    }
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        jsend.fail({ message: 'Invalid input data', errors: error.errors }),
-        { status: 400 }
-      );
+      return NextResponse.json(jsend.fail({ message: 'Project not found' }), { status: 404 });
     }
     return defaultErrorHandler();
   },
   {
     requireAuth: true,
-    bodySchema: jobUpdateSchema,
+    bodySchema: projectUpdateSchema,
     role: { roles: [ROLE.ORGANIZATION.ADMIN] },
   }
 );
 
+/**
+ * DELETE /api/orgs/:orgId/projects/:projectId
+ * Delete (archive) a project.
+ */
 export const DELETE = middleware(
   async (req, { params }) => {
-    const { orgId, projectId } = params;
+    const { orgId, projectId } = await params;
 
-    const job = await prisma.project.findUnique({
-      where: { id: projectId },
+    const project = await prisma.project.findFirst({
+      where: { id: projectId, orgId },
+      select: { status: true, _count: { select: { tasks: true } } },
     });
 
-    if (!job || job.orgId !== orgId) {
-      return NextResponse.json(
-        jsend.fail({ message: 'Job not found in this organization' }),
-        { status: 404 }
-      );
+    if (!project) {
+      return NextResponse.json(jsend.fail({ message: 'Project not found' }), { status: 404 });
     }
 
-    await prisma.project.delete({
-      where: { id: projectId },
-    });
+    // If project has tasks, archive instead of delete
+    if (project._count.tasks > 0) {
+      await prisma.project.update({
+        where: { id: projectId },
+        data: { status: 'ARCHIVED' },
+      });
+      return NextResponse.json(jsend.success({ message: 'Project archived' }));
+    }
 
-    return NextResponse.json(
-      jsend.success({ message: 'Job deleted successfully' }),
-      { status: 200 }
-    );
+    await prisma.project.delete({ where: { id: projectId } });
+    return NextResponse.json(jsend.success({ message: 'Project deleted' }));
   },
   (error, defaultErrorHandler) => {
     if (error.code === 'P2025') {
-      return NextResponse.json(jsend.fail({ message: 'Job not found' }), {
-        status: 404,
-      });
+      return NextResponse.json(jsend.fail({ message: 'Project not found' }), { status: 404 });
     }
     return defaultErrorHandler();
   },

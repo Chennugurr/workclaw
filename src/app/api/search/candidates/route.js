@@ -14,7 +14,10 @@ export const GET = middleware(
       _.split(_.get(params, 'experienceLevels', ''), ',')
     );
 
-    // TODO: Ensure the authenticated user has permission to search candidates
+    // Only customers and admins can search contributors
+    if (req.user.role !== 'CUSTOMER' && req.user.role !== 'ADMIN') {
+      return NextResponse.json(jsend.fail({ message: 'Forbidden' }), { status: 403 });
+    }
 
     // Construct the base query
     let query = {

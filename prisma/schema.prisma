@@ -339,6 +339,7 @@ model User {
   address            String          @unique
   role               UserRole        @default(CONTRIBUTOR)
   tier               ContributorTier @default(NEW)
+  badges             String[]        @default([])
   onboardingComplete Boolean         @default(false)
   kycStatus          KYCStatus       @default(NONE)
 

@@ -1,20 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  Calendar,
-  Link,
-  Bold,
-  Italic,
-  Underline,
-  Strikethrough,
-  List,
-  ListOrdered,
-} from 'lucide-react';
+import { toast } from 'sonner';
+import { Building2 } from 'lucide-react';
+import axios from '@/lib/axios';
+import { useAppState } from '@/store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -22,133 +17,112 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import FeatureComingSoon from '@/components/feature-coming-soon';
+
+const TEAM_SIZES = ['1-10', '11-50', '51-200', '201-500', '500+'];
+const INDUSTRIES = [
+  'AI / Machine Learning', 'Blockchain / Web3', 'Data & Analytics',
+  'Technology', 'Finance', 'Healthcare', 'Education', 'Research', 'Other',
+];
 
 export default function PageContent() {
-  const [establishmentDate, setEstablishmentDate] = useState('');
+  const { organization: org } = useAppState();
+  const orgData = org?.selected || {};
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [form, setForm] = useState({
+    website: orgData.website || '',
+    industry: orgData.industry || '',
+    teamSize: orgData.teamSize || '',
+    description: orgData.description || '',
+  });
 
-  // TODO: impl page
-  return <FeatureComingSoon />;
+  const update = (key, val) => setForm((prev) => ({ ...prev, [key]: val }));
+
+  const save = async () => {
+    setIsSubmitting(true);
+    try {
+      await axios.patch(`/orgs/${orgData.id}`, form);
+      toast.success('Organization info saved');
+    } catch {
+      toast.error('Failed to save');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-    <>
-      <h1 className='text-2xl font-bold mb-6'>Founding Info Settings</h1>
+    <div className='space-y-6'>
+      <h2 className='text-xl font-semibold flex items-center gap-2'>
+        <Building2 className='h-5 w-5' />
+        Organization Details
+      </h2>
 
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-6'>
-        <div>
-          <Label htmlFor='organization-type'>Organization Type</Label>
-          <Select>
-            <SelectTrigger id='organization-type' className='w-full mt-1'>
-              <SelectValue placeholder='Select...' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='corporation'>Corporation</SelectItem>
-              <SelectItem value='llc'>LLC</SelectItem>
-              <SelectItem value='partnership'>Partnership</SelectItem>
-              <SelectItem value='sole-proprietorship'>
-                Sole Proprietorship
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <Label htmlFor='industry-types'>Industry Types</Label>
-          <Select>
-            <SelectTrigger id='industry-types' className='w-full mt-1'>
-              <SelectValue placeholder='Select...' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='technology'>Technology</SelectItem>
-              <SelectItem value='finance'>Finance</SelectItem>
-              <SelectItem value='healthcare'>Healthcare</SelectItem>
-              <SelectItem value='education'>Education</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <Label htmlFor='team-size'>Team Size</Label>
-          <Select>
-            <SelectTrigger id='team-size' className='w-full mt-1'>
-              <SelectValue placeholder='Select...' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='1-10'>1-10 employees</SelectItem>
-              <SelectItem value='11-50'>11-50 employees</SelectItem>
-              <SelectItem value='51-200'>51-200 employees</SelectItem>
-              <SelectItem value='201-500'>201-500 employees</SelectItem>
-              <SelectItem value='501+'>501+ employees</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6'>
-        <div>
-          <Label htmlFor='establishment-date'>Year of Establishment</Label>
-          <div className='relative mt-1'>
-            <Input
-              id='establishment-date'
-              type='text'
-              placeholder='dd/mm/yyyy'
-              value={establishmentDate}
-              onChange={(e) => setEstablishmentDate(e.target.value)}
-              className='w-full pr-10'
-            />
-            <Calendar className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400' />
+      <Card>
+        <CardContent className='p-5 space-y-4'>
+          <div>
+            <Label>Organization Name</Label>
+            <Input className='mt-1' value={orgData.name || ''} disabled />
+            <p className='text-xs text-gray-400 mt-1'>
+              Contact support to change your organization name.
+            </p>
           </div>
-        </div>
 
-        <div>
-          <Label htmlFor='company-website'>Company Website</Label>
-          <div className='relative mt-1'>
-            <Input
-              id='company-website'
-              type='url'
-              placeholder='Website url...'
-              className='w-full pl-10'
-            />
-            <Link className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' />
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            <div>
+              <Label>Industry</Label>
+              <Select value={form.industry} onValueChange={(v) => update('industry', v)}>
+                <SelectTrigger className='mt-1'>
+                  <SelectValue placeholder='Select industry...' />
+                </SelectTrigger>
+                <SelectContent>
+                  {INDUSTRIES.map((i) => (
+                    <SelectItem key={i} value={i}>{i}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Team Size</Label>
+              <Select value={form.teamSize} onValueChange={(v) => update('teamSize', v)}>
+                <SelectTrigger className='mt-1'>
+                  <SelectValue placeholder='Select size...' />
+                </SelectTrigger>
+                <SelectContent>
+                  {TEAM_SIZES.map((s) => (
+                    <SelectItem key={s} value={s}>{s} people</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div className='mb-6'>
-        <Label htmlFor='company-vision'>Company Vision</Label>
-        <Textarea
-          id='company-vision'
-          placeholder='Tell us what Vision of your company...'
-          className='mt-1 min-h-[200px]'
-        />
-        <div className='flex space-x-2 mt-2'>
-          <Button variant='outline' size='icon'>
-            <Bold className='h-4 w-4' />
-          </Button>
-          <Button variant='outline' size='icon'>
-            <Italic className='h-4 w-4' />
-          </Button>
-          <Button variant='outline' size='icon'>
-            <Underline className='h-4 w-4' />
-          </Button>
-          <Button variant='outline' size='icon'>
-            <Strikethrough className='h-4 w-4' />
-          </Button>
-          <Button variant='outline' size='icon'>
-            <Link className='h-4 w-4' />
-          </Button>
-          <Button variant='outline' size='icon'>
-            <List className='h-4 w-4' />
-          </Button>
-          <Button variant='outline' size='icon'>
-            <ListOrdered className='h-4 w-4' />
-          </Button>
-        </div>
-      </div>
+          <div>
+            <Label>Website</Label>
+            <Input
+              className='mt-1'
+              placeholder='https://yourcompany.com'
+              value={form.website}
+              onChange={(e) => update('website', e.target.value)}
+            />
+          </div>
 
-      <Button size='lg' className='w-full sm:w-auto'>
-        Save Changes
+          <div>
+            <Label>Description</Label>
+            <Textarea
+              className='mt-1'
+              rows={4}
+              placeholder='Describe your organization and the type of AI work you focus on...'
+              value={form.description}
+              onChange={(e) => update('description', e.target.value)}
+              maxLength={1000}
+            />
+            <p className='text-xs text-gray-400 mt-1'>{form.description.length}/1000</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Button onClick={save} disabled={isSubmitting}>
+        {isSubmitting ? 'Saving...' : 'Save Changes'}
       </Button>
-    </>
+    </div>
   );
 }

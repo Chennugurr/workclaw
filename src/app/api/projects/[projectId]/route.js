@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma';
 
 export const GET = middleware(
   async (req, { params }) => {
-    const { projectId } = params;
+    const { projectId } = await params;
 
     const query = {
       where: { id: projectId },
@@ -26,11 +26,19 @@ export const GET = middleware(
             },
           },
         },
+        screenings: {
+          where: { status: 'ACTIVE' },
+          select: {
+            id: true,
+            title: true,
+            domain: true,
+          },
+        },
       },
     };
 
     if (req.user) {
-      query.include.proposals = {
+      query.include.applications = {
         where: {
           userId: req.user.id,
         },
@@ -41,20 +49,47 @@ export const GET = middleware(
       };
     }
 
-    const job = await prisma.project.findUnique(query);
+    const project = await prisma.project.findUnique(query);
 
-    if (!job) {
-      return NextResponse.json(jsend.fail({ message: 'Job not found' }), {
+    if (!project) {
+      return NextResponse.json(jsend.fail({ message: 'Project not found' }), {
         status: 404,
       });
     }
 
-    let res = job;
+    let res = { ...project };
 
+    // Map application for authenticated user
     if (req.user) {
-      res.proposal = job.proposals[0] || null;
-      delete res.proposals;
+      res.application = project.applications?.[0] || null;
+      delete res.applications;
+
+      // Check if user has passed required screenings
+      if (project.screenings && project.screenings.length > 0) {
+        const screeningIds = project.screenings.map((s) => s.id);
+        const passedAttempts = await prisma.screeningAttempt.findMany({
+          where: {
+            userId: req.user.id,
+            screeningId: { in: screeningIds },
+            passed: true,
+          },
+          select: { screeningId: true },
+        });
+        const passedIds = new Set(passedAttempts.map((a) => a.screeningId));
+        res.screeningPassed = screeningIds.every((id) => passedIds.has(id));
+        res.screeningDetails = project.screenings.map((s) => ({
+          ...s,
+          passed: passedIds.has(s.id),
+        }));
+      } else {
+        res.screeningPassed = true;
+        res.screeningDetails = [];
+      }
     }
+
+    // Rename org → organization for frontend consistency
+    res.organization = res.org;
+    delete res.org;
 
     return NextResponse.json(jsend.success(res));
   },

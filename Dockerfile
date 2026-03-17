@@ -1,7 +1,7 @@
 # ---- Dependencies ----
 FROM oven/bun:1 AS deps
 WORKDIR /app
-COPY package.json bun.lockb* ./
+COPY package.json bun.lockb* bun.lock* ./
 RUN bun install --frozen-lockfile
 
 # ---- Builder ----
@@ -42,6 +42,11 @@ RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
+
+# Copy Prisma schema + generated client for runtime
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
 EXPOSE 3000
 ENV PORT=3000

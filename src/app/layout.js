@@ -10,17 +10,17 @@ const fontSans = FontSans({
 });
 
 export const metadata = {
-  title: 'Workclaw - Web3 AI Work Platform',
-  description: `Workclaw is a paid web3 human intelligence platform. Train crypto-native AI systems, earn money for your expertise, and build a verified reputation in crypto AI work.`,
-  keywords: `web3, AI training, crypto, human feedback, data labeling, smart contracts, blockchain, RLHF`,
+  title: 'Workclaw - AI Training Work Platform',
+  description: `Workclaw is a human intelligence platform for training AI and LLMs. Complete structured tasks — labeling, ranking, reviewing, red-teaming — earn USDC, and build a verified reputation.`,
+  keywords: `AI training, LLM, human feedback, data labeling, RLHF, machine learning, annotation, AI safety`,
   openGraph: {
-    title: 'Workclaw - Web3 AI Work Platform',
-    description: `Earn money training AI for web3. Complete tasks, pass screenings, and get paid for your crypto expertise.`,
+    title: 'Workclaw - AI Training Work Platform',
+    description: `Earn money training AI. Complete tasks, pass screenings, and get paid for your expertise in USDC.`,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Workclaw - Web3 AI Work Platform',
-    description: `Earn money training AI for web3. Complete tasks, pass screenings, and get paid for your crypto expertise.`,
+    title: 'Workclaw - AI Training Work Platform',
+    description: `Earn money training AI. Complete tasks, pass screenings, and get paid for your expertise in USDC.`,
   },
 };
 

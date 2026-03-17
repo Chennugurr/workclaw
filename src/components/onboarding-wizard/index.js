@@ -245,7 +245,7 @@ export default function OnboardingWizard() {
                     <FormItem>
                       <FormLabel>Title / Headline</FormLabel>
                       <FormControl>
-                        <Input placeholder='DeFi researcher, Solidity developer, Security analyst...' {...field} />
+                        <Input placeholder='AI trainer, Data annotator, Content reviewer, Research analyst...' {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -259,7 +259,7 @@ export default function OnboardingWizard() {
                       <FormLabel>Short bio (optional)</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder='A few sentences about your crypto background and what kind of work interests you...'
+                          placeholder='A few sentences about your background and what kind of AI training work interests you...'
                           className='h-24'
                           {...field}
                         />
@@ -282,7 +282,7 @@ export default function OnboardingWizard() {
             </div>
 
             <div>
-              <label className='text-sm font-medium text-gray-700 mb-2 block'>Crypto experience level</label>
+              <label className='text-sm font-medium text-gray-700 mb-2 block'>AI training experience level</label>
               <Select value={cryptoExperience} onValueChange={setCryptoExperience}>
                 <SelectTrigger>
                   <SelectValue />
@@ -297,7 +297,7 @@ export default function OnboardingWizard() {
             </div>
 
             <div>
-              <label className='text-sm font-medium text-gray-700 mb-2 block'>Chains you know</label>
+              <label className='text-sm font-medium text-gray-700 mb-2 block'>Platforms & tools you know</label>
               <div className='flex flex-wrap gap-2'>
                 {CHAINS.map((chain) => (
                   <ToggleChip
@@ -346,7 +346,7 @@ export default function OnboardingWizard() {
               </div>
               <div className='flex items-center gap-2'>
                 <Checkbox checked={researchExp} onCheckedChange={setResearchExp} id='research' />
-                <label htmlFor='research' className='text-sm'>Crypto/blockchain research experience</label>
+                <label htmlFor='research' className='text-sm'>Academic or industry research experience</label>
               </div>
               <div className='flex items-center gap-2'>
                 <Checkbox checked={fraudDetectionExp} onCheckedChange={setFraudDetectionExp} id='fraud' />

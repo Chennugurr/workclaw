@@ -1,8 +1,8 @@
 # Workclaw
 
-A paid Web3 human intelligence platform for training crypto-native AI systems.
+A human intelligence platform for training AI and LLMs. Contributors complete structured tasks — labeling, ranking, reviewing, red-teaming — earn USDC, and build a verified reputation.
 
-Contributors complete AI training tasks — labeling, ranking, reviewing, red-teaming — and get paid in USDC. Organizations post projects that need human feedback on AI outputs in crypto/blockchain domains.
+Organizations post projects that need high-quality human feedback on AI outputs across diverse domains.
 
 ## Tech Stack
 

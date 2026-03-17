@@ -2,9 +2,9 @@
 
 ## What Is Workclaw?
 
-Workclaw is a paid Web3 human intelligence platform for training crypto-native AI systems. Contributors complete AI training tasks — labeling, ranking, reviewing, red-teaming — and get paid in USDC or fiat. Organizations (AI startups, wallet teams, exchanges, DeFi protocols) post projects that need human feedback on AI outputs related to crypto/blockchain.
+Workclaw is a human intelligence platform for training AI and LLMs. Contributors complete structured AI training tasks — labeling, ranking, reviewing, red-teaming — and get paid in USDC. Organizations (AI labs, startups, enterprises, research teams) post projects that need high-quality human feedback on AI outputs across diverse domains.
 
-**Think:** Outlier/Scale AI meets crypto. Not a freelancing marketplace. Not a job board. A structured work platform where qualified contributors do paid AI training tasks in web3 domains.
+**Think:** Outlier/Scale AI with crypto-native payments. Not a freelancing marketplace. Not a job board. A structured work platform where qualified contributors do paid AI training tasks. Web3 (Solana/USDC) is the payment and identity layer, not the product scope.
 
 ## Origin
 
@@ -25,10 +25,10 @@ This codebase was originally **detask**, a web3 freelancing marketplace (Next.js
 ## Target Users
 
 ### Contributors
-Crypto researchers, smart contract developers, Solidity/Rust engineers, community moderators, security researchers, NFT analysts, traders, multilingual crypto users, content reviewers.
+Writers, researchers, developers, linguists, domain experts (science, math, medicine, law, finance), data annotators, content reviewers, multilingual evaluators, prompt engineers, red teamers.
 
 ### Customers (Organizations)
-AI startups, wallet teams, exchanges, DeFi protocols, data providers, agent platforms, L1/L2/L3 teams, security tooling companies, launchpads, research firms.
+AI labs, LLM companies, startups building AI products, enterprises training domain-specific AI, research teams, data providers, companies needing high-quality labeled datasets.
 
 ### Reviewers
 Quality assurance managers, expert reviewers, calibrators, fraud/integrity reviewers.
@@ -39,12 +39,12 @@ Operations, trust & safety, payout managers, project managers.
 ## Core Use Cases
 
 - Human labeling and ranking of AI outputs
-- Reviewing AI-generated crypto research and summaries
-- Validating smart contract explanations
-- Scam, phishing, rugpull, and impersonation classification
-- Prompt writing and prompt improvement for blockchain agents
-- Red-team testing of AI agents and web3 support systems
-- Reviewing moderation decisions and multilingual crypto content
+- Reviewing AI-generated responses for accuracy and helpfulness
+- Factuality verification across science, math, coding, and more
+- Content safety evaluation and moderation
+- Prompt writing and prompt improvement for LLMs and AI agents
+- Red-team testing of AI systems for vulnerabilities and unsafe behaviors
+- Data annotation and dataset curation for model training
 
 ## Tech Stack
 

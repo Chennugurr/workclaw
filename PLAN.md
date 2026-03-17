@@ -2,7 +2,7 @@
 
 ## Phase 1: Rebrand & Information Architecture
 
-**Goal:** Transform the app from a freelancing marketplace into a web3 AI work platform at the structural level. After this phase the app should boot, auth should work, and the new navigation/routing should be in place — even if most pages are stubs.
+**Goal:** Transform the app from a freelancing marketplace into an AI training work platform at the structural level. After this phase the app should boot, auth should work, and the new navigation/routing should be in place — even if most pages are stubs.
 
 ### Tasks
 1. Rename all references from "detask" to "workclaw" (package.json, titles, meta, env, constants)

@@ -81,7 +81,7 @@ export default function Page() {
         <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
           <DashboardCard
             title='Contributor'
-            description='Complete AI training tasks, earn USDC, and build your expertise in web3 AI work.'
+            description='Complete AI training tasks, earn USDC, and build your expertise across diverse domains.'
             icon={UserIcon}
             href='/app/contributor/dashboard'
           />

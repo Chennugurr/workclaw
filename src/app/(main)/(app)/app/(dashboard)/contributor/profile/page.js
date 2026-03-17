@@ -289,7 +289,7 @@ export default function Page() {
                     <FormItem className='md:col-span-2'>
                       <FormLabel>Title / Headline</FormLabel>
                       <FormControl>
-                        <Input placeholder='e.g. DeFi Researcher & Smart Contract Auditor' {...field} disabled={isSaving} />
+                        <Input placeholder='e.g. AI Trainer & Data Annotator' {...field} disabled={isSaving} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -322,7 +322,7 @@ export default function Page() {
             <CardContent className='p-6'>
               <h2 className='text-lg font-semibold mb-4 flex items-center gap-2'>
                 <Wallet className='h-5 w-5' />
-                Web3 Identity
+                Identity & Socials
               </h2>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 <FormField
@@ -358,7 +358,7 @@ export default function Page() {
             <CardContent className='p-6'>
               <h2 className='text-lg font-semibold mb-4 flex items-center gap-2'>
                 <Shield className='h-5 w-5' />
-                Crypto Expertise
+                Domain Expertise
               </h2>
 
               <div className='mb-5'>
@@ -448,7 +448,7 @@ export default function Page() {
                     className='rounded border-gray-300'
                     disabled={isSaving}
                   />
-                  Crypto/blockchain research experience
+                  Academic or industry research experience
                 </label>
                 <label className='flex items-center gap-2 text-sm cursor-pointer'>
                   <input

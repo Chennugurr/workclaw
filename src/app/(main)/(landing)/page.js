@@ -23,32 +23,32 @@ const taskTypes = [
   {
     icon: <Target className='h-6 w-6' />,
     title: 'AI Response Rating',
-    description: 'Rate and rank AI-generated responses for accuracy, completeness, and safety in crypto contexts.',
+    description: 'Rate and rank AI-generated responses for accuracy, helpfulness, and safety across diverse domains.',
   },
   {
     icon: <Shield className='h-6 w-6' />,
-    title: 'Scam & Phishing Detection',
-    description: 'Classify Discord, Telegram, and social messages as safe, scam, phishing, or impersonation.',
+    title: 'Safety & Content Moderation',
+    description: 'Classify AI outputs for harmful content, bias, misinformation, and policy violations.',
   },
   {
     icon: <Brain className='h-6 w-6' />,
-    title: 'Smart Contract Review',
-    description: 'Validate AI explanations of smart contracts. Flag dangerous errors and misleading descriptions.',
+    title: 'Data Labeling & Annotation',
+    description: 'Label text, images, and structured data to create high-quality training datasets for AI models.',
   },
   {
     icon: <Zap className='h-6 w-6' />,
     title: 'Prompt Engineering',
-    description: 'Write and improve prompts for blockchain AI agents — wallet assistants, risk analyzers, and more.',
+    description: 'Write and refine prompts for LLMs — chatbots, coding assistants, research agents, and more.',
   },
   {
     icon: <CheckCircle className='h-6 w-6' />,
     title: 'Factuality Verification',
-    description: 'Verify whether AI-generated claims about DeFi, governance, and protocols are factually correct.',
+    description: 'Verify whether AI-generated claims are factually correct across science, math, coding, and more.',
   },
   {
     icon: <Users className='h-6 w-6' />,
     title: 'Red Team Testing',
-    description: 'Test AI agents and web3 support systems for vulnerabilities, hallucinations, and unsafe behaviors.',
+    description: 'Test AI systems for vulnerabilities, hallucinations, jailbreaks, and unsafe behaviors.',
   },
 ];
 
@@ -56,12 +56,12 @@ const howItWorks = [
   {
     step: '01',
     title: 'Connect & Qualify',
-    description: 'Connect your wallet, build your expertise profile, and pass screening tests to prove your crypto knowledge.',
+    description: 'Connect your wallet, build your expertise profile, and pass screening tests to prove your domain knowledge.',
   },
   {
     step: '02',
     title: 'Browse Opportunities',
-    description: 'Find projects that match your skills — from DeFi analysis to smart contract review to scam detection.',
+    description: 'Find projects that match your skills — from AI evaluation to data labeling to safety testing.',
   },
   {
     step: '03',
@@ -78,7 +78,7 @@ const howItWorks = [
 const faqItems = [
   {
     q: 'What kind of work is available?',
-    a: 'AI training tasks in web3 domains: rating AI responses, classifying scams, reviewing smart contract explanations, writing prompts for blockchain agents, and more. Tasks are structured and have clear instructions and rubrics.',
+    a: 'AI training tasks across many domains: rating LLM responses, labeling data, verifying facts, writing prompts, red-teaming AI systems, and more. Tasks are structured and have clear instructions and rubrics.',
   },
   {
     q: 'How do I get paid?',
@@ -86,11 +86,11 @@ const faqItems = [
   },
   {
     q: 'Do I need coding experience?',
-    a: 'Not necessarily. Many tasks require crypto knowledge rather than coding skills — understanding DeFi, identifying scams, reviewing AI-generated content. Some specialized tasks (code review, smart contract validation) do require technical expertise.',
+    a: 'Not necessarily. Many tasks require domain knowledge rather than coding skills — evaluating AI responses, labeling data, reviewing content for accuracy. Some specialized tasks (code review, technical writing) do require technical expertise.',
   },
   {
     q: 'How are screenings used?',
-    a: 'Screenings are short qualification tests that verify your knowledge in specific domains (DeFi, security, moderation, etc.). Passing screenings unlocks higher-paying projects that require that expertise.',
+    a: 'Screenings are short qualification tests that verify your knowledge in specific domains (writing, coding, math, science, etc.). Passing screenings unlocks higher-paying projects that require that expertise.',
   },
   {
     q: 'What is a trust score?',
@@ -181,16 +181,16 @@ export default function LandingPage() {
               transition={{ duration: 0.6 }}
             >
               <p className='text-sm font-semibold text-gray-500 uppercase tracking-widest mb-6'>
-                Web3 Human Intelligence Platform
+                Human Intelligence Platform
               </p>
               <h1 className='text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-[1.1] mb-8'>
-                Earn money training AI{' '}
+                Earn money{' '}
                 <span className='text-transparent bg-clip-text bg-gradient-to-r from-gray-600 to-gray-400'>
-                  for web3
+                  training AI
                 </span>
               </h1>
               <p className='text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed'>
-                Use your crypto expertise to complete paid AI training tasks. Rate responses, detect scams, review smart contracts, and build a verified reputation.
+                Complete structured AI training tasks — labeling, ranking, reviewing, red-teaming — earn USDC, and build a verified reputation.
               </p>
               <div className='flex flex-col sm:flex-row gap-4 justify-center'>
                 <Button size='lg' asChild className='bg-gray-900 hover:bg-gray-800 text-base px-8'>
@@ -211,8 +211,8 @@ export default function LandingPage() {
           <div className='container mx-auto px-4 md:px-8 py-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-center'>
             {[
               { label: 'Task Types', value: '14+' },
-              { label: 'Crypto Domains', value: '9' },
-              { label: 'Supported Chains', value: '7+' },
+              { label: 'Expertise Domains', value: '20+' },
+              { label: 'Languages', value: '16+' },
               { label: 'Payment', value: 'USDC' },
             ].map(({ label, value }) => (
               <div key={label}>
@@ -250,7 +250,7 @@ export default function LandingPage() {
             <div className='text-center mb-16'>
               <h2 className='text-3xl md:text-4xl font-bold text-gray-900 mb-4'>Types of work</h2>
               <p className='text-lg text-gray-600 max-w-2xl mx-auto'>
-                Structured AI training tasks across web3 domains. Each task has clear instructions, rubrics, and examples.
+                Structured AI training tasks across diverse domains. Each task has clear instructions, rubrics, and examples.
               </p>
             </div>
             <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6'>
@@ -276,16 +276,16 @@ export default function LandingPage() {
               <div>
                 <p className='text-sm font-semibold text-gray-500 uppercase tracking-widest mb-4'>For Contributors</p>
                 <h2 className='text-3xl md:text-4xl font-bold text-gray-900 mb-6'>
-                  Get paid for your crypto expertise
+                  Get paid for your expertise
                 </h2>
                 <ul className='space-y-4'>
                   {[
                     'Work remotely on your own schedule',
                     'Earn USDC for every approved task',
                     'Pass screenings to unlock better-paying work',
-                    'Build a verified reputation in crypto AI work',
+                    'Build a verified reputation in AI training',
                     'Quality bonuses for consistent high performers',
-                    'Multiple expertise tracks: DeFi, security, moderation, and more',
+                    'Multiple expertise tracks: writing, coding, math, science, and more',
                   ].map((item) => (
                     <li key={item} className='flex items-start gap-3'>
                       <CheckCircle className='h-5 w-5 text-green-600 mt-0.5 flex-shrink-0' />
@@ -303,10 +303,10 @@ export default function LandingPage() {
                 <h3 className='text-lg font-semibold text-gray-900 mb-4'>Areas of Expertise</h3>
                 <div className='flex flex-wrap gap-2'>
                   {[
-                    'DeFi', 'NFTs', 'Wallets', 'Smart Contracts', 'Solidity',
-                    'Rust', 'Security', 'Governance', 'Research',
-                    'Moderation', 'Scam Detection', 'Prompt Engineering',
-                    'Ethereum', 'Solana', 'Base', 'Arbitrum', 'Polygon',
+                    'Creative Writing', 'Technical Writing', 'Mathematics', 'Science',
+                    'Coding', 'Data Analysis', 'Research', 'Linguistics',
+                    'Moderation', 'Prompt Engineering', 'Red Teaming',
+                    'Medicine', 'Law', 'Finance', 'Education', 'Philosophy',
                   ].map((tag) => (
                     <span key={tag} className='px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-gray-700'>
                       {tag}
@@ -326,13 +326,13 @@ export default function LandingPage() {
                 <h3 className='text-lg font-semibold text-gray-900 mb-4'>Who uses Workclaw</h3>
                 <ul className='space-y-3'>
                   {[
-                    'AI startups building crypto products',
-                    'Wallet teams improving UX with AI',
-                    'Exchanges training support agents',
-                    'DeFi protocols validating AI research',
-                    'Security firms classifying threats',
-                    'L1/L2 teams building AI tooling',
-                    'Data providers improving AI models',
+                    'AI labs fine-tuning foundation models',
+                    'Startups building LLM-powered products',
+                    'Enterprises training domain-specific AI',
+                    'Research teams evaluating model safety',
+                    'Companies building AI assistants and agents',
+                    'Teams needing high-quality labeled datasets',
+                    'Organizations improving AI accuracy and reliability',
                   ].map((item) => (
                     <li key={item} className='flex items-start gap-3'>
                       <div className='h-2 w-2 rounded-full bg-gray-400 mt-2 flex-shrink-0' />
@@ -344,10 +344,10 @@ export default function LandingPage() {
               <div className='order-1 md:order-2'>
                 <p className='text-sm font-semibold text-gray-500 uppercase tracking-widest mb-4'>For Organizations</p>
                 <h2 className='text-3xl md:text-4xl font-bold text-gray-900 mb-6'>
-                  Train your AI with qualified crypto experts
+                  Train your AI with qualified human experts
                 </h2>
                 <p className='text-gray-600 mb-6 leading-relaxed'>
-                  Post structured AI training projects. Get high-quality human feedback from screened contributors who understand blockchain, DeFi, security, and crypto culture.
+                  Post structured AI training projects. Get high-quality human feedback from screened contributors with verified domain expertise.
                 </p>
                 <ul className='space-y-3 mb-8'>
                   {[

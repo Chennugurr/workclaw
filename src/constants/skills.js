@@ -1,7 +1,7 @@
 /**
  * Workclaw Skill Taxonomy
  *
- * Categories and skills relevant to web3 AI training work.
+ * Categories and skills relevant to AI training work.
  * Used for contributor profiles, project requirements, and matching.
  */
 

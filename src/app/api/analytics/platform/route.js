@@ -18,8 +18,8 @@ export const GET = middleware(
     ] = await prisma.$transaction([
       prisma.user.count(),
       prisma.organization.count(),
-      prisma.job.count(),
-      prisma.proposal.count(),
+      prisma.project.count(),
+      prisma.application.count(),
       prisma.session.count({
         where: {
           lastSeenAt: {
@@ -27,7 +27,7 @@ export const GET = middleware(
           },
         },
       }),
-      prisma.job.count({
+      prisma.project.count({
         where: {
           status: 'COMPLETED',
           updatedAt: {
@@ -35,13 +35,13 @@ export const GET = middleware(
           },
         },
       }),
-      prisma.job.count({
+      prisma.project.count({
         where: {
           status: 'COMPLETED',
         },
       }),
       prisma.skill.count(),
-      prisma.job.aggregate({
+      prisma.project.aggregate({
         _avg: {
           budget: true,
         },

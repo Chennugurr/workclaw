@@ -10,17 +10,17 @@ const fontSans = FontSans({
 });
 
 export const metadata = {
-  title: 'Detask - Blockchain-powered Freelancing Platform',
-  description: `Detask is a blockchain-powered freelancing platform for professionals to launch projects, build portfolios, and find opportunities.`,
-  keywords: `blockchain, freelancing, professionals, projects, portfolios, opportunities`,
+  title: 'Workclaw - Web3 AI Work Platform',
+  description: `Workclaw is a paid web3 human intelligence platform. Train crypto-native AI systems, earn money for your expertise, and build a verified reputation in crypto AI work.`,
+  keywords: `web3, AI training, crypto, human feedback, data labeling, smart contracts, blockchain, RLHF`,
   openGraph: {
-    title: 'Detask - Blockchain-powered Freelancing Platform',
-    description: `Launch projects, build portfolios, and find opportunities on our blockchain-powered freelancing platform.`,
+    title: 'Workclaw - Web3 AI Work Platform',
+    description: `Earn money training AI for web3. Complete tasks, pass screenings, and get paid for your crypto expertise.`,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Detask - Blockchain-powered Freelancing',
-    description: `Launch projects, build portfolios, and find opportunities on our blockchain-powered freelancing platform.`,
+    title: 'Workclaw - Web3 AI Work Platform',
+    description: `Earn money training AI for web3. Complete tasks, pass screenings, and get paid for your crypto expertise.`,
   },
 };
 

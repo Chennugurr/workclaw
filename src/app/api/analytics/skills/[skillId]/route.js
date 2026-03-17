@@ -29,14 +29,14 @@ export const GET = middleware(
         where: { skillId, ownerType: 'USER' },
       }),
       prisma.skillAssociation.count({
-        where: { skillId, ownerType: 'JOB' },
+        where: { skillId, ownerType: 'PROJECT' },
       }),
       prisma.skillAssociation.groupBy({
         by: ['level'],
         where: { skillId, ownerType: 'USER' },
         _count: true,
       }),
-      prisma.job.count({
+      prisma.project.count({
         where: {
           skills: {
             some: {
@@ -48,7 +48,7 @@ export const GET = middleware(
           },
         },
       }),
-      prisma.job.count({
+      prisma.project.count({
         where: {
           skills: {
             some: {

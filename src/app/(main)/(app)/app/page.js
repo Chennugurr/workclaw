@@ -3,7 +3,13 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { UserIcon, BriefcaseIcon, ArrowRightIcon } from 'lucide-react';
+import {
+  UserIcon,
+  BriefcaseIcon,
+  ArrowRightIcon,
+  ShieldCheckIcon,
+  SettingsIcon,
+} from 'lucide-react';
 
 const AnimatedIcon = ({ icon: Icon, isHovered }) => (
   <motion.div
@@ -12,7 +18,7 @@ const AnimatedIcon = ({ icon: Icon, isHovered }) => (
     transition={{ duration: 0.6, type: 'spring' }}
     className='text-4xl mb-6'
   >
-    <Icon size={48} className='text-indigo-600' />
+    <Icon size={48} className='text-gray-700' />
   </motion.div>
 );
 
@@ -21,16 +27,11 @@ const DashboardCard = ({ title, description, icon: Icon, href }) => {
 
   return (
     <motion.div
-      className='relative overflow-hidden rounded-2xl p-8 cursor-pointer bg-white'
-      style={{
-        boxShadow:
-          '0 10px 30px rgba(0, 0, 0, 0.1), 0 1px 8px rgba(0, 0, 0, 0.06)',
-      }}
+      className='relative overflow-hidden rounded-2xl p-8 cursor-pointer bg-white border border-gray-200'
       whileHover={{
-        scale: 1.05,
-        boxShadow:
-          '0 20px 40px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08)',
-        y: -10,
+        scale: 1.03,
+        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.08)',
+        y: -5,
       }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
@@ -38,7 +39,7 @@ const DashboardCard = ({ title, description, icon: Icon, href }) => {
       <Link href={href}>
         <AnimatedIcon icon={Icon} isHovered={isHovered} />
         <motion.h2
-          className='text-3xl font-bold mb-4 text-gray-800'
+          className='text-2xl font-bold mb-3 text-gray-900'
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -46,7 +47,7 @@ const DashboardCard = ({ title, description, icon: Icon, href }) => {
           {title}
         </motion.h2>
         <motion.p
-          className='text-gray-600 mb-6'
+          className='text-gray-600 mb-6 text-sm'
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
@@ -54,11 +55,11 @@ const DashboardCard = ({ title, description, icon: Icon, href }) => {
           {description}
         </motion.p>
         <motion.div
-          className='absolute bottom-4 right-4 flex items-center text-indigo-600 font-semibold'
+          className='absolute bottom-4 right-4 flex items-center text-gray-700 font-semibold text-sm'
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: isHovered ? 0 : -20, opacity: isHovered ? 1 : 0 }}
         >
-          Enter <ArrowRightIcon className='ml-2' size={20} />
+          Enter <ArrowRightIcon className='ml-2' size={16} />
         </motion.div>
       </Link>
     </motion.div>
@@ -67,30 +68,28 @@ const DashboardCard = ({ title, description, icon: Icon, href }) => {
 
 export default function Page() {
   return (
-    <div className='min-h-screen bg-white text-gray-800 flex items-center justify-center p-4 overflow-hidden'>
+    <div className='min-h-screen bg-white text-gray-800 flex items-center justify-center p-4'>
       <div className='relative z-10 max-w-5xl w-full'>
         <div className='text-center mb-16'>
-          <h1 className='text-6xl font-extrabold mb-4 text-gray-900'>
-            Dashboard Selection
+          <h1 className='text-5xl font-bold mb-4 text-gray-900'>
+            Welcome to Workclaw
           </h1>
-          <p className='text-xl text-gray-600 max-w-2xl mx-auto mb-8'>
-            Choose your path to success. Whether you&apos;re seeking new
-            opportunities or building your dream team, we&apos;ve got you
-            covered.
+          <p className='text-lg text-gray-600 max-w-2xl mx-auto'>
+            Choose how you want to use the platform.
           </p>
         </div>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-12'>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
           <DashboardCard
-            title='Candidate Portal'
-            description='Explore exciting job opportunities and manage your applications with ease'
+            title='Contributor'
+            description='Complete AI training tasks, earn USDC, and build your expertise in web3 AI work.'
             icon={UserIcon}
-            href='/app/c/dashboard'
+            href='/app/contributor/dashboard'
           />
           <DashboardCard
-            title='Employer Hub'
-            description='Post jobs, manage applications, and find the perfect candidates for your team'
+            title='Customer'
+            description='Post AI training projects, manage contributors, and get high-quality human feedback.'
             icon={BriefcaseIcon}
-            href='/app/e/dashboard'
+            href='/app/customer/dashboard'
           />
         </div>
       </div>

@@ -14,7 +14,7 @@ export const GET = middleware(
       order,
       userId,
       orgId,
-      jobId,
+      projectId,
       status,
     } = parseSearchQuery(req);
 
@@ -92,15 +92,15 @@ export const GET = middleware(
     // Add filters based on provided IDs
     if (userId) query.where.userId = userId;
     if (orgId) query.where.job = { orgId };
-    if (jobId) query.where.jobId = jobId;
+    if (projectId) query.where.projectId = projectId;
 
     // Add status filter if provided
     if (status) query.where.status = status.toUpperCase();
 
     // Execute the query
     const [proposals, totalCount] = await prisma.$transaction([
-      prisma.proposal.findMany(query),
-      prisma.proposal.count({ where: query.where }),
+      prisma.application.findMany(query),
+      prisma.application.count({ where: query.where }),
     ]);
 
     // Prepare pagination info
@@ -127,8 +127,8 @@ export const GET = middleware(
     role: {
       roles: [ROLE.SELF, ROLE.ORGANIZATION.MEMBER, ROLE.RECRUITER],
       resolve: (req) => {
-        const { userId, orgId, jobId } = parseSearchQuery(req);
-        return [userId, orgId, jobId];
+        const { userId, orgId, projectId } = parseSearchQuery(req);
+        return [userId, orgId, projectId];
       },
     },
   }

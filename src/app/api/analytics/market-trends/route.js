@@ -42,7 +42,7 @@ export const GET = middleware(
         }),
 
         // Query for most demanded positions
-        prisma.job.groupBy({
+        prisma.project.groupBy({
           by: ['position'],
           where: {
             createdAt: {
@@ -57,7 +57,7 @@ export const GET = middleware(
         }),
 
         // Query for job trends
-        prisma.job.groupBy({
+        prisma.project.groupBy({
           by: ['status'],
           where: {
             createdAt: {

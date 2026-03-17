@@ -296,7 +296,7 @@ function getCandidateStatusCondition(role) {
  *     // Handle PUT request for organization admin or recruiter
  *   },
  *   [ROLE.ORGANIZATION.ADMIN, ROLE.RECRUITER],
- *   (_, { params }) => [params.orgId, params.jobId],
+ *   (_, { params }) => [params.orgId, params.projectId],
  *   'every'
  * );
  */
@@ -362,7 +362,7 @@ function withRole(handler, roles = [], resolve = null, validate = 'some') {
         });
         roleChecks[index] = !!staff;
       } else if (isRecruiter) {
-        const id = ids[index] || params?.jobId;
+        const id = ids[index] || params?.projectId;
 
         if (!id) {
           roleChecks[index] = false;
@@ -370,7 +370,7 @@ function withRole(handler, roles = [], resolve = null, validate = 'some') {
         }
 
         // Check if job exists
-        const job = await prisma.job.findUnique({
+        const job = await prisma.project.findUnique({
           where: { id },
         });
         if (!job) {
@@ -393,17 +393,17 @@ function withRole(handler, roles = [], resolve = null, validate = 'some') {
         }
 
         // Check if user is a recruiter for the job
-        const recruiter = await prisma.recruiter.findUnique({
+        const recruiter = await prisma.reviewerAssignment.findUnique({
           where: {
-            staffId_jobId: {
+            staffId_projectId: {
               staffId: staff.id,
-              jobId: id,
+              projectId: id,
             },
           },
         });
         roleChecks[index] = !!recruiter;
       } else if (isCandidate) {
-        const id = ids[index] || params?.jobId;
+        const id = ids[index] || params?.projectId;
 
         if (!id) {
           roleChecks[index] = false;
@@ -411,11 +411,11 @@ function withRole(handler, roles = [], resolve = null, validate = 'some') {
         }
 
         // Check if user has a proposal for the job with the required status
-        const proposal = await prisma.proposal.findUnique({
+        const proposal = await prisma.application.findUnique({
           where: {
-            userId_jobId: {
+            userId_projectId: {
               userId: req.user.id,
-              jobId: id,
+              projectId: id,
             },
             status: getCandidateStatusCondition(role),
           },

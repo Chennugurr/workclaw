@@ -2,21 +2,27 @@
 
 import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Search,
   ChevronDown,
-  Briefcase,
-  AlertCircle,
   Settings,
   Layers,
   Menu,
   X,
-  BriefcaseBusiness,
+  Target,
+  ClipboardList,
+  GraduationCap,
+  DollarSign,
+  MessageSquare,
+  Bell,
   User,
-  LayoutList,
-  Bookmark,
+  FolderKanban,
+  Plus,
+  Users,
+  BarChart3,
+  CreditCard,
+  Shield,
 } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
@@ -34,89 +40,96 @@ import OrganizationSwitcher from '@/components/organization-switcher';
 import { useAppState } from '@/store';
 
 const MENU = deepFreeze({
-  candidate: {
+  contributor: {
     main: [
-      {
-        name: 'Find Job',
-        href: '/app/c/jobs',
-      },
-      {
-        name: 'Find Employers',
-        href: '/app/c/employers',
-      },
-      {
-        name: 'Dashboard',
-        href: '/app/c/dashboard',
-      },
+      { name: 'Opportunities', href: '/app/contributor/opportunities' },
+      { name: 'My Tasks', href: '/app/contributor/my-tasks' },
+      { name: 'Dashboard', href: '/app/contributor/dashboard' },
     ],
     side: [
       {
         icon: <Layers className='h-5 w-5 mr-3' />,
         name: 'Overview',
-        href: '/app/c/dashboard',
+        href: '/app/contributor/dashboard',
       },
       {
-        icon: <Briefcase className='h-5 w-5 mr-3' />,
-        name: 'Applied Jobs',
-        href: '/app/c/applied',
+        icon: <Target className='h-5 w-5 mr-3' />,
+        name: 'Opportunities',
+        href: '/app/contributor/opportunities',
       },
       {
-        icon: <Bookmark className='h-5 w-5 mr-3' />,
-        name: 'Favorite Jobs',
-        href: '/app/c/favorites',
+        icon: <ClipboardList className='h-5 w-5 mr-3' />,
+        name: 'My Tasks',
+        href: '/app/contributor/my-tasks',
       },
       {
-        icon: <AlertCircle className='h-5 w-5 mr-3' />,
-        name: 'Job Alert',
-        href: '/app/c/alerts',
+        icon: <GraduationCap className='h-5 w-5 mr-3' />,
+        name: 'Screenings',
+        href: '/app/contributor/screenings',
       },
       {
-        icon: <Settings className='h-5 w-5 mr-3' />,
-        name: 'Settings',
-        href: '/app/c/settings',
-      },
-    ],
-  },
-  employer: {
-    main: [
-      {
-        name: 'Find Candidates',
-        href: '/app/e/candidates',
+        icon: <DollarSign className='h-5 w-5 mr-3' />,
+        name: 'Earnings',
+        href: '/app/contributor/earnings',
       },
       {
-        name: 'Dashboard',
-        href: '/app/e/dashboard',
-      },
-      {
-        name: 'My Jobs',
-        href: '/app/e/jobs',
-      },
-    ],
-    side: [
-      {
-        icon: <Layers className='h-5 w-5 mr-3' />,
-        name: 'Overview',
-        href: '/app/e/dashboard',
-      },
-      {
-        icon: <BriefcaseBusiness className='h-5 w-5 mr-3' />,
-        name: 'My Jobs',
-        href: '/app/e/jobs',
-      },
-      {
-        icon: <LayoutList className='h-5 w-5 mr-3' />,
-        name: 'Post a Job',
-        href: '/app/e/jobs/new',
+        icon: <MessageSquare className='h-5 w-5 mr-3' />,
+        name: 'Reviews',
+        href: '/app/contributor/reviews',
       },
       {
         icon: <User className='h-5 w-5 mr-3' />,
-        name: 'Saved Candidates',
-        href: '/app/e/saved',
+        name: 'Profile',
+        href: '/app/contributor/profile',
       },
       {
         icon: <Settings className='h-5 w-5 mr-3' />,
         name: 'Settings',
-        href: '/app/e/settings',
+        href: '/app/contributor/settings',
+      },
+    ],
+  },
+  customer: {
+    main: [
+      { name: 'Dashboard', href: '/app/customer/dashboard' },
+      { name: 'Projects', href: '/app/customer/projects' },
+      { name: 'New Project', href: '/app/customer/projects/new' },
+    ],
+    side: [
+      {
+        icon: <Layers className='h-5 w-5 mr-3' />,
+        name: 'Overview',
+        href: '/app/customer/dashboard',
+      },
+      {
+        icon: <FolderKanban className='h-5 w-5 mr-3' />,
+        name: 'Projects',
+        href: '/app/customer/projects',
+      },
+      {
+        icon: <Plus className='h-5 w-5 mr-3' />,
+        name: 'New Project',
+        href: '/app/customer/projects/new',
+      },
+      {
+        icon: <Users className='h-5 w-5 mr-3' />,
+        name: 'Contributors',
+        href: '/app/customer/contributors',
+      },
+      {
+        icon: <BarChart3 className='h-5 w-5 mr-3' />,
+        name: 'Analytics',
+        href: '/app/customer/analytics',
+      },
+      {
+        icon: <CreditCard className='h-5 w-5 mr-3' />,
+        name: 'Billing',
+        href: '/app/customer/billing',
+      },
+      {
+        icon: <Settings className='h-5 w-5 mr-3' />,
+        name: 'Settings',
+        href: '/app/customer/settings',
       },
     ],
   },
@@ -125,16 +138,16 @@ const MENU = deepFreeze({
 export default function AppLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [dashboardType, setDashboardType] = useState('candidate');
+  const [dashboardType, setDashboardType] = useState('contributor');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menu = useMemo(() => {
     let menu;
-    if (pathname.startsWith('/app/e')) {
-      menu = MENU.employer;
-      setDashboardType('employer');
+    if (pathname.startsWith('/app/customer')) {
+      menu = MENU.customer;
+      setDashboardType('customer');
     } else {
-      menu = MENU.candidate;
-      setDashboardType('candidate');
+      menu = MENU.contributor;
+      setDashboardType('contributor');
     }
     menu = deepFreeze({
       ...menu,
@@ -154,12 +167,12 @@ export default function AppLayout({ children }) {
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   const switchProfile = (profile) => {
-    if (profile === 'employer') router.replace('/app/e/dashboard');
-    else router.replace('/app/c/dashboard');
+    if (profile === 'customer') router.replace('/app/customer/dashboard');
+    else router.replace('/app/contributor/dashboard');
   };
 
-  if (authenticated && !user?.profile && pathname !== '/app/c/settings') {
-    return router.push('/app/c/settings');
+  if (authenticated && !user?.profile && pathname !== '/app/contributor/settings') {
+    return router.push('/app/contributor/settings');
   }
 
   return (
@@ -176,7 +189,7 @@ export default function AppLayout({ children }) {
                     key={idx}
                     href={item.href}
                     className={cn({
-                      'text-blue-600 font-semibold': active,
+                      'text-gray-900 font-semibold': active,
                       'text-gray-600 hover:text-gray-800': !active,
                     })}
                   >
@@ -207,17 +220,17 @@ export default function AppLayout({ children }) {
                 <DropdownMenuTrigger asChild>
                   <Button variant='ghost' className='flex items-center'>
                     <span className='text-gray-600'>
-                      {dashboardType === 'candidate' ? 'Candidate' : 'Employer'}
+                      {dashboardType === 'contributor' ? 'Contributor' : 'Customer'}
                     </span>
                     <ChevronDown className='h-4 w-4 text-gray-600 ml-1' />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem onSelect={() => switchProfile('candidate')}>
-                    Candidate
+                  <DropdownMenuItem onSelect={() => switchProfile('contributor')}>
+                    Contributor
                   </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => switchProfile('employer')}>
-                    Employer
+                  <DropdownMenuItem onSelect={() => switchProfile('customer')}>
+                    Customer
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -225,25 +238,12 @@ export default function AppLayout({ children }) {
           </div>
         </div>
 
-        {/* Second Menu */}
+        {/* Header */}
         <header className='shadow-sm border-b py-4'>
           <div className='px-4 lg:container mx-auto flex justify-between items-center'>
             <div className='flex items-center gap-8'>
-              <Link href='/app' className='outline-none'>
-                <Image
-                  src='/assets/images/logo/black.png'
-                  alt='Detask'
-                  width={124}
-                  height={32}
-                  className='hidden md:block'
-                />
-                <Image
-                  src='/assets/images/logo/icon/black.png'
-                  alt='Detask'
-                  width={32}
-                  height={32}
-                  className='block md:hidden'
-                />
+              <Link href='/app' className='outline-none text-xl font-bold text-gray-900 tracking-tight'>
+                workclaw
               </Link>
             </div>
 
@@ -252,7 +252,7 @@ export default function AppLayout({ children }) {
                 <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' />
                 <Input
                   type='text'
-                  placeholder='Job tittle, keyword, company'
+                  placeholder='Search projects, tasks...'
                   className='pl-10 pr-4 py-2 w-80'
                 />
               </div>
@@ -263,9 +263,9 @@ export default function AppLayout({ children }) {
         </header>
 
         <div className='lg:container flex flex-1'>
-          {/* Side Navigation for larger screens */}
+          {/* Side Navigation */}
           <aside className='hidden lg:block w-64 border-r flex-shrink-0'>
-            {authenticated && dashboardType === 'employer' && (
+            {authenticated && dashboardType === 'customer' && (
               <div className='py-4 pr-4 border-b'>
                 <OrganizationSwitcher />
               </div>
@@ -284,9 +284,9 @@ export default function AppLayout({ children }) {
                     key={idx}
                     href={item.href}
                     className={cn('flex items-center px-4 py-3', {
-                      'text-blue-600 bg-blue-50 border-l-4 border-blue-600':
+                      'text-gray-900 bg-gray-100 border-l-4 border-gray-900':
                         active,
-                      'text-gray-600 hover:bg-gray-100': !active,
+                      'text-gray-600 hover:bg-gray-50': !active,
                     })}
                   >
                     {item.icon}
@@ -297,7 +297,7 @@ export default function AppLayout({ children }) {
             </nav>
           </aside>
 
-          {/* Main Content Area */}
+          {/* Main Content */}
           <main className='flex-1 min-w-0'>
             <div className='max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6'>
               {children}
@@ -306,11 +306,11 @@ export default function AppLayout({ children }) {
         </div>
       </div>
 
-      {/* Mobile Menu Sheet */}
+      {/* Mobile Menu */}
       <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
         <SheetContent side='left' className='w-64 p-0'>
           <aside className='w-full h-full border-r flex-shrink-0'>
-            {dashboardType === 'employer' && (
+            {dashboardType === 'customer' && (
               <div className='mt-8 p-4 border-b'>
                 <OrganizationSwitcher />
               </div>
@@ -329,9 +329,9 @@ export default function AppLayout({ children }) {
                     key={idx}
                     href={item.href}
                     className={cn('flex items-center px-4 py-3', {
-                      'text-blue-600 bg-blue-50 border-l-4 border-blue-600':
+                      'text-gray-900 bg-gray-100 border-l-4 border-gray-900':
                         active,
-                      'text-gray-600 hover:bg-gray-100': !active,
+                      'text-gray-600 hover:bg-gray-50': !active,
                     })}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
@@ -353,9 +353,9 @@ export default function AppLayout({ children }) {
                     key={idx}
                     href={item.href}
                     className={cn('flex items-center px-4 py-3', {
-                      'text-blue-600 bg-blue-50 border-l-4 border-blue-600':
+                      'text-gray-900 bg-gray-100 border-l-4 border-gray-900':
                         active,
-                      'text-gray-600 hover:bg-gray-100': !active,
+                      'text-gray-600 hover:bg-gray-50': !active,
                     })}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >

@@ -14,15 +14,15 @@ export const GET = middleware(
       earningsInUSDC,
       topSkills,
     ] = await prisma.$transaction([
-      prisma.proposal.count({
+      prisma.application.count({
         where: { userId },
       }),
-      prisma.proposal.groupBy({
+      prisma.application.groupBy({
         by: ['status'],
         where: { userId },
         _count: true,
       }),
-      prisma.job.findMany({
+      prisma.project.findMany({
         where: {
           proposals: {
             some: {
@@ -37,7 +37,7 @@ export const GET = middleware(
           updatedAt: true,
         },
       }),
-      prisma.job.aggregate({
+      prisma.project.aggregate({
         where: {
           proposals: {
             some: {

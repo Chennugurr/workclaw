@@ -28,13 +28,13 @@ export const GET = middleware(
       totalSpent,
       topSkillsHired,
     ] = await prisma.$transaction([
-      prisma.job.count({ where: { orgId } }),
-      prisma.job.count({ where: { orgId, status: JobStatus.OPEN } }),
-      prisma.proposal.count({ where: { job: { orgId } } }),
-      prisma.proposal.count({
+      prisma.project.count({ where: { orgId } }),
+      prisma.project.count({ where: { orgId, status: JobStatus.OPEN } }),
+      prisma.application.count({ where: { job: { orgId } } }),
+      prisma.application.count({
         where: { job: { orgId }, status: ProposalStatus.HIRED },
       }),
-      prisma.job.aggregate({
+      prisma.project.aggregate({
         where: { orgId, status: JobStatus.COMPLETED },
         _sum: { budget: true },
       }),

@@ -6,13 +6,13 @@ import prisma from '@/lib/prisma';
 
 export const GET = middleware(
   async (req) => {
-    const { searchTerm, page, limit, sort, order, userId, jobId } =
+    const { searchTerm, page, limit, sort, order, userId, projectId } =
       parseSearchQuery(req);
 
-    // Validate that userId and jobId are not both present
-    if (userId && jobId) {
+    // Validate that userId and projectId are not both present
+    if (userId && projectId) {
       return NextResponse.json(
-        jsend.fail({ message: 'userId and jobId cannot be used together' }),
+        jsend.fail({ message: 'userId and projectId cannot be used together' }),
         { status: 400 }
       );
     }
@@ -33,8 +33,8 @@ export const GET = middleware(
       ];
     }
 
-    // If userId or jobId is provided, set up the include structure for associations
-    if (userId || jobId) {
+    // If userId or projectId is provided, set up the include structure for associations
+    if (userId || projectId) {
       query.include = {
         associations: {
           include: {},
@@ -64,12 +64,12 @@ export const GET = middleware(
       };
     }
 
-    // Add jobId filter if provided
-    if (jobId) {
+    // Add projectId filter if provided
+    if (projectId) {
       query.where.associations = {
         some: {
-          jobId,
-          ownerType: 'JOB',
+          projectId,
+          ownerType: 'PROJECT',
         },
       };
       query.include.associations.include.job = {

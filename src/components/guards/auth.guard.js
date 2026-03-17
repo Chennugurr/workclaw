@@ -10,10 +10,10 @@ export default function AuthGuard({ children }) {
   const pathname = usePathname();
   const { authenticated } = useStore();
   if (!authenticated) {
-    const dashboard = pathname.startsWith('/app/e') ? 'employer' : 'candidate';
+    const dashboard = pathname.startsWith('/app/customer') ? 'customer' : 'contributor';
     const defaultPath = {
-      employer: '/app/e/candidates',
-      candidate: '/app/c/jobs',
+      customer: '/app/customer/dashboard',
+      contributor: '/app/contributor/opportunities',
     };
     toast.info('The page you are trying to access requires authentication.', {
       id: TOAST_IDS.AUTH_GUARD,

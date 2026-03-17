@@ -6,7 +6,7 @@ import prisma from '@/lib/prisma';
 
 export const GET = middleware(
   async (req) => {
-    const { searchTerm, page, limit, sort, order, orgId, jobId } =
+    const { searchTerm, page, limit, sort, order, orgId, projectId } =
       parseSearchQuery(req);
 
     if (!orgId) {
@@ -78,15 +78,15 @@ export const GET = middleware(
       ];
     }
 
-    // Add jobId filter if provided
-    if (jobId) {
-      query.where.jobId = jobId;
+    // Add projectId filter if provided
+    if (projectId) {
+      query.where.projectId = projectId;
     }
 
     // Execute the query
     const [recruiters, totalCount] = await prisma.$transaction([
-      prisma.recruiter.findMany(query),
-      prisma.recruiter.count({ where: query.where }),
+      prisma.reviewerAssignment.findMany(query),
+      prisma.reviewerAssignment.count({ where: query.where }),
     ]);
 
     // Prepare pagination info

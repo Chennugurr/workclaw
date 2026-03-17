@@ -5,10 +5,10 @@ import prisma from '@/lib/prisma';
 
 export const GET = middleware(
   async (req, { params }) => {
-    const { jobId } = params;
+    const { projectId } = params;
 
-    const job = await prisma.job.findUnique({
-      where: { id: jobId },
+    const job = await prisma.project.findUnique({
+      where: { id: projectId },
       select: { id: true, orgId: true },
     });
 
@@ -19,9 +19,9 @@ export const GET = middleware(
     }
 
     const [proposalCounts, topCandidateSkills] = await prisma.$transaction([
-      prisma.proposal.groupBy({
+      prisma.application.groupBy({
         by: ['status'],
-        where: { jobId },
+        where: { projectId },
         _count: true,
       }),
       prisma.skillAssociation.groupBy({
@@ -29,7 +29,7 @@ export const GET = middleware(
         where: {
           user: {
             proposals: {
-              some: { jobId },
+              some: { projectId },
             },
           },
         },
@@ -61,7 +61,7 @@ export const GET = middleware(
     });
 
     const jobAnalytics = {
-      jobId,
+      projectId,
       proposals: proposalStatus,
       topCandidateSkills: topSkills.map((s) => ({ id: s.id, name: s.name })),
     };
@@ -73,9 +73,9 @@ export const GET = middleware(
     role: {
       roles: [ROLE.ORGANIZATION.MEMBER],
       resolve: async (_, { params }) => {
-        const { jobId } = params;
-        const job = await prisma.job.findUnique({
-          where: { id: jobId },
+        const { projectId } = params;
+        const job = await prisma.project.findUnique({
+          where: { id: projectId },
           select: { id: true, orgId: true },
         });
         return [job.orgId];

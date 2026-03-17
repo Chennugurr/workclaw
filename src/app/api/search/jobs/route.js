@@ -128,8 +128,8 @@ export const GET = middleware(
 
     // Execute the query
     const [jobs, totalCount] = await prisma.$transaction([
-      prisma.job.findMany(query),
-      prisma.job.count({ where: query.where }),
+      prisma.project.findMany(query),
+      prisma.project.count({ where: query.where }),
     ]);
 
     // Prepare pagination info

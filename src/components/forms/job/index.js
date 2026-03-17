@@ -110,7 +110,7 @@ export default function JobForm({ job }) {
         toast.success(`Job ${isEdit ? 'updated' : 'posted'} successfully`, {
           id: toastId,
         });
-        if (!isEdit) router.push(`/app/e/jobs/${res.data.data.id}/edit`);
+        if (!isEdit) router.push(`/app/customer/projects/${res.data.data.id}/edit`);
       }
     } catch (error) {
       toast.error(

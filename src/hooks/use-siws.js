@@ -18,7 +18,7 @@ export default function useSIWS() {
     return new SiwsMessage({
       domain: window.location.host,
       address,
-      statement: `Sign in with Solana to access Detask. This action will not trigger any blockchain transactions or incur any gas fees`,
+      statement: `Sign in with Solana to access Workclaw. This action will not trigger any blockchain transactions or incur any gas fees`,
       uri: window.location.origin,
       version: '1',
       chainId: chainId,

@@ -1,0 +1,7 @@
+{
+  "name": "Detask dApp",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node",
+  "postCreateCommand": "npm i -g bun",
+  "postStartCommand": "if [ -f package.json ] && [ ! -d node_modules ]; then bun install; fi",
+  "remoteUser": "root"
+}

@@ -1,0 +1,358 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHERS
+  UNDEFINED
+}
+
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+  DIVORCED
+  WIDOWED
+}
+
+enum Education {
+  HIGH_SCHOOL
+  ASSOCIATE_DEGREE
+  BACHELOR_DEGREE
+  MASTER_DEGREE
+  DOCTORATE
+  PROFESSIONAL_CERTIFICATION
+  VOCATIONAL_TRAINING
+  OTHER
+}
+
+enum Experience {
+  INTERNSHIP
+  ENTRY_LEVEL
+  MID_LEVEL
+  SENIOR_LEVEL
+  MANAGEMENT
+  DIRECTOR
+  EXECUTIVE
+  CONSULTANT
+  FREELANCE
+}
+
+enum Availability {
+  AVAILABLE
+  UNAVAILABLE
+}
+
+enum SocialPlatform {
+  TWITTER
+  LINKEDIN
+  FACEBOOK
+  INSTAGRAM
+  GITHUB
+  WEBSITE
+  OTHER
+}
+
+enum SocialOwnerType {
+  USER
+  ORGANIZATION
+}
+
+enum SessionStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
+enum ExperienceLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum SkillOwnerType {
+  USER
+  JOB
+}
+
+enum OrganizationType {
+  STARTUP
+  SMALL_BUSINESS
+  CORPORATION
+  NON_PROFIT
+  GOVERNMENT
+  EDUCATIONAL
+  HEALTHCARE
+  FINTECH
+  ECOMMERCE
+  TECHNOLOGY
+  CONSULTING
+  OTHER
+}
+
+enum OrganizationTeamSize {
+  ONE_TO_TEN
+  ELEVEN_TO_FIFTY
+  FIFTY_ONE_TO_TWO_HUNDRED
+  TWO_HUNDRED_ONE_TO_FIVE_HUNDRED
+  FIVE_HUNDRED_ONE_TO_ONE_THOUSAND
+  OVER_ONE_THOUSAND
+}
+
+enum OrganizationStaffRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum JobCurrency {
+  USDC
+}
+
+enum JobStatus {
+  OPEN
+  CLOSED
+  CANCELED
+  COMPLETED
+}
+
+enum JobPosition {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  TEMPORARY
+  INTERNSHIP
+}
+
+enum ProposalStatus {
+  APPLIED
+  WITHDRAWN
+  SHORTLISTED
+  ARCHIVED
+  HIRED
+}
+
+model User {
+  id        String   @id @default(dbgenerated("nanoid()"))
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  address   String   @unique
+
+  profile   Profile?
+  socials   Social[]
+  session   Session[]
+  skills    SkillAssociation[]
+  orgs      OrganizationStaff[]
+  proposals Proposal[]
+
+  @@map("users")
+}
+
+model Profile {
+  id            String         @id @default(dbgenerated("nanoid()"))
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  userId        String         @unique
+  firstName     String         @db.VarChar(50)
+  middleName    String?        @db.VarChar(50)
+  lastName      String         @db.VarChar(50)
+  title         String
+  email         String?        @unique
+  phone         String?
+  website       String?
+  location      String?
+  nationality   String?
+  dateOfBirth   DateTime?
+  gender        Gender?
+  maritalStatus MaritalStatus?
+  education     Education?
+  experience    Experience?
+  availability  Availability   @default(AVAILABLE)
+  bio           String?        @db.Text
+  pfp           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model Social {
+  id          String          @id @default(dbgenerated("nanoid()"))
+  userId      String?
+  orgId       String?
+  platform    SocialPlatform
+  handleOrUrl String
+  ownerType   SocialOwnerType
+
+  user         User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization? @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@map("socials")
+}
+
+model Session {
+  id           String        @id @default(dbgenerated("nanoid()"))
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  userId       String
+  accessToken  String        @unique
+  refreshToken String        @unique
+  status       SessionStatus @default(ACTIVE)
+  expiresAt    DateTime // refresh token expires at
+  lastSeenAt   DateTime?
+  ipAddress    String?
+  userAgent    String?
+  location     String?
+  deviceInfo   Json?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status, expiresAt, lastSeenAt])
+  @@map("sessions")
+}
+
+model Skill {
+  id          String   @id @default(dbgenerated("nanoid()"))
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String   @unique
+  description String?  @db.Text
+  verified    Boolean  @default(false)
+  icon        String?
+
+  associations SkillAssociation[]
+
+  @@index([name])
+  @@map("skills")
+}
+
+model SkillAssociation {
+  id        String          @id @default(dbgenerated("nanoid()"))
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  userId    String?
+  jobId     String?
+  skillId   String
+  level     ExperienceLevel
+  ownerType SkillOwnerType
+
+  user  User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job   Job?  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skillId])
+  @@unique([jobId, skillId])
+  @@index([level])
+  @@map("skill_associations")
+}
+
+model Organization {
+  id        String               @id @default(dbgenerated("nanoid()"))
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+  name      String               @db.VarChar(100)
+  email     String?              @unique
+  phone     String?
+  website   String?
+  location  String?
+  foundedIn DateTime?
+  type      OrganizationType
+  teamSize  OrganizationTeamSize
+  bio       String?              @db.Text
+  logo      String?
+  banner    String?
+
+  staffs  OrganizationStaff[]
+  jobs    Job[]
+  socials Social[]
+
+  @@index([name])
+  @@map("organizations")
+}
+
+model OrganizationStaff {
+  id        String                @unique @default(dbgenerated("nanoid()"))
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+  userId    String
+  orgId     String
+  role      OrganizationStaffRole
+
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  org        Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  recruiting Recruiter[]
+
+  @@id([userId, orgId])
+  @@map("organization_staffs")
+}
+
+model Job {
+  id          String          @id @default(dbgenerated("nanoid()"))
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  orgId       String
+  title       String          @db.VarChar(200)
+  description String          @db.Text
+  budget      Decimal         @db.Money
+  currency    JobCurrency     @default(USDC)
+  duration    Int?
+  status      JobStatus       @default(OPEN)
+  position    JobPosition
+  experience  ExperienceLevel
+  location    String          @db.VarChar(255)
+
+  org        Organization       @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  skills     SkillAssociation[]
+  recruiters Recruiter[]
+  proposals  Proposal[]
+
+  @@index([createdAt, updatedAt, orgId, budget, duration, status, position, experience])
+  @@map("jobs")
+}
+
+model Recruiter {
+  id        String   @unique @default(dbgenerated("nanoid()"))
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  staffId   String
+  jobId     String
+
+  staff OrganizationStaff @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  job   Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@id([staffId, jobId])
+  @@map("recruiters")
+}
+
+model Proposal {
+  id          String         @unique @default(dbgenerated("nanoid()"))
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  userId      String
+  jobId       String
+  budget      Decimal?       @db.Money
+  statement   String         @db.Text
+  status      ProposalStatus @default(APPLIED)
+  completedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@id([userId, jobId])
+  @@index([status])
+  @@map("proposals")
+}

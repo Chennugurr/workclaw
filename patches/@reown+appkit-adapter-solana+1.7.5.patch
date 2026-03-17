@@ -1,0 +1,17 @@
+diff --git a/node_modules/@reown/appkit-adapter-solana/dist/esm/src/utils/chains.js b/node_modules/@reown/appkit-adapter-solana/dist/esm/src/utils/chains.js
+index ec2b29a..1ffa10f 100644
+--- a/node_modules/@reown/appkit-adapter-solana/dist/esm/src/utils/chains.js
++++ b/node_modules/@reown/appkit-adapter-solana/dist/esm/src/utils/chains.js
+@@ -1,8 +1,9 @@
+ import {} from '@reown/appkit-common';
+-import { solana, solanaDevnet, solanaTestnet } from '@reown/appkit/networks';
++import { solana, solanaDevnet, solanaTestnet, solanaLocalnet } from '@reown/appkit/networks';
+ export const solanaChains = {
+     'solana:mainnet': solana,
+     'solana:testnet': solanaTestnet,
+-    'solana:devnet': solanaDevnet
++    'solana:devnet': solanaDevnet,
++    'solana:localnet': solanaLocalnet,
+ };
+ //# sourceMappingURL=chains.js.map
+\ No newline at end of file

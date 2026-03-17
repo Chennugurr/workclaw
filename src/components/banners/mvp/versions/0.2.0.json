@@ -1,0 +1,86 @@
+{
+  "$schema": "./schema.json",
+  "version": "0.2.0",
+  "releaseDate": "2024-09-14T07:31:47.000Z",
+  "description": "MVP release with enhanced functionality and improved user experience",
+  "updates": [
+    {
+      "type": "improvement",
+      "date": "2024-09-14T07:31:47.000Z",
+      "description": "Enhanced SEO for better discoverability"
+    },
+    {
+      "type": "improvement",
+      "date": "2024-09-14T07:26:00.000Z",
+      "description": "Improved Web3 wallet integration"
+    },
+    {
+      "type": "fix",
+      "date": "2024-09-14T07:20:00.000Z",
+      "description": "Resolved critical server error"
+    },
+    {
+      "type": "fix",
+      "date": "2024-09-14T07:18:00.000Z",
+      "description": "Fixed MDX editor stability issues"
+    },
+    {
+      "type": "fix",
+      "date": "2024-09-14T07:14:00.000Z",
+      "description": "Resolved unexpected session expirations"
+    },
+    {
+      "type": "improvement",
+      "date": "2024-09-14T07:12:00.000Z",
+      "description": "Enhanced landing page design"
+    },
+    {
+      "type": "improvement",
+      "date": "2024-09-14T07:10:00.000Z",
+      "description": "Upgraded notification system for better user experience"
+    },
+    {
+      "type": "improvement",
+      "date": "2024-09-14T07:02:00.000Z",
+      "description": "Simplified access to public-facing pages"
+    }
+  ],
+  "features": [
+    {
+      "name": "Enhanced SEO",
+      "description": "Improved search engine visibility for easier discovery"
+    },
+    {
+      "name": "Improved Web3 Integration",
+      "description": "Better interaction with Web3 wallets for seamless blockchain connectivity"
+    },
+    {
+      "name": "Redesigned Landing Page",
+      "description": "Updated menu items and enhanced design for improved user navigation"
+    },
+    {
+      "name": "Stable MDX Editor",
+      "description": "Fixed issues to provide a more reliable editing experience"
+    },
+    {
+      "name": "Improved Session Management",
+      "description": "Resolved unexpected session expirations for uninterrupted user experience"
+    },
+    {
+      "name": "Enhanced Notification System",
+      "description": "Upgraded to Sonner for improved user notifications"
+    },
+    {
+      "name": "Simplified Public Access",
+      "description": "Removed authentication requirement for public-facing pages"
+    }
+  ],
+  "knownIssues": [
+    "Some API endpoints are still work in progress",
+    "Some features are still under development and may not be fully functional",
+    "Potential instability in newly implemented features",
+    "Session management is not yet fully implemented",
+    "Limited error handling for edge cases"
+  ],
+  "deprecations": ["Previous authentication flow for public-facing pages"]
+}

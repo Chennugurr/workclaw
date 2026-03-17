@@ -1,0 +1,46 @@
+{
+  "$schema": "./schema.json",
+  "version": "0.1.0",
+  "releaseDate": "2024-09-11T01:55:30.000Z",
+  "description": "Initial MVP release with core functionality and user-centric features",
+  "updates": [
+    {
+      "type": "feature",
+      "date": "2024-08-29T12:07:42.000Z",
+      "description": "SIWE authentication"
+    },
+    {
+      "type": "improvement",
+      "date": "2024-09-08T02:56:14.000Z",
+      "description": "Landing page redesign"
+    },
+    {
+      "type": "feature",
+      "date": "2024-09-11T01:02:39.000Z",
+      "description": "Candidate and employer dashboard"
+    },
+    {
+      "type": "improvement",
+      "date": "2024-09-11T01:55:30.000Z",
+      "description": "Enhanced UI/UX"
+    }
+  ],
+  "features": [
+    {
+      "name": "Solana Authentication",
+      "description": "Secure sign-in using your Solana wallet"
+    },
+    {
+      "name": "Candidate and Employer Dashboard",
+      "description": "Central hub for managing your job search activities (in development)"
+    }
+  ],
+  "knownIssues": [
+    "Some API endpoints are still work in progress",
+    "Unstable features. MVP is still in early development stage",
+    "Session management is not yet fully implemented",
+    "Session expires unexpectedly in some cases",
+    "Limited error handling for edge cases"
+  ],
+  "deprecations": []
+}

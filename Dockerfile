@@ -5,7 +5,7 @@ COPY package.json bun.lockb* bun.lock* ./
 RUN bun install --frozen-lockfile
 
 # ---- Builder ----
-FROM oven/bun:1 AS builder
+FROM node:20-slim AS builder
 WORKDIR /app
 
 ARG DATABASE_URL
@@ -21,17 +21,18 @@ ENV JWT_SECRET=$JWT_SECRET
 ENV JWT_REFRESH_SECRET=$JWT_REFRESH_SECRET
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_PROJECT_ID=$NEXT_PUBLIC_PROJECT_ID
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 
-RUN apt-get update -y && apt-get install -y openssl
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN bunx prisma generate
-RUN bun run build
+RUN npx prisma generate
+RUN npx next build
 
 # ---- Runner ----
-FROM oven/bun:1-slim AS runner
+FROM node:20-slim AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -63,4 +64,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["bun", "server.js"]
+CMD ["node", "server.js"]

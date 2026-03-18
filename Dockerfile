@@ -49,14 +49,15 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
 # Copy server-external packages needed at runtime
-COPY --from=builder /app/node_modules/siws ./node_modules/siws
 COPY --from=builder /app/node_modules/jsonwebtoken ./node_modules/jsonwebtoken
 COPY --from=builder /app/node_modules/jws ./node_modules/jws
 COPY --from=builder /app/node_modules/jwa ./node_modules/jwa
 COPY --from=builder /app/node_modules/safe-buffer ./node_modules/safe-buffer
-COPY --from=builder /app/node_modules/request-ip ./node_modules/request-ip
 COPY --from=builder /app/node_modules/ua-parser-js ./node_modules/ua-parser-js
 COPY --from=builder /app/node_modules/jsend ./node_modules/jsend
+COPY --from=builder /app/node_modules/tweetnacl ./node_modules/tweetnacl
+COPY --from=builder /app/node_modules/bs58 ./node_modules/bs58
+COPY --from=builder /app/node_modules/base-x ./node_modules/base-x
 
 EXPOSE 3000
 ENV PORT=3000

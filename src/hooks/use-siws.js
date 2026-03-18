@@ -4,7 +4,7 @@ import {
   useAppKitAccount,
   useAppKitNetwork,
 } from '@reown/appkit/react';
-import { SiwsMessage } from 'siws';
+import { SiwsMessage } from '@/lib/siws';
 
 export default function useSIWS() {
   const { chainId } = useAppKitNetwork();

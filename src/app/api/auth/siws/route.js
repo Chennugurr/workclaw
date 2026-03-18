@@ -1,6 +1,6 @@
 import jsend from 'jsend';
 import jwt from 'jsonwebtoken';
-import { SiwsMessage } from 'siws';
+import { SiwsMessage } from '@/lib/siws';
 import { NextResponse } from 'next/server';
 import { middleware } from '@/api/middleware';
 import prisma from '@/lib/prisma';

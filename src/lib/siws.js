@@ -3,14 +3,7 @@ import nacl from 'tweetnacl';
 
 function generateNonce() {
   const bytes = new Uint8Array(16);
-  if (typeof globalThis.crypto !== 'undefined') {
-    globalThis.crypto.getRandomValues(bytes);
-  } else {
-    // Node.js fallback
-    const { randomBytes } = require('crypto');
-    const buf = randomBytes(16);
-    bytes.set(buf);
-  }
+  globalThis.crypto.getRandomValues(bytes);
   return btoa(String.fromCharCode(...bytes));
 }
 

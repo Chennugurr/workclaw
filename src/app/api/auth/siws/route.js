@@ -1,8 +1,6 @@
-import { z } from 'zod';
 import jsend from 'jsend';
 import jwt from 'jsonwebtoken';
 import { SiwsMessage } from 'siws';
-import { getClientIp } from 'request-ip';
 import { NextResponse } from 'next/server';
 import { middleware } from '@/api/middleware';
 import prisma from '@/lib/prisma';
@@ -11,10 +9,34 @@ import { getLocationFromIP } from '@/lib/geolocation';
 import { getDeviceInfo } from '@/lib/device-info';
 import { headers } from 'next/headers';
 
+function getClientIpFromHeaders(headerList) {
+  return (
+    headerList.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    headerList.get('x-real-ip') ||
+    headerList.get('cf-connecting-ip') ||
+    'unknown'
+  );
+}
+
 export const POST = middleware(async (req) => {
   const headerList = await headers();
   const token = headerList.get('x-siws-token');
-  const fields = new SiwsMessage({}).decode(token);
+
+  if (!token) {
+    return NextResponse.json(jsend.error('Missing SIWS token'), {
+      status: 400,
+    });
+  }
+
+  let fields;
+  try {
+    fields = new SiwsMessage({}).decode(token);
+  } catch (err) {
+    console.error('SIWS decode error:', err);
+    return NextResponse.json(jsend.error('Invalid SIWS token format'), {
+      status: 400,
+    });
+  }
 
   if (!fields.validate()) {
     return NextResponse.json(jsend.error('Invalid signature'), {
@@ -24,12 +46,15 @@ export const POST = middleware(async (req) => {
 
   // Check if the message is not too old (e.g., 5 minutes)
   const message = fields.message;
-  const issuedAt = new Date(message.match(/Issued At: (.*)/)[1]);
-  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-  if (issuedAt < fiveMinutesAgo) {
-    return NextResponse.json(jsend.error('Message is too old'), {
-      status: 400,
-    });
+  const issuedAtMatch = message?.match(/Issued At: (.*)/);
+  if (issuedAtMatch) {
+    const issuedAt = new Date(issuedAtMatch[1]);
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    if (issuedAt < fiveMinutesAgo) {
+      return NextResponse.json(jsend.error('Message is too old'), {
+        status: 400,
+      });
+    }
   }
 
   // Check if user already exists
@@ -62,7 +87,7 @@ export const POST = middleware(async (req) => {
   // Hash the tokens before saving
   const hashedAccessToken = hashToken(accessToken);
   const hashedRefreshToken = hashToken(refreshToken);
-  const ipAddress = getClientIp(req) || req.ip;
+  const ipAddress = getClientIpFromHeaders(headerList);
   const userAgent = req.headers.get('user-agent');
   const location = await getLocationFromIP(ipAddress);
 

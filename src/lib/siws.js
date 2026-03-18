@@ -1,5 +1,7 @@
-import bs58 from 'bs58';
+import _bs58 from 'bs58';
 import nacl from 'tweetnacl';
+
+const bs58 = _bs58.default || _bs58;
 
 function generateNonce() {
   const bytes = new Uint8Array(16);

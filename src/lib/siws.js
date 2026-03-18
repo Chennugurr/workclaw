@@ -1,6 +1,32 @@
-import { randomBytes } from 'crypto';
 import bs58 from 'bs58';
 import nacl from 'tweetnacl';
+
+function generateNonce() {
+  const bytes = new Uint8Array(16);
+  if (typeof globalThis.crypto !== 'undefined') {
+    globalThis.crypto.getRandomValues(bytes);
+  } else {
+    // Node.js fallback
+    const { randomBytes } = require('crypto');
+    const buf = randomBytes(16);
+    bytes.set(buf);
+  }
+  return btoa(String.fromCharCode(...bytes));
+}
+
+function toBase64(str) {
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(str).toString('base64');
+  }
+  return btoa(str);
+}
+
+function fromBase64(b64) {
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(b64, 'base64').toString('utf8');
+  }
+  return atob(b64);
+}
 
 export class SiwsMessage {
   constructor({ domain, address, statement, message, signature } = {}) {
@@ -12,7 +38,7 @@ export class SiwsMessage {
   }
 
   prepare() {
-    const nonce = randomBytes(16).toString('base64');
+    const nonce = generateNonce();
     const timestamp = new Date();
     const message = `${this.domain} wants you to sign in with your Solana account:\n${this.address}\n\n${this.statement}.\n\nNonce: ${nonce}\nIssued At: ${timestamp}`;
     this.message = message;
@@ -21,13 +47,11 @@ export class SiwsMessage {
 
   token(signature) {
     this.signature = bs58.encode(signature);
-    const tokenData = Buffer.from(JSON.stringify(this));
-    return tokenData.toString('base64');
+    return toBase64(JSON.stringify(this));
   }
 
   decode(token) {
-    const tokenObject = Buffer.from(token, 'base64');
-    const siwsMessage = JSON.parse(tokenObject.toString('utf8'));
+    const siwsMessage = JSON.parse(fromBase64(token));
     this.domain = siwsMessage.domain;
     this.address = siwsMessage.address;
     this.statement = siwsMessage.statement;

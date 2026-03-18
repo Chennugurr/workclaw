@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
-  serverExternalPackages: ['jsonwebtoken', 'ua-parser-js', 'tweetnacl', 'bs58', 'base-x'],
+  serverExternalPackages: ['jsonwebtoken', 'ua-parser-js'],
   webpack: (config) => {
     config.externals.push('pino-pretty', 'lokijs', 'encoding');
     return config;

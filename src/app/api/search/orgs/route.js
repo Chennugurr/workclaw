@@ -36,7 +36,7 @@ export const GET = middleware(
         },
         _count: {
           select: {
-            jobs: true,
+            projects: true,
             staffs: true,
           },
         },

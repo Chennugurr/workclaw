@@ -60,16 +60,8 @@ COPY --from=builder /app/node_modules/tweetnacl ./node_modules/tweetnacl
 COPY --from=builder /app/node_modules/bs58 ./node_modules/bs58
 COPY --from=builder /app/node_modules/base-x ./node_modules/base-x
 
-# Copy Prisma CLI + engines for runtime migrations
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder /app/node_modules/@prisma/engines ./node_modules/@prisma/engines
-COPY --from=builder /app/node_modules/@prisma/engines-version ./node_modules/@prisma/engines-version
-COPY --from=builder /app/node_modules/@prisma/get-platform ./node_modules/@prisma/get-platform
-COPY --from=builder /app/node_modules/@prisma/fetch-engine ./node_modules/@prisma/fetch-engine
-COPY --from=builder /app/node_modules/@prisma/debug ./node_modules/@prisma/debug
-
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["sh", "-c", "node ./node_modules/prisma/build/index.js migrate deploy || echo 'Migration skipped'; node server.js"]
+CMD ["node", "server.js"]

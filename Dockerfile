@@ -29,6 +29,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 RUN npx prisma generate
+RUN npx prisma migrate deploy
 RUN npx next build
 
 # ---- Runner ----
@@ -60,16 +61,8 @@ COPY --from=builder /app/node_modules/tweetnacl ./node_modules/tweetnacl
 COPY --from=builder /app/node_modules/bs58 ./node_modules/bs58
 COPY --from=builder /app/node_modules/base-x ./node_modules/base-x
 
-# Copy Prisma CLI for running migrations at startup
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
-
-# Copy startup script
-COPY start.sh ./start.sh
-RUN chmod +x start.sh
-
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["./start.sh"]
+CMD ["node", "server.js"]

@@ -29,7 +29,6 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 RUN npx prisma generate
-RUN npx prisma migrate deploy
 RUN npx next build
 
 # ---- Runner ----
@@ -61,8 +60,16 @@ COPY --from=builder /app/node_modules/tweetnacl ./node_modules/tweetnacl
 COPY --from=builder /app/node_modules/bs58 ./node_modules/bs58
 COPY --from=builder /app/node_modules/base-x ./node_modules/base-x
 
+# Copy Prisma CLI + engines for runtime migrations
+COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder /app/node_modules/@prisma/engines ./node_modules/@prisma/engines
+COPY --from=builder /app/node_modules/@prisma/engines-version ./node_modules/@prisma/engines-version
+COPY --from=builder /app/node_modules/@prisma/get-platform ./node_modules/@prisma/get-platform
+COPY --from=builder /app/node_modules/@prisma/fetch-engine ./node_modules/@prisma/fetch-engine
+COPY --from=builder /app/node_modules/@prisma/debug ./node_modules/@prisma/debug
+
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]

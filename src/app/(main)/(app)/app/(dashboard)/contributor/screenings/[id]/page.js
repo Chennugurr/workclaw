@@ -227,23 +227,28 @@ export default function Page({ params: paramsPromise }) {
               question.questionType === 'SCENARIO_BASED') &&
               question.options && (
                 <div className='space-y-2'>
-                  {question.options.map((opt) => (
-                    <button
-                      key={opt.id}
-                      onClick={() => setAnswer(question.id, opt.id)}
-                      className={cn(
-                        'w-full text-left px-4 py-3 rounded-lg border text-sm transition-colors',
-                        answers[question.id] === opt.id
-                          ? 'border-gray-900 bg-gray-50 font-medium'
-                          : 'border-gray-200 hover:border-gray-300'
-                      )}
-                    >
-                      <span className='font-mono text-xs text-gray-400 mr-2 uppercase'>
-                        {opt.id}.
-                      </span>
-                      {opt.text}
-                    </button>
-                  ))}
+                  {question.options.map((opt, idx) => {
+                    const optValue = typeof opt === 'string' ? opt : opt.id || opt.text;
+                    const optLabel = typeof opt === 'string' ? opt : opt.text || opt.id;
+                    const letter = String.fromCharCode(65 + idx);
+                    return (
+                      <button
+                        key={optValue}
+                        onClick={() => setAnswer(question.id, optValue)}
+                        className={cn(
+                          'w-full text-left px-4 py-3 rounded-lg border text-sm transition-colors',
+                          answers[question.id] === optValue
+                            ? 'border-gray-900 bg-gray-50 font-medium'
+                            : 'border-gray-200 hover:border-gray-300'
+                        )}
+                      >
+                        <span className='font-mono text-xs text-gray-400 mr-2'>
+                          {letter}.
+                        </span>
+                        {optLabel}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
 

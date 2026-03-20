@@ -73,10 +73,13 @@ export const POST = middleware(
         question.questionType === 'MULTIPLE_CHOICE' ||
         question.questionType === 'SCENARIO_BASED'
       ) {
+        const correctValue = typeof question.correctAnswer === 'string'
+          ? question.correctAnswer
+          : question.correctAnswer?.id || question.correctAnswer;
         if (
-          question.correctAnswer &&
+          correctValue &&
           answer &&
-          answer === question.correctAnswer.id
+          answer === correctValue
         ) {
           earnedPoints += question.points;
         }

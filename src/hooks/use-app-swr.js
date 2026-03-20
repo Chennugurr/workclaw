@@ -44,6 +44,7 @@ export default function useAppSWR(url, options = {}) {
 
   // Memoize the searchParams construction
   const memoizedSearchParams = useMemo(() => {
+    if (!url) return new URLSearchParams();
     const searchParams = new URLSearchParams(url.split('?')[1] || '');
     _.forEach(params, (value, key) => {
       if (value !== undefined && value !== null && value !== '') {
@@ -55,6 +56,7 @@ export default function useAppSWR(url, options = {}) {
 
   // Memoize the full URL
   const memoizedFullUrl = useMemo(() => {
+    if (!url) return null;
     const baseUrl = url.split('?')[0];
     const queryString = memoizedSearchParams.toString();
     return `${baseUrl}${queryString ? `?${queryString}` : ''}`;

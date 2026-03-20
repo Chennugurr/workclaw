@@ -184,6 +184,11 @@ const MENU = deepFreeze({
         href: '/app/admin/tasks',
       },
       {
+        icon: <GraduationCap className='h-5 w-5 mr-3' />,
+        name: 'Screenings',
+        href: '/app/admin/screenings',
+      },
+      {
         icon: <CreditCard className='h-5 w-5 mr-3' />,
         name: 'Payouts',
         href: '/app/admin/payouts',

@@ -13,9 +13,14 @@ const publicAxios = Axios.create({
 
 // Function to check if token is expired or about to expire
 const isTokenExpired = (token) => {
-  const decodedToken = JSON.parse(atob(token.split('.')[1]));
-  const currentTime = Math.floor(Date.now() / 1000);
-  return decodedToken.exp < currentTime + 10; // Token is considered expired if it's about to expire in 10 seconds
+  if (!token) return true;
+  try {
+    const decodedToken = JSON.parse(atob(token.split('.')[1]));
+    const currentTime = Math.floor(Date.now() / 1000);
+    return decodedToken.exp < currentTime + 10;
+  } catch {
+    return true;
+  }
 };
 
 // Function to handle token refresh
@@ -65,7 +70,7 @@ axios.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       const accessToken = await handleTokenRefresh(true);

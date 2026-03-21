@@ -3,15 +3,12 @@ import {
   Keypair,
   PublicKey,
   Transaction,
+  SystemProgram,
+  LAMPORTS_PER_SOL,
   sendAndConfirmTransaction,
 } from '@solana/web3.js';
-import {
-  getOrCreateAssociatedTokenAccount,
-  createTransferInstruction,
-  TOKEN_PROGRAM_ID,
-} from '@solana/spl-token';
 
-const TOKEN_DECIMALS = 6; // pump.fun tokens use 6 decimals
+const REWARD_AMOUNT_SOL = 0.01; // SOL per screening completion
 
 /**
  * Get a Solana connection using the configured RPC URL.
@@ -38,81 +35,45 @@ function getTreasuryKeypair() {
 }
 
 /**
- * Get the reward token mint address from environment.
- */
-function getRewardMint() {
-  const mint = process.env.REWARD_TOKEN_MINT;
-  if (!mint) throw new Error('REWARD_TOKEN_MINT not configured');
-  return new PublicKey(mint);
-}
-
-/**
- * Send token rewards to a user's wallet.
+ * Send SOL reward to a user's wallet for passing a screening.
  *
  * @param {string} recipientAddress - The user's Solana wallet address
- * @param {number} tokenAmount - Number of tokens to send (whole tokens, not smallest unit)
- * @returns {Promise<{success: boolean, signature?: string, error?: string}>}
+ * @param {number} solAmount - Amount of SOL to send (default: REWARD_AMOUNT_SOL)
+ * @returns {Promise<{success: boolean, signature?: string, amount?: number, error?: string}>}
  */
-export async function sendTokenReward(recipientAddress, tokenAmount = 1) {
+export async function sendSolReward(recipientAddress, solAmount = REWARD_AMOUNT_SOL) {
   try {
-    // Validate env vars are set
-    if (!process.env.SOLANA_RPC_URL || !process.env.TREASURY_PRIVATE_KEY || !process.env.REWARD_TOKEN_MINT) {
-      console.warn('[token-rewards] Reward env vars not configured, skipping token reward');
-      return { success: false, error: 'Token rewards not configured' };
+    if (!process.env.SOLANA_RPC_URL || !process.env.TREASURY_PRIVATE_KEY) {
+      console.warn('[rewards] Reward env vars not configured, skipping SOL reward');
+      return { success: false, error: 'Rewards not configured' };
     }
 
     const connection = getConnection();
     const treasury = getTreasuryKeypair();
-    const mint = getRewardMint();
     const recipient = new PublicKey(recipientAddress);
+    const lamports = Math.round(solAmount * LAMPORTS_PER_SOL);
 
-    // Amount in smallest unit (6 decimals for pump.fun tokens)
-    const amount = BigInt(tokenAmount) * BigInt(10 ** TOKEN_DECIMALS);
-
-    // Get or create the treasury's token account
-    const sourceAccount = await getOrCreateAssociatedTokenAccount(
-      connection,
-      treasury,
-      mint,
-      treasury.publicKey
+    const transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: treasury.publicKey,
+        toPubkey: recipient,
+        lamports,
+      })
     );
 
-    // Get or create the recipient's token account
-    const destinationAccount = await getOrCreateAssociatedTokenAccount(
-      connection,
-      treasury, // treasury pays for account creation if needed
-      mint,
-      recipient
-    );
-
-    // Build transfer instruction
-    const transferIx = createTransferInstruction(
-      sourceAccount.address,
-      destinationAccount.address,
-      treasury.publicKey,
-      amount
-    );
-
-    const transaction = new Transaction().add(transferIx);
-
-    // Send and confirm
     const signature = await sendAndConfirmTransaction(connection, transaction, [treasury]);
 
-    console.log(`[token-rewards] Sent ${tokenAmount} token(s) to ${recipientAddress} — tx: ${signature}`);
-    return { success: true, signature };
+    console.log(`[rewards] Sent ${solAmount} SOL to ${recipientAddress} — tx: ${signature}`);
+    return { success: true, signature, amount: solAmount };
   } catch (error) {
-    console.error('[token-rewards] Failed to send reward:', error.message);
+    console.error('[rewards] Failed to send SOL reward:', error.message);
     return { success: false, error: error.message };
   }
 }
 
 /**
- * Check if token rewards are configured.
+ * Check if rewards are configured.
  */
 export function isRewardsConfigured() {
-  return !!(
-    process.env.SOLANA_RPC_URL &&
-    process.env.TREASURY_PRIVATE_KEY &&
-    process.env.REWARD_TOKEN_MINT
-  );
+  return !!(process.env.SOLANA_RPC_URL && process.env.TREASURY_PRIVATE_KEY);
 }

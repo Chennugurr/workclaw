@@ -3,7 +3,7 @@ import jsend from 'jsend';
 import { NextResponse } from 'next/server';
 import { middleware } from '@/api/middleware';
 import prisma from '@/lib/prisma';
-import { sendTokenReward, isRewardsConfigured } from '@/lib/token-rewards';
+import { sendSolReward, isRewardsConfigured } from '@/lib/token-rewards';
 
 const submitSchema = z.object({
   answers: z.record(z.string(), z.any()),
@@ -121,10 +121,9 @@ export const POST = middleware(
       // Check if user already passed this screening before (don't double-reward)
       const previousPass = screening.attempts.find((a) => a.passed === true);
       if (!previousPass) {
-        const reward = await sendTokenReward(req.user.address, 1);
+        const reward = await sendSolReward(req.user.address);
         if (reward.success) {
           rewardTx = reward.signature;
-          // Log the reward event
           await prisma.reputationEvent.create({
             data: {
               userId: req.user.id,
@@ -132,7 +131,7 @@ export const POST = middleware(
               details: {
                 screeningId,
                 screeningTitle: screening.title,
-                tokenAmount: 1,
+                solAmount: reward.amount,
                 txSignature: reward.signature,
               },
               scoreDelta: 10,

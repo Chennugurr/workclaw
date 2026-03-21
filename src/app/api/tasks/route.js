@@ -94,7 +94,7 @@ export const POST = middleware(
           userId: req.user.id,
           projectId,
         },
-        status: 'ACCEPTED',
+        status: 'APPROVED',
       },
     });
 

@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { toast } from 'sonner';
 import {
   ClipboardList,
   ChevronRight,
@@ -14,7 +16,9 @@ import {
   DollarSign,
   Play,
   Eye,
+  Zap,
 } from 'lucide-react';
+import axios from '@/lib/axios';
 import useAppSWR from '@/hooks/use-app-swr';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -116,11 +120,56 @@ function TaskCard({ task }) {
   );
 }
 
+function ClaimTaskCard({ project, onClaimed }) {
+  const [claiming, setClaiming] = useState(false);
+  const router = useRouter();
+  const taskLabel = TASK_TYPE_LABELS[project.taskType] || project.taskType;
+
+  const claimTask = async () => {
+    setClaiming(true);
+    try {
+      const res = await axios.post('/tasks', { projectId: project.id });
+      const task = res.data.data;
+      toast.success('Task claimed!');
+      router.push(`/app/contributor/tasks/${task.id}`);
+    } catch (error) {
+      toast.error(error?.response?.data?.data?.message || 'Failed to claim task.');
+    } finally {
+      setClaiming(false);
+    }
+  };
+
+  return (
+    <Card className='hover:shadow-md transition-shadow'>
+      <CardContent className='p-5 flex items-center justify-between'>
+        <div className='flex-1 min-w-0'>
+          <h3 className='font-semibold text-gray-900 truncate'>{project.title}</h3>
+          <div className='flex items-center gap-2 mt-1'>
+            <Badge variant='outline' className='text-xs'>{taskLabel}</Badge>
+            {project.rateAmount && (
+              <span className='text-xs text-gray-500 flex items-center gap-1'>
+                <DollarSign className='h-3 w-3' />
+                ${Number(project.rateAmount).toFixed(2)}/task
+              </span>
+            )}
+          </div>
+        </div>
+        <Button size='sm' onClick={claimTask} disabled={claiming}>
+          <Zap className='h-3.5 w-3.5 mr-1' />
+          {claiming ? 'Claiming...' : 'Claim Task'}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function PageContent() {
   const [activeTab, setActiveTab] = useState('active');
-  const { data: result, isLoading } = useAppSWR(
+  const router = useRouter();
+  const { data: result, isLoading, mutate } = useAppSWR(
     `/tasks?status=${activeTab}&limit=50`
   );
+  const { data: approvedProjects } = useAppSWR('/tasks/available-projects');
 
   const tasks = result?.data || [];
   const pagination = result?.pagination;
@@ -131,6 +180,20 @@ export default function PageContent() {
         <h1 className='text-2xl font-bold mb-1'>My Tasks</h1>
         <p className='text-gray-500'>Your assigned and completed work.</p>
       </div>
+
+      {/* Available Projects — Claim Tasks */}
+      {approvedProjects?.length > 0 && activeTab === 'active' && (
+        <div className='mb-6'>
+          <h2 className='text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3'>
+            Claim New Tasks
+          </h2>
+          <div className='space-y-2'>
+            {approvedProjects.map((project) => (
+              <ClaimTaskCard key={project.id} project={project} onClaimed={mutate} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className='flex gap-1 mb-6 bg-gray-100 rounded-lg p-1 w-fit'>
@@ -180,11 +243,13 @@ export default function PageContent() {
                 : 'No tasks yet'}
             </h3>
             <p className='text-sm text-gray-500 max-w-md mx-auto mb-4'>
-              {activeTab === 'active'
+              {activeTab === 'active' && !approvedProjects?.length
                 ? 'Apply to a project and get accepted to start receiving tasks.'
+                : activeTab === 'active'
+                ? 'Claim a task from your approved projects above.'
                 : 'Complete tasks to see them here.'}
             </p>
-            {activeTab === 'active' && (
+            {activeTab === 'active' && !approvedProjects?.length && (
               <Button asChild>
                 <Link href='/app/contributor/opportunities'>
                   Browse Opportunities

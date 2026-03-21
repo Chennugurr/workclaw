@@ -10,22 +10,7 @@ export const GET = middleware(
     const query = {
       where: { id: projectId },
       include: {
-        org: true,
-        skills: {
-          select: {
-            id: true,
-            level: true,
-            skill: {
-              select: {
-                id: true,
-                name: true,
-                description: true,
-                verified: true,
-                icon: true,
-              },
-            },
-          },
-        },
+        organization: true,
         screenings: {
           where: { status: 'ACTIVE' },
           select: {
@@ -33,6 +18,9 @@ export const GET = middleware(
             title: true,
             domain: true,
           },
+        },
+        _count: {
+          select: { tasks: true, applications: true },
         },
       },
     };
@@ -86,10 +74,6 @@ export const GET = middleware(
         res.screeningDetails = [];
       }
     }
-
-    // Rename org → organization for frontend consistency
-    res.organization = res.org;
-    delete res.org;
 
     return NextResponse.json(jsend.success(res));
   },

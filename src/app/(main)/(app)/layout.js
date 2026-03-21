@@ -1,7 +1,7 @@
 'use client';
 
 import './globals.css';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { useAppKitAccount, useDisconnect } from '@reown/appkit/react';
 import { TOAST_IDS } from '@/constants';
@@ -14,10 +14,28 @@ import axios from '@/lib/axios';
 export default function AppLayout({ children }) {
   const { disconnect } = useDisconnect();
   const siwsInProgress = useRef(false);
+  const sessionRestored = useRef(false);
   const { address, isConnected } = useAppKitAccount();
   const { authenticated } = useAppState();
   const dispatch = useAppDispatch();
   const { signMessage } = useSIWS();
+
+  // Try to restore session from existing tokens on mount
+  useEffect(() => {
+    if (sessionRestored.current) return;
+    sessionRestored.current = true;
+
+    const accessToken = localStorage.getItem('@app/ls/ast');
+    const refreshToken = localStorage.getItem('@app/ls/rft');
+    if (!accessToken && !refreshToken) return;
+
+    // We have tokens — try to restore the session via whoami
+    dispatch({ type: ACTIONS.USER.FETCH }).catch(() => {
+      // Tokens are invalid, clear them
+      localStorage.removeItem('@app/ls/ast');
+      localStorage.removeItem('@app/ls/rft');
+    });
+  }, [dispatch]);
 
   const handleSIWS = useCallback(async () => {
     if (siwsInProgress.current) return;
@@ -62,8 +80,23 @@ export default function AppLayout({ children }) {
   }, [isConnected, address, dispatch]);
 
   useEffect(() => {
-    if (!isConnected && authenticated) handleLogout();
-    if (isConnected && !authenticated) handleSIWS();
+    // Don't logout immediately on load — wallet reconnection is async and takes time.
+    // Only logout if wallet is truly disconnected AND we don't have valid tokens.
+    if (!isConnected && authenticated) {
+      const hasTokens = !!localStorage.getItem('@app/ls/ast') || !!localStorage.getItem('@app/ls/rft');
+      if (!hasTokens) {
+        handleLogout();
+      }
+      // If we have tokens, wait — wallet may still be reconnecting
+      return;
+    }
+    // Wallet connected but not authenticated and no tokens — need fresh SIWS
+    if (isConnected && !authenticated) {
+      const hasTokens = !!localStorage.getItem('@app/ls/ast');
+      if (!hasTokens) {
+        handleSIWS();
+      }
+    }
   }, [isConnected, authenticated, handleLogout, handleSIWS]);
 
   return (

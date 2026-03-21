@@ -10,7 +10,9 @@ export const GET = middleware(
     const query = {
       where: { id: projectId },
       include: {
-        organization: true,
+        organization: {
+          select: { id: true, name: true, logo: true, bio: true },
+        },
         screenings: {
           where: { status: 'ACTIVE' },
           select: {
@@ -18,9 +20,6 @@ export const GET = middleware(
             title: true,
             domain: true,
           },
-        },
-        _count: {
-          select: { tasks: true, applications: true },
         },
       },
     };

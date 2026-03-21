@@ -90,6 +90,14 @@ export const GET = middleware(
       ? approvedSubmissions / (approvedSubmissions + rejectedSubmissions || 1)
       : 0;
 
+    // Auto-promote NEW → VERIFIED if screenings passed but tier wasn't updated
+    if (req.user.tier === 'NEW' && screeningsPassed > 0) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { tier: 'VERIFIED' },
+      });
+    }
+
     return NextResponse.json(
       jsend.success({
         overview: {

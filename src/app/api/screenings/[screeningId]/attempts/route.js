@@ -106,6 +106,14 @@ export const POST = middleware(
       },
     });
 
+    // Promote NEW → VERIFIED when first screening is passed
+    if (passed && req.user.tier === 'NEW') {
+      await prisma.user.update({
+        where: { id: req.user.id },
+        data: { tier: 'VERIFIED' },
+      });
+    }
+
     return NextResponse.json(
       jsend.success({
         id: attempt.id,

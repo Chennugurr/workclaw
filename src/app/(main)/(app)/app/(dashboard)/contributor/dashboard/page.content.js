@@ -48,8 +48,17 @@ export default function PageContent() {
   const { data: analytics } = useAppSWR(
     user?.id ? `/contributors/${user.id}/analytics` : null
   );
+  const { data: screenings } = useAppSWR('/screenings');
 
   const overview = analytics?.overview || {};
+
+  // Compute onboarding checklist state
+  const hasProfile = !!user?.profile;
+  const hasPassedScreening = screenings?.some((s) =>
+    s.attempts?.some((a) => a.passed === true)
+  );
+  const hasCompletedTask = (overview.totalSubmissions || 0) > 0;
+  const completedSteps = [hasProfile, hasPassedScreening, hasCompletedTask].filter(Boolean).length;
 
   // Show onboarding wizard if not complete
   if (!onboardingComplete && !user?.profile) {
@@ -199,7 +208,7 @@ export default function PageContent() {
       )}
 
       {/* Onboarding Progress (if new user) */}
-      {tier === 'NEW' && (
+      {tier === 'NEW' && completedSteps < 3 && (
         <Card className='mb-6 border-gray-900'>
           <CardContent className='p-6'>
             <div className='flex items-start justify-between mb-4'>
@@ -207,29 +216,43 @@ export default function PageContent() {
                 <h2 className='text-lg font-semibold'>Get started</h2>
                 <p className='text-sm text-gray-500'>Complete these steps to unlock paid work.</p>
               </div>
-              <Badge variant='outline'>1 of 3</Badge>
+              <Badge variant='outline'>{completedSteps} of 3</Badge>
             </div>
             <div className='space-y-3'>
               <div className='flex items-center gap-3'>
-                <div className='h-6 w-6 rounded-full bg-green-100 flex items-center justify-center'>
-                  <Shield className='h-3.5 w-3.5 text-green-600' />
+                <div className={`h-6 w-6 rounded-full ${hasProfile ? 'bg-green-100' : 'bg-gray-100'} flex items-center justify-center`}>
+                  <Shield className={`h-3.5 w-3.5 ${hasProfile ? 'text-green-600' : 'text-gray-400'}`} />
                 </div>
-                <span className='text-sm line-through text-gray-400'>Create your profile</span>
+                {hasProfile ? (
+                  <span className='text-sm line-through text-gray-400'>Create your profile</span>
+                ) : (
+                  <span className='text-sm text-gray-900'>Create your profile</span>
+                )}
               </div>
               <div className='flex items-center gap-3'>
-                <div className='h-6 w-6 rounded-full bg-gray-100 flex items-center justify-center'>
-                  <GraduationCap className='h-3.5 w-3.5 text-gray-400' />
+                <div className={`h-6 w-6 rounded-full ${hasPassedScreening ? 'bg-green-100' : 'bg-gray-100'} flex items-center justify-center`}>
+                  <GraduationCap className={`h-3.5 w-3.5 ${hasPassedScreening ? 'text-green-600' : 'text-gray-400'}`} />
                 </div>
-                <Link href='/app/contributor/screenings' className='text-sm text-gray-900 hover:underline'>
-                  Pass your first screening test
-                </Link>
-                <ArrowRight className='h-3.5 w-3.5 text-gray-400' />
+                {hasPassedScreening ? (
+                  <span className='text-sm line-through text-gray-400'>Pass your first screening test</span>
+                ) : (
+                  <>
+                    <Link href='/app/contributor/screenings' className='text-sm text-gray-900 hover:underline'>
+                      Pass your first screening test
+                    </Link>
+                    <ArrowRight className='h-3.5 w-3.5 text-gray-400' />
+                  </>
+                )}
               </div>
               <div className='flex items-center gap-3'>
-                <div className='h-6 w-6 rounded-full bg-gray-100 flex items-center justify-center'>
-                  <Zap className='h-3.5 w-3.5 text-gray-400' />
+                <div className={`h-6 w-6 rounded-full ${hasCompletedTask ? 'bg-green-100' : 'bg-gray-100'} flex items-center justify-center`}>
+                  <Zap className={`h-3.5 w-3.5 ${hasCompletedTask ? 'text-green-600' : 'text-gray-400'}`} />
                 </div>
-                <span className='text-sm text-gray-500'>Complete your first task</span>
+                {hasCompletedTask ? (
+                  <span className='text-sm line-through text-gray-400'>Complete your first task</span>
+                ) : (
+                  <span className='text-sm text-gray-500'>Complete your first task</span>
+                )}
               </div>
             </div>
           </CardContent>

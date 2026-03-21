@@ -25,7 +25,7 @@ async function main() {
       const taskIds = tasks.map((t) => t.id);
 
       if (taskIds.length > 0) {
-        const delSubmissions = await prisma.submission.deleteMany({
+        const delSubmissions = await prisma.taskSubmission.deleteMany({
           where: { taskId: { in: taskIds } },
         });
         console.log(`  Deleted ${delSubmissions.count} submissions for ${project.title}`);

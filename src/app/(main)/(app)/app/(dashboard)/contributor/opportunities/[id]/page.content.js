@@ -199,6 +199,13 @@ export default function PageContent({ params }) {
               <Lock className='h-4 w-4 mr-2' />
               {project.status === 'FULL' ? 'Project Full' : 'Not Available'}
             </Button>
+          ) : hasApplied && applicationStatus === 'APPROVED' ? (
+            <Button asChild className='flex-grow lg:flex-grow-0'>
+              <Link href='/app/contributor/my-tasks'>
+                Start Working
+                <ChevronRight className='ml-2 h-4 w-4' />
+              </Link>
+            </Button>
           ) : hasApplied ? (
             <>
               <ApplicationStatusBadge status={applicationStatus} />
@@ -444,6 +451,7 @@ export default function PageContent({ params }) {
 function ApplicationStatusBadge({ status }) {
   const config = {
     PENDING: { label: 'Application Pending', color: 'bg-yellow-100 text-yellow-700', icon: Clock },
+    APPROVED: { label: 'Approved', color: 'bg-green-100 text-green-700', icon: CheckCircle2 },
     ACCEPTED: { label: 'Accepted', color: 'bg-green-100 text-green-700', icon: CheckCircle2 },
     REJECTED: { label: 'Not Selected', color: 'bg-red-100 text-red-700', icon: AlertCircle },
     WITHDRAWN: { label: 'Withdrawn', color: 'bg-gray-100 text-gray-500', icon: AlertCircle },

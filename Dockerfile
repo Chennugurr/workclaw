@@ -60,6 +60,45 @@ COPY --from=builder /app/node_modules/tweetnacl ./node_modules/tweetnacl
 COPY --from=builder /app/node_modules/bs58 ./node_modules/bs58
 COPY --from=builder /app/node_modules/base-x ./node_modules/base-x
 
+# Copy Solana + pump.fun SDK packages for creator-fee collection at runtime
+COPY --from=builder /app/node_modules/@solana ./node_modules/@solana
+COPY --from=builder /app/node_modules/@pump-fun ./node_modules/@pump-fun
+COPY --from=builder /app/node_modules/@coral-xyz ./node_modules/@coral-xyz
+COPY --from=builder /app/node_modules/bn.js ./node_modules/bn.js
+COPY --from=builder /app/node_modules/borsh ./node_modules/borsh
+COPY --from=builder /app/node_modules/buffer-layout ./node_modules/buffer-layout
+COPY --from=builder /app/node_modules/superstruct ./node_modules/superstruct
+COPY --from=builder /app/node_modules/rpc-websockets ./node_modules/rpc-websockets
+COPY --from=builder /app/node_modules/jayson ./node_modules/jayson
+COPY --from=builder /app/node_modules/@noble ./node_modules/@noble
+COPY --from=builder /app/node_modules/@babel ./node_modules/@babel
+COPY --from=builder /app/node_modules/agentkeepalive ./node_modules/agentkeepalive
+COPY --from=builder /app/node_modules/node-fetch ./node_modules/node-fetch
+COPY --from=builder /app/node_modules/buffer ./node_modules/buffer
+COPY --from=builder /app/node_modules/camelcase ./node_modules/camelcase
+COPY --from=builder /app/node_modules/cross-fetch ./node_modules/cross-fetch
+COPY --from=builder /app/node_modules/eventemitter3 ./node_modules/eventemitter3
+COPY --from=builder /app/node_modules/pako ./node_modules/pako
+COPY --from=builder /app/node_modules/toml ./node_modules/toml
+COPY --from=builder /app/node_modules/fast-stable-stringify ./node_modules/fast-stable-stringify
+COPY --from=builder /app/node_modules/ws ./node_modules/ws
+COPY --from=builder /app/node_modules/uuid ./node_modules/uuid
+COPY --from=builder /app/node_modules/isomorphic-ws ./node_modules/isomorphic-ws
+COPY --from=builder /app/node_modules/json-stringify-safe ./node_modules/json-stringify-safe
+COPY --from=builder /app/node_modules/delay ./node_modules/delay
+COPY --from=builder /app/node_modules/es6-promisify ./node_modules/es6-promisify
+COPY --from=builder /app/node_modules/eyes ./node_modules/eyes
+COPY --from=builder /app/node_modules/stream-json ./node_modules/stream-json
+COPY --from=builder /app/node_modules/@swc ./node_modules/@swc
+COPY --from=builder /app/node_modules/commander ./node_modules/commander
+COPY --from=builder /app/node_modules/humanize-ms ./node_modules/humanize-ms
+COPY --from=builder /app/node_modules/ms ./node_modules/ms
+COPY --from=builder /app/node_modules/regenerator-runtime ./node_modules/regenerator-runtime
+COPY --from=builder /app/node_modules/tr46 ./node_modules/tr46
+COPY --from=builder /app/node_modules/whatwg-url ./node_modules/whatwg-url
+COPY --from=builder /app/node_modules/webidl-conversions ./node_modules/webidl-conversions
+COPY --from=builder /app/node_modules/@solana/spl-token ./node_modules/@solana/spl-token
+
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"

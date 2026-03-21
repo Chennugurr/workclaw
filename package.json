@@ -15,6 +15,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@mdxeditor/editor": "^3.11.3",
     "@prisma/client": "^5.19.0",
+    "@pump-fun/pump-sdk": "^1.31.0",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-aspect-ratio": "^1.1.0",

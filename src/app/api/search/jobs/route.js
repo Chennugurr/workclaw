@@ -56,7 +56,7 @@ export const GET = middleware(
         taskVolume: true,
         requiredTier: true,
         visibility: true,
-        org: {
+        organization: {
           select: {
             id: true,
             name: true,
@@ -77,7 +77,7 @@ export const GET = middleware(
       query.where.OR = [
         { title: { contains: searchTerm, mode: 'insensitive' } },
         { description: { contains: searchTerm, mode: 'insensitive' } },
-        { org: { name: { contains: searchTerm, mode: 'insensitive' } } },
+        { organization: { name: { contains: searchTerm, mode: 'insensitive' } } },
       ];
     }
 

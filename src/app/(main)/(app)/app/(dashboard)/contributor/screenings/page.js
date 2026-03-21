@@ -14,6 +14,16 @@ import {
   ChevronRight,
   Target,
   RotateCcw,
+  Bot,
+  FileSearch,
+  Shield,
+  BarChart3,
+  Scale,
+  BookOpen,
+  Globe,
+  Code,
+  ImageIcon,
+  FileText,
 } from 'lucide-react';
 import useAppSWR from '@/hooks/use-app-swr';
 import { Button } from '@/components/ui/button';
@@ -24,16 +34,22 @@ import { Progress } from '@/components/ui/progress';
 dayjs.extend(relativeTime);
 
 const DOMAIN_ICONS = {
-  'Solidity Knowledge': '📜',
-  'DeFi Knowledge': '💰',
-  'Scam Detection': '🔒',
-  'Prompt Evaluation': '🤖',
-  'Ranking Judgment': '📊',
-  'Factuality Review': '✅',
-  'Moderation Judgment': '⚖️',
-  'Crypto Terminology': '🔤',
-  'Blockchain Security': '🛡️',
-  'Multilingual Review': '🌐',
+  'Solidity Knowledge': BookOpen,
+  'DeFi Knowledge': BarChart3,
+  'Scam Detection': Shield,
+  'Prompt Evaluation': Bot,
+  'Ranking Judgment': Scale,
+  'Factuality Review': FileSearch,
+  'Moderation Judgment': Scale,
+  'Crypto Terminology': BookOpen,
+  'Blockchain Security': Shield,
+  'Multilingual Review': Globe,
+  'Content Moderation': Shield,
+  'Data Labeling QA': FileText,
+  'Language Assessment': Globe,
+  'Reasoning & Logic': BarChart3,
+  'Code Review': Code,
+  'Image Annotation QA': ImageIcon,
 };
 
 function getScreeningStatus(screening) {
@@ -70,7 +86,7 @@ function ScreeningCard({ screening }) {
     if (a.score !== null && (best === null || a.score > best)) return a.score;
     return best;
   }, null);
-  const icon = DOMAIN_ICONS[screening.domain] || '📋';
+  const DomainIcon = DOMAIN_ICONS[screening.domain] || FileText;
 
   const canStart = status.type === 'available' || status.type === 'retake';
 
@@ -79,7 +95,9 @@ function ScreeningCard({ screening }) {
       <CardContent className='p-5'>
         <div className='flex items-start justify-between mb-3'>
           <div className='flex items-start gap-3'>
-            <div className='text-2xl mt-0.5'>{icon}</div>
+            <div className='h-9 w-9 rounded-lg bg-gray-100 flex items-center justify-center mt-0.5'>
+              <DomainIcon className='h-5 w-5 text-gray-600' />
+            </div>
             <div>
               <h3 className='font-semibold text-gray-900'>{screening.title}</h3>
               <p className='text-sm text-gray-500 mt-0.5'>{screening.domain}</p>

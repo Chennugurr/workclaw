@@ -93,7 +93,6 @@ COPY --from=builder /app/node_modules/@swc ./node_modules/@swc
 COPY --from=builder /app/node_modules/commander ./node_modules/commander
 COPY --from=builder /app/node_modules/humanize-ms ./node_modules/humanize-ms
 COPY --from=builder /app/node_modules/ms ./node_modules/ms
-COPY --from=builder /app/node_modules/regenerator-runtime ./node_modules/regenerator-runtime
 COPY --from=builder /app/node_modules/tr46 ./node_modules/tr46
 COPY --from=builder /app/node_modules/whatwg-url ./node_modules/whatwg-url
 COPY --from=builder /app/node_modules/webidl-conversions ./node_modules/webidl-conversions

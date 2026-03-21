@@ -99,12 +99,16 @@ export const POST = middleware(
       );
     }
 
+    // Auto-approve if the project's org has no human reviewers (internal/open projects)
+    const staffCount = await prisma.organizationStaff.count({ where: { orgId } });
+    const autoApprove = staffCount === 0;
+
     const application = await prisma.application.create({
       data: {
         userId: req.user.id,
         projectId,
         note: note || null,
-        status: 'PENDING',
+        status: autoApprove ? 'APPROVED' : 'PENDING',
       },
       include: {
         user: {

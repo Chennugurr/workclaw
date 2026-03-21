@@ -43,15 +43,19 @@ export const GET = middleware(
         id: true,
         title: true,
         description: true,
-        budget: true,
-        currency: true,
-        duration: true,
         status: true,
-        position: true,
-        experience: true,
-        location: true,
         createdAt: true,
         updatedAt: true,
+        taskType: true,
+        domain: true,
+        difficulty: true,
+        payModel: true,
+        rateAmount: true,
+        currency: true,
+        capacity: true,
+        taskVolume: true,
+        requiredTier: true,
+        visibility: true,
         org: {
           select: {
             id: true,
@@ -59,20 +63,10 @@ export const GET = middleware(
             logo: true,
           },
         },
-        skills: {
-          select: {
-            level: true,
-            skill: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
         _count: {
           select: {
-            skills: true,
+            tasks: true,
+            applications: true,
           },
         },
       },
@@ -83,15 +77,7 @@ export const GET = middleware(
       query.where.OR = [
         { title: { contains: searchTerm, mode: 'insensitive' } },
         { description: { contains: searchTerm, mode: 'insensitive' } },
-        {
-          skills: {
-            some: {
-              skill: { name: { contains: searchTerm, mode: 'insensitive' } },
-            },
-          },
-        },
         { org: { name: { contains: searchTerm, mode: 'insensitive' } } },
-        { location: { contains: searchTerm, mode: 'insensitive' } },
       ];
     }
 
@@ -99,31 +85,10 @@ export const GET = middleware(
     if (orgId) {
       query.where.orgId = orgId;
 
-      if (req.user) {
-        // Check if the authenticated user is a member of the organization
-        const isOrgMember = await prisma.organizationStaff.findUnique({
-          where: {
-            userId_orgId: {
-              userId: req.user.id,
-              orgId: orgId,
-            },
-          },
-        });
-
-        if (isOrgMember) {
-          query.select._count.select.recruiters = true;
-          query.select._count.select.proposals = true;
-        }
-      }
+      // orgId filter already set above
     }
     if (status) {
       query.where.status = status.toUpperCase();
-    }
-    if (position) {
-      query.where.position = position.toUpperCase();
-    }
-    if (experience) {
-      query.where.experience = experience.toUpperCase();
     }
 
     // Execute the query

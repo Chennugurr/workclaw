@@ -3,6 +3,7 @@ import jsend from 'jsend';
 import { NextResponse } from 'next/server';
 import { middleware } from '@/api/middleware';
 import prisma from '@/lib/prisma';
+import { sendTokenReward, isRewardsConfigured } from '@/lib/token-rewards';
 
 const submitSchema = z.object({
   answers: z.record(z.string(), z.any()),
@@ -114,6 +115,33 @@ export const POST = middleware(
       });
     }
 
+    // Send 1 token reward for passing a screening (first pass only)
+    let rewardTx = null;
+    if (passed && isRewardsConfigured()) {
+      // Check if user already passed this screening before (don't double-reward)
+      const previousPass = screening.attempts.find((a) => a.passed === true);
+      if (!previousPass) {
+        const reward = await sendTokenReward(req.user.address, 1);
+        if (reward.success) {
+          rewardTx = reward.signature;
+          // Log the reward event
+          await prisma.reputationEvent.create({
+            data: {
+              userId: req.user.id,
+              eventType: 'SCREENING_REWARD',
+              details: {
+                screeningId,
+                screeningTitle: screening.title,
+                tokenAmount: 1,
+                txSignature: reward.signature,
+              },
+              scoreDelta: 10,
+            },
+          });
+        }
+      }
+    }
+
     return NextResponse.json(
       jsend.success({
         id: attempt.id,
@@ -121,6 +149,7 @@ export const POST = middleware(
         passed: attempt.passed,
         pendingReview: hasManualQuestions,
         attemptsRemaining: screening.maxAttempts - (attemptCount + 1),
+        rewardTx,
       }),
       { status: 201 }
     );

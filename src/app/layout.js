@@ -16,11 +16,13 @@ export const metadata = {
   openGraph: {
     title: 'HumanLayer - AI Training Work Platform',
     description: `Earn SOL training AI. Complete tasks, pass screenings, and get paid instantly on-chain.`,
+    images: ['/og-image.png'],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'HumanLayer - AI Training Work Platform',
     description: `Earn SOL training AI. Complete tasks, pass screenings, and get paid instantly on-chain.`,
+    images: ['/og-image.png'],
   },
 };
 

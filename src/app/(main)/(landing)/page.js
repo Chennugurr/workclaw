@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Menu, ArrowRight, Shield, Zap, DollarSign, Brain, Target, Users, CheckCircle, ChevronDown } from 'lucide-react';
 import { motion, useAnimation } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -128,8 +129,9 @@ export default function LandingPage() {
       {/* Header */}
       <header className='border-b border-gray-200 sticky top-0 bg-white/80 backdrop-blur-sm z-50'>
         <nav className='container mx-auto flex items-center justify-between px-4 md:px-8 h-16'>
-          <Link href='/' className='text-2xl font-bold text-gray-900 tracking-tight'>
-            humanlayer
+          <Link href='/' className='flex items-center gap-2'>
+            <Image src='/images/brand/logo.png' alt='HumanLayer' width={32} height={32} className='rounded-md' />
+            <Image src='/images/brand/wordmark-dark.png' alt='HumanLayer' width={120} height={28} className='hidden sm:block' />
           </Link>
 
           <div className='hidden lg:flex items-center gap-x-8'>
@@ -173,15 +175,18 @@ export default function LandingPage() {
 
       <main>
         {/* Hero */}
-        <section className='py-24 md:py-32'>
-          <div className='container mx-auto px-4 md:px-8 text-center max-w-4xl'>
+        <section className='relative py-24 md:py-32 overflow-hidden'>
+          <div className='absolute inset-0 flex justify-center items-center opacity-[0.07] pointer-events-none'>
+            <Image src='/images/brand/hero-vitruvian.png' alt='' width={800} height={800} className='object-contain' priority />
+          </div>
+          <div className='container mx-auto px-4 md:px-8 text-center max-w-4xl relative z-10'>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
               <p className='text-sm font-semibold text-gray-500 uppercase tracking-widest mb-6'>
-                Human Intelligence Platform
+                The First Crypto-Native AI Training Platform
               </p>
               <h1 className='text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-[1.1] mb-8'>
                 Earn money{' '}
@@ -224,8 +229,11 @@ export default function LandingPage() {
         </section>
 
         {/* How It Works */}
-        <section id='how-it-works' className='py-24'>
-          <div className='container mx-auto px-4 md:px-8 max-w-5xl'>
+        <section id='how-it-works' className='relative py-24 overflow-hidden'>
+          <div className='absolute right-0 top-1/2 -translate-y-1/2 opacity-[0.04] pointer-events-none hidden lg:block'>
+            <Image src='/images/brand/face-polygon-dark.png' alt='' width={500} height={500} />
+          </div>
+          <div className='container mx-auto px-4 md:px-8 max-w-5xl relative z-10'>
             <div className='text-center mb-16'>
               <h2 className='text-3xl md:text-4xl font-bold text-gray-900 mb-4'>How it works</h2>
               <p className='text-lg text-gray-600 max-w-2xl mx-auto'>
@@ -299,19 +307,24 @@ export default function LandingPage() {
                   </Link>
                 </Button>
               </div>
-              <div className='bg-gray-50 rounded-2xl p-8 border border-gray-200'>
-                <h3 className='text-lg font-semibold text-gray-900 mb-4'>Areas of Expertise</h3>
-                <div className='flex flex-wrap gap-2'>
-                  {[
-                    'Creative Writing', 'Technical Writing', 'Mathematics', 'Science',
-                    'Coding', 'Data Analysis', 'Research', 'Linguistics',
-                    'Moderation', 'Prompt Engineering', 'Red Teaming',
-                    'Medicine', 'Law', 'Finance', 'Education', 'Philosophy',
-                  ].map((tag) => (
-                    <span key={tag} className='px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-gray-700'>
-                      {tag}
-                    </span>
-                  ))}
+              <div className='relative'>
+                <div className='bg-gray-50 rounded-2xl p-8 border border-gray-200'>
+                  <h3 className='text-lg font-semibold text-gray-900 mb-4'>Areas of Expertise</h3>
+                  <div className='flex flex-wrap gap-2'>
+                    {[
+                      'Creative Writing', 'Technical Writing', 'Mathematics', 'Science',
+                      'Coding', 'Data Analysis', 'Research', 'Linguistics',
+                      'Moderation', 'Prompt Engineering', 'Red Teaming',
+                      'Medicine', 'Law', 'Finance', 'Education', 'Philosophy',
+                    ].map((tag) => (
+                      <span key={tag} className='px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-gray-700'>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className='absolute -bottom-8 -right-8 opacity-20 pointer-events-none hidden md:block'>
+                  <Image src='/images/brand/figure-colorful.png' alt='' width={150} height={150} />
                 </div>
               </div>
             </div>
@@ -319,7 +332,10 @@ export default function LandingPage() {
         </section>
 
         {/* For Teams */}
-        <section id='for-teams' className='py-24 bg-gray-50'>
+        <section id='for-teams' className='relative py-24 bg-gray-50 overflow-hidden'>
+          <div className='absolute left-0 bottom-0 opacity-[0.04] pointer-events-none hidden lg:block'>
+            <Image src='/images/brand/vitruvian-sphere.png' alt='' width={400} height={400} />
+          </div>
           <div className='container mx-auto px-4 md:px-8 max-w-5xl'>
             <div className='grid md:grid-cols-2 gap-16 items-center'>
               <div className='bg-white rounded-2xl p-8 border border-gray-200 order-2 md:order-1'>
@@ -373,8 +389,11 @@ export default function LandingPage() {
         </section>
 
         {/* FAQ */}
-        <section id='faq' className='py-24'>
-          <div className='container mx-auto px-4 md:px-8 max-w-3xl'>
+        <section id='faq' className='relative py-24 overflow-hidden'>
+          <div className='absolute right-0 top-0 opacity-[0.05] pointer-events-none hidden lg:block'>
+            <Image src='/images/brand/figure-colorful-circle.png' alt='' width={300} height={300} />
+          </div>
+          <div className='container mx-auto px-4 md:px-8 max-w-3xl relative z-10'>
             <div className='text-center mb-16'>
               <h2 className='text-3xl md:text-4xl font-bold text-gray-900 mb-4'>Frequently asked questions</h2>
             </div>
@@ -387,8 +406,11 @@ export default function LandingPage() {
         </section>
 
         {/* CTA */}
-        <section className='py-24 bg-gray-900'>
-          <div className='container mx-auto px-4 md:px-8 text-center max-w-3xl'>
+        <section className='relative py-24 bg-gray-900 overflow-hidden'>
+          <div className='absolute inset-0 flex justify-center items-center opacity-[0.08] pointer-events-none'>
+            <Image src='/images/brand/head-glitch.png' alt='' width={600} height={600} className='object-contain' />
+          </div>
+          <div className='container mx-auto px-4 md:px-8 text-center max-w-3xl relative z-10'>
             <h2 className='text-3xl md:text-4xl font-bold text-white mb-6'>
               Ready to start earning?
             </h2>
@@ -416,7 +438,10 @@ export default function LandingPage() {
         <div className='container mx-auto px-4 md:px-8'>
           <div className='flex flex-col md:flex-row justify-between items-center gap-6'>
             <div className='flex items-center gap-6'>
-              <span className='text-lg font-bold text-gray-900'>humanlayer</span>
+              <Link href='/' className='flex items-center gap-2'>
+                <Image src='/images/brand/logo.png' alt='HumanLayer' width={24} height={24} className='rounded-sm' />
+                <Image src='/images/brand/wordmark-dark.png' alt='HumanLayer' width={100} height={24} />
+              </Link>
               <nav className='flex gap-6'>
                 {['Terms', 'Privacy', 'Trust & Safety'].map((item) => (
                   <a key={item} href='#' className='text-sm text-gray-500 hover:text-gray-700'>

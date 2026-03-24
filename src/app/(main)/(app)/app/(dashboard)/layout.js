@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Search,
@@ -340,8 +341,9 @@ export default function AppLayout({ children }) {
         <header className='shadow-sm border-b py-4'>
           <div className='px-4 lg:container mx-auto flex justify-between items-center'>
             <div className='flex items-center gap-8'>
-              <Link href='/app' className='outline-none text-xl font-bold text-gray-900 tracking-tight'>
-                humanlayer
+              <Link href='/app' className='outline-none flex items-center gap-2'>
+                <Image src='/images/brand/logo.png' alt='HumanLayer' width={28} height={28} className='rounded-md' />
+                <Image src='/images/brand/wordmark-dark.png' alt='HumanLayer' width={110} height={26} className='hidden sm:block' />
               </Link>
             </div>
 

@@ -270,7 +270,7 @@ export default function AppLayout({ children }) {
     <>
       <div className='flex flex-col min-h-screen'>
         {/* Top Menu */}
-        <div className='bg-gray-100 py-2'>
+        <div className='bg-white/[0.02] border-b border-white/[0.06] py-2'>
           <div className='px-4 lg:container mx-auto flex justify-between items-center text-sm'>
             <nav className='hidden lg:flex gap-4'>
               {menu.main.map((item, idx) => {
@@ -280,8 +280,8 @@ export default function AppLayout({ children }) {
                     key={idx}
                     href={item.href}
                     className={cn({
-                      'text-gray-900 font-semibold': active,
-                      'text-gray-600 hover:text-gray-800': !active,
+                      'text-white font-semibold': active,
+                      'text-white/40 hover:text-white/70': !active,
                     })}
                   >
                     {item.name}
@@ -294,7 +294,7 @@ export default function AppLayout({ children }) {
               <Button
                 variant='ghost'
                 size='icon'
-                className='h-fit w-fit'
+                className='h-fit w-fit text-white/60 hover:text-white hover:bg-white/5'
                 onClick={toggleMobileMenu}
               >
                 {isMobileMenuOpen ? (
@@ -309,11 +309,11 @@ export default function AppLayout({ children }) {
             <div className='flex items-center gap-4'>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant='ghost' className='flex items-center'>
-                    <span className='text-gray-600 capitalize'>
+                  <Button variant='ghost' className='flex items-center text-white/50 hover:text-white hover:bg-white/5'>
+                    <span className='capitalize'>
                       {dashboardType}
                     </span>
-                    <ChevronDown className='h-4 w-4 text-gray-600 ml-1' />
+                    <ChevronDown className='h-4 w-4 ml-1' />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
@@ -338,22 +338,22 @@ export default function AppLayout({ children }) {
         </div>
 
         {/* Header */}
-        <header className='shadow-sm border-b py-4'>
+        <header className='border-b border-white/[0.06] bg-white/[0.02] backdrop-blur-xl py-4'>
           <div className='px-4 lg:container mx-auto flex justify-between items-center'>
             <div className='flex items-center gap-8'>
               <Link href='/app' className='outline-none flex items-center gap-2'>
                 <Image src='/images/brand/logo.png' alt='HumanLayer' width={28} height={28} className='rounded-md' />
-                <Image src='/images/brand/wordmark-dark.png' alt='HumanLayer' width={110} height={26} className='hidden sm:block' />
+                <Image src='/images/brand/wordmark-light.png' alt='HumanLayer' width={110} height={26} className='hidden sm:block' />
               </Link>
             </div>
 
             <div className='flex items-center gap-4'>
               <div className='relative hidden lg:block'>
-                <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' />
+                <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-white/30' />
                 <Input
                   type='text'
                   placeholder='Search projects, tasks...'
-                  className='pl-10 pr-4 py-2 w-80'
+                  className='pl-10 pr-4 py-2 w-80 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/30 focus:border-white/20'
                 />
               </div>
 
@@ -365,15 +365,15 @@ export default function AppLayout({ children }) {
 
         <div className='lg:container flex flex-1'>
           {/* Side Navigation */}
-          <aside className='hidden lg:block w-64 border-r flex-shrink-0'>
+          <aside className='hidden lg:block w-64 border-r border-white/[0.06] flex-shrink-0'>
             {authenticated && dashboardType === 'customer' && (
-              <div className='py-4 pr-4 border-b'>
+              <div className='py-4 pr-4 border-b border-white/[0.06]'>
                 <OrganizationSwitcher />
               </div>
             )}
 
             <div className='p-4'>
-              <h2 className='text-sm font-semibold text-gray-500 uppercase'>
+              <h2 className='text-sm font-semibold text-white/30 uppercase tracking-wider'>
                 {dashboardType} Dashboard
               </h2>
             </div>
@@ -384,10 +384,10 @@ export default function AppLayout({ children }) {
                   <Link
                     key={idx}
                     href={item.href}
-                    className={cn('flex items-center px-4 py-3', {
-                      'text-gray-900 bg-gray-100 border-l-4 border-gray-900':
+                    className={cn('flex items-center px-4 py-3 transition-all', {
+                      'text-white bg-white/[0.06] border-l-2 border-cyan-400':
                         active,
-                      'text-gray-600 hover:bg-gray-50': !active,
+                      'text-white/40 hover:text-white/70 hover:bg-white/[0.03]': !active,
                     })}
                   >
                     {item.icon}
@@ -409,16 +409,16 @@ export default function AppLayout({ children }) {
 
       {/* Mobile Menu */}
       <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-        <SheetContent side='left' className='w-64 p-0'>
-          <aside className='w-full h-full border-r flex-shrink-0'>
+        <SheetContent side='left' className='w-64 p-0 bg-[#0a0a0f] border-white/[0.08]'>
+          <aside className='w-full h-full flex-shrink-0'>
             {dashboardType === 'customer' && (
-              <div className='mt-8 p-4 border-b'>
+              <div className='mt-8 p-4 border-b border-white/[0.06]'>
                 <OrganizationSwitcher />
               </div>
             )}
 
-            <div className='p-4 border-y'>
-              <h2 className='text-sm font-semibold text-gray-500 uppercase'>
+            <div className='p-4 border-y border-white/[0.06]'>
+              <h2 className='text-sm font-semibold text-white/30 uppercase tracking-wider'>
                 Main Menu
               </h2>
             </div>
@@ -430,9 +430,9 @@ export default function AppLayout({ children }) {
                     key={idx}
                     href={item.href}
                     className={cn('flex items-center px-4 py-3', {
-                      'text-gray-900 bg-gray-100 border-l-4 border-gray-900':
+                      'text-white bg-white/[0.06] border-l-2 border-cyan-400':
                         active,
-                      'text-gray-600 hover:bg-gray-50': !active,
+                      'text-white/40 hover:text-white/70 hover:bg-white/[0.03]': !active,
                     })}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
@@ -441,8 +441,8 @@ export default function AppLayout({ children }) {
                 );
               })}
             </nav>
-            <div className='p-4 border-y'>
-              <h2 className='text-sm font-semibold text-gray-500 uppercase'>
+            <div className='p-4 border-y border-white/[0.06]'>
+              <h2 className='text-sm font-semibold text-white/30 uppercase tracking-wider'>
                 {dashboardType} Dashboard
               </h2>
             </div>
@@ -454,9 +454,9 @@ export default function AppLayout({ children }) {
                     key={idx}
                     href={item.href}
                     className={cn('flex items-center px-4 py-3', {
-                      'text-gray-900 bg-gray-100 border-l-4 border-gray-900':
+                      'text-white bg-white/[0.06] border-l-2 border-cyan-400':
                         active,
-                      'text-gray-600 hover:bg-gray-50': !active,
+                      'text-white/40 hover:text-white/70 hover:bg-white/[0.03]': !active,
                     })}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >

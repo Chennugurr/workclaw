@@ -72,7 +72,7 @@ export default function Page() {
       <div className='relative z-10 max-w-5xl w-full'>
         <div className='text-center mb-16'>
           <h1 className='text-5xl font-bold mb-4 text-gray-900'>
-            Welcome to Workclaw
+            Welcome to HumanLayer
           </h1>
           <p className='text-lg text-gray-600 max-w-2xl mx-auto'>
             Choose how you want to use the platform.
@@ -81,7 +81,7 @@ export default function Page() {
         <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
           <DashboardCard
             title='Contributor'
-            description='Complete AI training tasks, earn USDC, and build your expertise across diverse domains.'
+            description='Complete AI training tasks, earn SOL, and build your expertise across diverse domains.'
             icon={UserIcon}
             href='/app/contributor/dashboard'
           />

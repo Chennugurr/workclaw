@@ -1,5 +1,5 @@
 /**
- * Workclaw Skill Taxonomy
+ * HumanLayer Skill Taxonomy
  *
  * Categories and skills relevant to AI training work.
  * Used for contributor profiles, project requirements, and matching.

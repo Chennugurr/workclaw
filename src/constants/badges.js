@@ -1,5 +1,5 @@
 /**
- * Workclaw Badge Definitions
+ * HumanLayer Badge Definitions
  *
  * Badges are earned through specific achievements and displayed on contributor profiles.
  * Each badge has criteria that are checked when reputation events occur.

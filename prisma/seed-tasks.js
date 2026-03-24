@@ -2,18 +2,18 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Seeding Workclaw RLHF task projects...\n');
+  console.log('Seeding HumanLayer RLHF task projects...\n');
 
-  // ─── Create Workclaw organization ──────────────────────────────────────────
-  let org = await prisma.organization.findFirst({ where: { name: 'Workclaw' } });
+  // ─── Create HumanLayer organization ──────────────────────────────────────────
+  let org = await prisma.organization.findFirst({ where: { name: 'HumanLayer' } });
   if (!org) {
     org = await prisma.organization.create({
       data: {
-        name: 'Workclaw',
+        name: 'HumanLayer',
         type: 'TECHNOLOGY',
         teamSize: 'ONE_TO_TEN',
-        bio: 'Workclaw internal RLHF data collection — building open preference datasets for the AI community.',
-        website: 'https://workclaw.com',
+        bio: 'HumanLayer internal RLHF data collection — building open preference datasets for the AI community.',
+        website: 'https://humanlayer.com',
       },
     });
     console.log(`Created organization: ${org.name} (${org.id})`);

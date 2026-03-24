@@ -188,7 +188,7 @@ export default function OnboardingWizard() {
       });
 
       await dispatch({ type: ACTIONS.USER.FETCH });
-      toast.success('Profile setup complete! Welcome to Workclaw.', { id: toastId });
+      toast.success('Profile setup complete! Welcome to HumanLayer.', { id: toastId });
     } catch (error) {
       toast.error(
         error?.response?.data?.message || 'Failed to save profile. Please try again.',
@@ -476,7 +476,7 @@ export default function OnboardingWizard() {
                     id='terms'
                   />
                   <label htmlFor='terms' className='text-sm leading-relaxed'>
-                    I agree to the Workclaw Terms of Service and understand that my work will be used for AI training purposes. I will be compensated for approved submissions.
+                    I agree to the HumanLayer Terms of Service and understand that my work will be used for AI training purposes. I will be compensated for approved submissions.
                   </label>
                 </div>
                 <div className='flex items-start gap-3'>

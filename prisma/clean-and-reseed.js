@@ -8,8 +8,8 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Cleaning old seeded data...\n');
 
-  // Delete tasks, batches, and projects for Workclaw org
-  const org = await prisma.organization.findFirst({ where: { name: 'Workclaw' } });
+  // Delete tasks, batches, and projects for HumanLayer org
+  const org = await prisma.organization.findFirst({ where: { name: 'HumanLayer' } });
   if (org) {
     const projects = await prisma.project.findMany({
       where: { orgId: org.id },

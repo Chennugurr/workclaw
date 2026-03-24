@@ -71,7 +71,7 @@ const howItWorks = [
   {
     step: '04',
     title: 'Get Paid',
-    description: 'Earn USDC for every approved task. Higher quality and expertise unlock better-paying work.',
+    description: 'Earn SOL for every approved task. Higher quality and expertise unlock better-paying work.',
   },
 ];
 
@@ -82,7 +82,7 @@ const faqItems = [
   },
   {
     q: 'How do I get paid?',
-    a: 'You earn per task or per hour, depending on the project. Payments are in USDC, sent directly to your wallet. Quality bonuses and streak incentives are available for consistent contributors.',
+    a: 'You earn per task or per hour, depending on the project. Payments are in SOL, sent directly to your wallet. Quality bonuses and streak incentives are available for consistent contributors.',
   },
   {
     q: 'Do I need coding experience?',
@@ -129,7 +129,7 @@ export default function LandingPage() {
       <header className='border-b border-gray-200 sticky top-0 bg-white/80 backdrop-blur-sm z-50'>
         <nav className='container mx-auto flex items-center justify-between px-4 md:px-8 h-16'>
           <Link href='/' className='text-2xl font-bold text-gray-900 tracking-tight'>
-            workclaw
+            humanlayer
           </Link>
 
           <div className='hidden lg:flex items-center gap-x-8'>
@@ -190,7 +190,7 @@ export default function LandingPage() {
                 </span>
               </h1>
               <p className='text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed'>
-                Complete structured AI training tasks — labeling, ranking, reviewing, red-teaming — earn USDC, and build a verified reputation.
+                Complete structured AI training tasks — labeling, ranking, reviewing, red-teaming — earn SOL, and build a verified reputation.
               </p>
               <div className='flex flex-col sm:flex-row gap-4 justify-center'>
                 <Button size='lg' asChild className='bg-gray-900 hover:bg-gray-800 text-base px-8'>
@@ -213,7 +213,7 @@ export default function LandingPage() {
               { label: 'Task Types', value: '14+' },
               { label: 'Expertise Domains', value: '20+' },
               { label: 'Languages', value: '16+' },
-              { label: 'Payment', value: 'USDC' },
+              { label: 'Payment', value: 'SOL' },
             ].map(({ label, value }) => (
               <div key={label}>
                 <p className='text-3xl font-bold text-gray-900'>{value}</p>
@@ -281,7 +281,7 @@ export default function LandingPage() {
                 <ul className='space-y-4'>
                   {[
                     'Work remotely on your own schedule',
-                    'Earn USDC for every approved task',
+                    'Earn SOL for every approved task',
                     'Pass screenings to unlock better-paying work',
                     'Build a verified reputation in AI training',
                     'Quality bonuses for consistent high performers',
@@ -323,7 +323,7 @@ export default function LandingPage() {
           <div className='container mx-auto px-4 md:px-8 max-w-5xl'>
             <div className='grid md:grid-cols-2 gap-16 items-center'>
               <div className='bg-white rounded-2xl p-8 border border-gray-200 order-2 md:order-1'>
-                <h3 className='text-lg font-semibold text-gray-900 mb-4'>Who uses Workclaw</h3>
+                <h3 className='text-lg font-semibold text-gray-900 mb-4'>Who uses HumanLayer</h3>
                 <ul className='space-y-3'>
                   {[
                     'AI labs fine-tuning foundation models',
@@ -354,7 +354,7 @@ export default function LandingPage() {
                     'Screened contributor pool with verified expertise',
                     'Quality assurance with gold tasks and consensus scoring',
                     'Structured task types — no custom tooling needed',
-                    'Pay per task or per hour, in USDC',
+                    'Pay per task or per hour, in SOL',
                   ].map((item) => (
                     <li key={item} className='flex items-start gap-3'>
                       <CheckCircle className='h-5 w-5 text-green-600 mt-0.5 flex-shrink-0' />
@@ -416,7 +416,7 @@ export default function LandingPage() {
         <div className='container mx-auto px-4 md:px-8'>
           <div className='flex flex-col md:flex-row justify-between items-center gap-6'>
             <div className='flex items-center gap-6'>
-              <span className='text-lg font-bold text-gray-900'>workclaw</span>
+              <span className='text-lg font-bold text-gray-900'>humanlayer</span>
               <nav className='flex gap-6'>
                 {['Terms', 'Privacy', 'Trust & Safety'].map((item) => (
                   <a key={item} href='#' className='text-sm text-gray-500 hover:text-gray-700'>
@@ -426,7 +426,7 @@ export default function LandingPage() {
               </nav>
             </div>
             <p className='text-sm text-gray-500'>
-              &copy; {new Date().getFullYear()} Workclaw. All rights reserved.
+              &copy; {new Date().getFullYear()} HumanLayer. All rights reserved.
             </p>
           </div>
         </div>

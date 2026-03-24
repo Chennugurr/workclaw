@@ -64,7 +64,7 @@ export default function PageContent() {
   if (!onboardingComplete && !user?.profile) {
     return (
       <div>
-        <h1 className='text-2xl font-bold mb-2'>Welcome to Workclaw</h1>
+        <h1 className='text-2xl font-bold mb-2'>Welcome to HumanLayer</h1>
         <p className='text-gray-500 mb-8'>
           Let&apos;s set up your contributor profile so you can start earning.
         </p>

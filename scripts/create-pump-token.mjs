@@ -1,5 +1,5 @@
 /**
- * One-time script to create the WORKCLAW token on pump.fun.
+ * One-time script to create the HUMANLAYER token on pump.fun.
  *
  * Usage:
  *   TREASURY_PRIVATE_KEY='[...]' SOLANA_RPC_URL='https://...' node scripts/create-pump-token.mjs
@@ -25,8 +25,8 @@ const RPC_URL = process.env.SOLANA_RPC_URL || 'https://rpc.solanatracker.io/publ
 const INITIAL_BUY_SOL = parseFloat(process.env.INITIAL_BUY_SOL || '0.1');
 
 // Token metadata — update before running
-const TOKEN_NAME = 'Workclaw';
-const TOKEN_SYMBOL = 'WCLAW';
+const TOKEN_NAME = 'HumanLayer';
+const TOKEN_SYMBOL = 'HLAYER';
 const TOKEN_URI = ''; // Set to your metadata JSON URI (upload to IPFS/Arweave first)
 
 function getCreatorKeypair() {
@@ -51,7 +51,7 @@ async function main() {
   const mint = Keypair.generate();
   const sdk = new PumpSdk(connection);
 
-  console.log('Creating WORKCLAW token on pump.fun...');
+  console.log('Creating HUMANLAYER token on pump.fun...');
   console.log(`  Creator: ${creator.publicKey.toBase58()}`);
   console.log(`  Mint:    ${mint.publicKey.toBase58()}`);
   console.log(`  Name:    ${TOKEN_NAME}`);

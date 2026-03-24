@@ -22,7 +22,7 @@ if (!projectId) {
 
 // 2. Create a metadata object - optional
 const metadata = {
-  name: 'Workclaw',
+  name: 'HumanLayer',
   description: 'AI Training Work Platform',
   url: typeof window !== 'undefined' ? window.location.origin : 'https://workclaw-production.up.railway.app',
   icons: ['https://avatars.githubusercontent.com/u/179229932'],

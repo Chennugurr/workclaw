@@ -341,7 +341,7 @@ export default function AppLayout({ children }) {
           <div className='px-4 lg:container mx-auto flex justify-between items-center'>
             <div className='flex items-center gap-8'>
               <Link href='/app' className='outline-none text-xl font-bold text-gray-900 tracking-tight'>
-                workclaw
+                humanlayer
               </Link>
             </div>
 

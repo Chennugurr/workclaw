@@ -10,17 +10,17 @@ const fontSans = FontSans({
 });
 
 export const metadata = {
-  title: 'Workclaw - AI Training Work Platform',
-  description: `Workclaw is a human intelligence platform for training AI and LLMs. Complete structured tasks — labeling, ranking, reviewing, red-teaming — earn USDC, and build a verified reputation.`,
-  keywords: `AI training, LLM, human feedback, data labeling, RLHF, machine learning, annotation, AI safety`,
+  title: 'HumanLayer - AI Training Work Platform',
+  description: `HumanLayer is the first crypto-native AI training platform. Complete structured tasks — labeling, ranking, reviewing, red-teaming — earn SOL, and build a verified reputation.`,
+  keywords: `AI training, LLM, human feedback, data labeling, RLHF, machine learning, annotation, AI safety, crypto, solana, web3`,
   openGraph: {
-    title: 'Workclaw - AI Training Work Platform',
-    description: `Earn money training AI. Complete tasks, pass screenings, and get paid for your expertise in USDC.`,
+    title: 'HumanLayer - AI Training Work Platform',
+    description: `Earn SOL training AI. Complete tasks, pass screenings, and get paid instantly on-chain.`,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Workclaw - AI Training Work Platform',
-    description: `Earn money training AI. Complete tasks, pass screenings, and get paid for your expertise in USDC.`,
+    title: 'HumanLayer - AI Training Work Platform',
+    description: `Earn SOL training AI. Complete tasks, pass screenings, and get paid instantly on-chain.`,
   },
 };
 

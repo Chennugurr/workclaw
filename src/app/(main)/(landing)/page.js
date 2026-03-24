@@ -1,14 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, ArrowRight, Shield, Zap, DollarSign, Brain, Target, Users, CheckCircle, ChevronDown } from 'lucide-react';
-import { motion, useAnimation } from 'framer-motion';
+import { Menu, ArrowRight, Shield, Zap, Brain, Target, Users, CheckCircle, ChevronDown } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Card, CardContent } from '@/components/ui/card';
 
 const navItems = [
   { name: 'How It Works', href: '#how-it-works' },
@@ -17,8 +16,6 @@ const navItems = [
   { name: 'For Teams', href: '#for-teams' },
   { name: 'FAQ', href: '#faq' },
 ];
-
-const MotionLink = motion(Link);
 
 const taskTypes = [
   {
@@ -99,22 +96,34 @@ const faqItems = [
   },
 ];
 
+function GlassCard({ children, className, hover = true }) {
+  return (
+    <div className={cn(
+      'bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-2xl',
+      hover && 'hover:bg-white/[0.06] hover:border-white/[0.15] transition-all duration-300',
+      className
+    )}>
+      {children}
+    </div>
+  );
+}
+
 function FAQItem({ q, a }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className='border-b border-gray-200'>
+    <div className='border-b border-white/[0.08]'>
       <button
         onClick={() => setOpen(!open)}
         className='w-full flex items-center justify-between py-5 text-left'
       >
-        <span className='text-lg font-medium text-gray-900'>{q}</span>
-        <ChevronDown className={cn('h-5 w-5 text-gray-500 transition-transform', open && 'rotate-180')} />
+        <span className='text-lg font-medium text-white/90'>{q}</span>
+        <ChevronDown className={cn('h-5 w-5 text-white/40 transition-transform', open && 'rotate-180')} />
       </button>
       {open && (
         <motion.p
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
-          className='pb-5 text-gray-600 leading-relaxed'
+          className='pb-5 text-white/50 leading-relaxed'
         >
           {a}
         </motion.p>
@@ -125,13 +134,90 @@ function FAQItem({ q, a }) {
 
 export default function LandingPage() {
   return (
-    <div className='bg-white w-full min-h-screen'>
+    <div className='bg-[#050508] w-full min-h-screen text-white selection:bg-purple-500/30'>
+      {/* Glitch CSS */}
+      <style jsx global>{`
+        @keyframes glitch-1 {
+          0%, 100% { clip-path: inset(40% 0 61% 0); transform: translate(-2px, 2px); }
+          20% { clip-path: inset(92% 0 1% 0); transform: translate(1px, -1px); }
+          40% { clip-path: inset(43% 0 1% 0); transform: translate(-1px, 3px); }
+          60% { clip-path: inset(25% 0 58% 0); transform: translate(3px, 1px); }
+          80% { clip-path: inset(54% 0 7% 0); transform: translate(-3px, -2px); }
+        }
+        @keyframes glitch-2 {
+          0%, 100% { clip-path: inset(62% 0 10% 0); transform: translate(2px, -2px); }
+          20% { clip-path: inset(10% 0 85% 0); transform: translate(-1px, 2px); }
+          40% { clip-path: inset(68% 0 16% 0); transform: translate(1px, -3px); }
+          60% { clip-path: inset(3% 0 80% 0); transform: translate(-2px, 1px); }
+          80% { clip-path: inset(78% 0 5% 0); transform: translate(3px, 2px); }
+        }
+        @keyframes scanline {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(100vh); }
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+        @keyframes pulse-glow {
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 0.8; }
+        }
+        .glitch-text {
+          position: relative;
+        }
+        .glitch-text::before,
+        .glitch-text::after {
+          content: attr(data-text);
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+        }
+        .glitch-text::before {
+          color: #0ff;
+          animation: glitch-1 3s infinite linear;
+          opacity: 0.6;
+        }
+        .glitch-text::after {
+          color: #f0f;
+          animation: glitch-2 3s infinite linear;
+          opacity: 0.6;
+        }
+        .glass-glow {
+          box-shadow: 0 0 40px rgba(139, 92, 246, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+        .neon-border {
+          position: relative;
+        }
+        .neon-border::before {
+          content: '';
+          position: absolute;
+          inset: -1px;
+          border-radius: inherit;
+          padding: 1px;
+          background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2));
+          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          -webkit-mask-composite: xor;
+          mask-composite: exclude;
+        }
+      `}</style>
+
+      {/* Scanline overlay */}
+      <div className='fixed inset-0 pointer-events-none z-[100] opacity-[0.015]'
+        style={{
+          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)',
+        }}
+      />
+
       {/* Header */}
-      <header className='border-b border-gray-200 sticky top-0 bg-white/80 backdrop-blur-sm z-50'>
+      <header className='sticky top-0 z-50 border-b border-white/[0.06] bg-[#050508]/80 backdrop-blur-2xl'>
         <nav className='container mx-auto flex items-center justify-between px-4 md:px-8 h-16'>
           <Link href='/' className='flex items-center gap-2'>
             <Image src='/images/brand/logo.png' alt='HumanLayer' width={32} height={32} className='rounded-md' />
-            <Image src='/images/brand/wordmark-dark.png' alt='HumanLayer' width={120} height={28} className='hidden sm:block' />
+            <Image src='/images/brand/wordmark-light.png' alt='HumanLayer' width={120} height={28} className='hidden sm:block' />
           </Link>
 
           <div className='hidden lg:flex items-center gap-x-8'>
@@ -139,7 +225,7 @@ export default function LandingPage() {
               <a
                 key={name}
                 href={href}
-                className='text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors'
+                className='text-sm font-medium text-white/50 hover:text-white transition-colors'
               >
                 {name}
               </a>
@@ -147,22 +233,22 @@ export default function LandingPage() {
           </div>
 
           <div className='flex items-center gap-x-3'>
-            <Button size='sm' variant='outline' asChild>
+            <Button size='sm' variant='outline' asChild className='border-white/10 text-white/70 hover:bg-white/5 hover:text-white bg-transparent'>
               <Link href='/app'>Sign In</Link>
             </Button>
-            <Button size='sm' asChild className='bg-gray-900 hover:bg-gray-800'>
+            <Button size='sm' asChild className='bg-white text-black hover:bg-white/90'>
               <Link href='/app'>Get Started</Link>
             </Button>
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant='ghost' size='icon' className='lg:hidden'>
+                <Button variant='ghost' size='icon' className='lg:hidden text-white/70 hover:text-white hover:bg-white/5'>
                   <Menu className='h-5 w-5' />
                 </Button>
               </SheetTrigger>
-              <SheetContent side='right'>
+              <SheetContent side='right' className='bg-[#0a0a0f] border-white/10'>
                 <nav className='flex flex-col gap-4 mt-8'>
                   {navItems.map(({ name, href }) => (
-                    <a key={name} href={href} className='text-lg font-medium text-gray-700 hover:text-gray-900'>
+                    <a key={name} href={href} className='text-lg font-medium text-white/70 hover:text-white'>
                       {name}
                     </a>
                   ))}
@@ -175,35 +261,45 @@ export default function LandingPage() {
 
       <main>
         {/* Hero */}
-        <section className='relative py-24 md:py-32 overflow-hidden'>
-          <div className='absolute inset-0 flex justify-center items-center opacity-[0.07] pointer-events-none'>
-            <Image src='/images/brand/hero-vitruvian.png' alt='' width={800} height={800} className='object-contain' priority />
+        <section className='relative py-28 md:py-40 overflow-hidden'>
+          {/* Background image */}
+          <div className='absolute inset-0 flex justify-center items-center pointer-events-none'>
+            <div className='relative' style={{ animation: 'float 8s ease-in-out infinite' }}>
+              <Image src='/images/brand/hero-vitruvian.png' alt='' width={700} height={700} className='object-contain opacity-[0.15]' priority />
+              {/* Glow behind image */}
+              <div className='absolute inset-0 bg-gradient-radial from-purple-500/20 via-transparent to-transparent blur-3xl' />
+            </div>
           </div>
+          {/* Gradient orbs */}
+          <div className='absolute top-20 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[128px] pointer-events-none' />
+          <div className='absolute bottom-20 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[128px] pointer-events-none' />
+
           <div className='container mx-auto px-4 md:px-8 text-center max-w-4xl relative z-10'>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.8 }}
             >
-              <p className='text-sm font-semibold text-gray-500 uppercase tracking-widest mb-6'>
+              <p className='text-sm font-semibold text-cyan-400/80 uppercase tracking-[0.2em] mb-6'>
                 The First Crypto-Native AI Training Platform
               </p>
-              <h1 className='text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-[1.1] mb-8'>
-                Earn money{' '}
-                <span className='text-transparent bg-clip-text bg-gradient-to-r from-gray-600 to-gray-400'>
+              <h1 className='text-5xl md:text-7xl lg:text-8xl font-bold leading-[1.05] mb-8'>
+                <span className='glitch-text' data-text='Earn money'>Earn money</span>
+                <br />
+                <span className='text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400'>
                   training AI
                 </span>
               </h1>
-              <p className='text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed'>
-                Complete structured AI training tasks — labeling, ranking, reviewing, red-teaming — earn SOL, and build a verified reputation.
+              <p className='text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-12 leading-relaxed'>
+                Complete structured AI training tasks — labeling, ranking, reviewing, red-teaming — earn SOL, and build a verified on-chain reputation.
               </p>
               <div className='flex flex-col sm:flex-row gap-4 justify-center'>
-                <Button size='lg' asChild className='bg-gray-900 hover:bg-gray-800 text-base px-8'>
+                <Button size='lg' asChild className='bg-white text-black hover:bg-white/90 text-base px-8 h-12'>
                   <Link href='/app'>
                     Start Earning <ArrowRight className='ml-2 h-5 w-5' />
                   </Link>
                 </Button>
-                <Button size='lg' variant='outline' asChild className='text-base px-8'>
+                <Button size='lg' variant='outline' asChild className='border-white/15 text-white/70 hover:bg-white/5 hover:text-white text-base px-8 h-12 bg-transparent'>
                   <a href='#how-it-works'>Learn More</a>
                 </Button>
               </div>
@@ -212,7 +308,7 @@ export default function LandingPage() {
         </section>
 
         {/* Stats */}
-        <section className='border-y border-gray-200 bg-gray-50'>
+        <section className='border-y border-white/[0.06] bg-white/[0.02]'>
           <div className='container mx-auto px-4 md:px-8 py-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-center'>
             {[
               { label: 'Task Types', value: '14+' },
@@ -221,69 +317,90 @@ export default function LandingPage() {
               { label: 'Payment', value: 'SOL' },
             ].map(({ label, value }) => (
               <div key={label}>
-                <p className='text-3xl font-bold text-gray-900'>{value}</p>
-                <p className='text-sm text-gray-500 mt-1'>{label}</p>
+                <p className='text-3xl font-bold text-white'>{value}</p>
+                <p className='text-sm text-white/40 mt-1'>{label}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* How It Works */}
-        <section id='how-it-works' className='relative py-24 overflow-hidden'>
-          <div className='absolute right-0 top-1/2 -translate-y-1/2 opacity-[0.04] pointer-events-none hidden lg:block'>
-            <Image src='/images/brand/face-polygon-dark.png' alt='' width={500} height={500} />
+        <section id='how-it-works' className='relative py-28 overflow-hidden'>
+          <div className='absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none hidden lg:block'>
+            <Image src='/images/brand/face-polygon-dark.png' alt='' width={450} height={450} className='opacity-20' />
           </div>
+          <div className='absolute left-0 top-0 w-72 h-72 bg-cyan-500/5 rounded-full blur-[100px] pointer-events-none' />
+
           <div className='container mx-auto px-4 md:px-8 max-w-5xl relative z-10'>
             <div className='text-center mb-16'>
-              <h2 className='text-3xl md:text-4xl font-bold text-gray-900 mb-4'>How it works</h2>
-              <p className='text-lg text-gray-600 max-w-2xl mx-auto'>
+              <h2 className='text-3xl md:text-5xl font-bold text-white mb-4'>How it works</h2>
+              <p className='text-lg text-white/40 max-w-2xl mx-auto'>
                 From sign-up to payout in four steps. Work remotely, on your own schedule.
               </p>
             </div>
-            <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-8'>
-              {howItWorks.map(({ step, title, description }) => (
-                <div key={step} className='relative'>
-                  <p className='text-5xl font-bold text-gray-100 mb-4'>{step}</p>
-                  <h3 className='text-lg font-semibold text-gray-900 mb-2'>{title}</h3>
-                  <p className='text-gray-600 text-sm leading-relaxed'>{description}</p>
-                </div>
+            <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-6'>
+              {howItWorks.map(({ step, title, description }, i) => (
+                <motion.div
+                  key={step}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  <GlassCard className='p-6 glass-glow h-full'>
+                    <p className='text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-white/20 to-white/5 mb-4'>{step}</p>
+                    <h3 className='text-lg font-semibold text-white mb-2'>{title}</h3>
+                    <p className='text-white/40 text-sm leading-relaxed'>{description}</p>
+                  </GlassCard>
+                </motion.div>
               ))}
             </div>
           </div>
         </section>
 
         {/* Task Types */}
-        <section id='task-types' className='py-24 bg-gray-50'>
+        <section id='task-types' className='py-28 bg-white/[0.01]'>
           <div className='container mx-auto px-4 md:px-8 max-w-6xl'>
             <div className='text-center mb-16'>
-              <h2 className='text-3xl md:text-4xl font-bold text-gray-900 mb-4'>Types of work</h2>
-              <p className='text-lg text-gray-600 max-w-2xl mx-auto'>
+              <h2 className='text-3xl md:text-5xl font-bold text-white mb-4'>Types of work</h2>
+              <p className='text-lg text-white/40 max-w-2xl mx-auto'>
                 Structured AI training tasks across diverse domains. Each task has clear instructions, rubrics, and examples.
               </p>
             </div>
             <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6'>
-              {taskTypes.map(({ icon, title, description }) => (
-                <Card key={title} className='border border-gray-200 shadow-none hover:shadow-md transition-shadow'>
-                  <CardContent className='p-6'>
-                    <div className='h-12 w-12 rounded-lg bg-gray-100 flex items-center justify-center mb-4 text-gray-700'>
+              {taskTypes.map(({ icon, title, description }, i) => (
+                <motion.div
+                  key={title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                >
+                  <GlassCard className='p-6 glass-glow h-full'>
+                    <div className='h-12 w-12 rounded-xl bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-white/[0.08] flex items-center justify-center mb-4 text-cyan-400'>
                       {icon}
                     </div>
-                    <h3 className='text-lg font-semibold text-gray-900 mb-2'>{title}</h3>
-                    <p className='text-gray-600 text-sm leading-relaxed'>{description}</p>
-                  </CardContent>
-                </Card>
+                    <h3 className='text-lg font-semibold text-white mb-2'>{title}</h3>
+                    <p className='text-white/40 text-sm leading-relaxed'>{description}</p>
+                  </GlassCard>
+                </motion.div>
               ))}
             </div>
           </div>
         </section>
 
         {/* For Contributors */}
-        <section id='for-contributors' className='py-24'>
-          <div className='container mx-auto px-4 md:px-8 max-w-5xl'>
+        <section id='for-contributors' className='relative py-28 overflow-hidden'>
+          <div className='absolute right-0 bottom-0 pointer-events-none hidden lg:block'>
+            <Image src='/images/brand/figure-colorful-dark.png' alt='' width={350} height={350} className='opacity-30' />
+          </div>
+          <div className='absolute right-20 top-20 w-64 h-64 bg-pink-500/5 rounded-full blur-[100px] pointer-events-none' />
+
+          <div className='container mx-auto px-4 md:px-8 max-w-5xl relative z-10'>
             <div className='grid md:grid-cols-2 gap-16 items-center'>
               <div>
-                <p className='text-sm font-semibold text-gray-500 uppercase tracking-widest mb-4'>For Contributors</p>
-                <h2 className='text-3xl md:text-4xl font-bold text-gray-900 mb-6'>
+                <p className='text-sm font-semibold text-cyan-400/80 uppercase tracking-[0.15em] mb-4'>For Contributors</p>
+                <h2 className='text-3xl md:text-4xl font-bold text-white mb-6'>
                   Get paid for your expertise
                 </h2>
                 <ul className='space-y-4'>
@@ -296,50 +413,47 @@ export default function LandingPage() {
                     'Multiple expertise tracks: writing, coding, math, science, and more',
                   ].map((item) => (
                     <li key={item} className='flex items-start gap-3'>
-                      <CheckCircle className='h-5 w-5 text-green-600 mt-0.5 flex-shrink-0' />
-                      <span className='text-gray-700'>{item}</span>
+                      <CheckCircle className='h-5 w-5 text-cyan-400/70 mt-0.5 flex-shrink-0' />
+                      <span className='text-white/60'>{item}</span>
                     </li>
                   ))}
                 </ul>
-                <Button size='lg' asChild className='mt-8 bg-gray-900 hover:bg-gray-800'>
+                <Button size='lg' asChild className='mt-8 bg-white text-black hover:bg-white/90'>
                   <Link href='/app'>
                     Apply as Contributor <ArrowRight className='ml-2 h-5 w-5' />
                   </Link>
                 </Button>
               </div>
-              <div className='relative'>
-                <div className='bg-gray-50 rounded-2xl p-8 border border-gray-200'>
-                  <h3 className='text-lg font-semibold text-gray-900 mb-4'>Areas of Expertise</h3>
-                  <div className='flex flex-wrap gap-2'>
-                    {[
-                      'Creative Writing', 'Technical Writing', 'Mathematics', 'Science',
-                      'Coding', 'Data Analysis', 'Research', 'Linguistics',
-                      'Moderation', 'Prompt Engineering', 'Red Teaming',
-                      'Medicine', 'Law', 'Finance', 'Education', 'Philosophy',
-                    ].map((tag) => (
-                      <span key={tag} className='px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-gray-700'>
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+              <GlassCard className='p-8 glass-glow neon-border'>
+                <h3 className='text-lg font-semibold text-white mb-4'>Areas of Expertise</h3>
+                <div className='flex flex-wrap gap-2'>
+                  {[
+                    'Creative Writing', 'Technical Writing', 'Mathematics', 'Science',
+                    'Coding', 'Data Analysis', 'Research', 'Linguistics',
+                    'Moderation', 'Prompt Engineering', 'Red Teaming',
+                    'Medicine', 'Law', 'Finance', 'Education', 'Philosophy',
+                  ].map((tag) => (
+                    <span key={tag} className='px-3 py-1.5 bg-white/[0.04] border border-white/[0.08] rounded-full text-sm text-white/60 hover:text-white/80 hover:border-white/20 transition-all'>
+                      {tag}
+                    </span>
+                  ))}
                 </div>
-                <div className='absolute -bottom-8 -right-8 opacity-20 pointer-events-none hidden md:block'>
-                  <Image src='/images/brand/figure-colorful.png' alt='' width={150} height={150} />
-                </div>
-              </div>
+              </GlassCard>
             </div>
           </div>
         </section>
 
         {/* For Teams */}
-        <section id='for-teams' className='relative py-24 bg-gray-50 overflow-hidden'>
-          <div className='absolute left-0 bottom-0 opacity-[0.04] pointer-events-none hidden lg:block'>
-            <Image src='/images/brand/vitruvian-sphere.png' alt='' width={400} height={400} />
+        <section id='for-teams' className='relative py-28 overflow-hidden'>
+          <div className='absolute left-0 bottom-0 pointer-events-none hidden lg:block'>
+            <Image src='/images/brand/vitruvian-sphere.png' alt='' width={400} height={400} className='opacity-15' />
           </div>
-          <div className='container mx-auto px-4 md:px-8 max-w-5xl'>
+          <div className='absolute left-20 bottom-20 w-80 h-80 bg-purple-500/5 rounded-full blur-[100px] pointer-events-none' />
+
+          <div className='container mx-auto px-4 md:px-8 max-w-5xl relative z-10'>
             <div className='grid md:grid-cols-2 gap-16 items-center'>
-              <div className='bg-white rounded-2xl p-8 border border-gray-200 order-2 md:order-1'>
-                <h3 className='text-lg font-semibold text-gray-900 mb-4'>Who uses HumanLayer</h3>
+              <GlassCard className='p-8 glass-glow order-2 md:order-1'>
+                <h3 className='text-lg font-semibold text-white mb-4'>Who uses HumanLayer</h3>
                 <ul className='space-y-3'>
                   {[
                     'AI labs fine-tuning foundation models',
@@ -351,18 +465,18 @@ export default function LandingPage() {
                     'Organizations improving AI accuracy and reliability',
                   ].map((item) => (
                     <li key={item} className='flex items-start gap-3'>
-                      <div className='h-2 w-2 rounded-full bg-gray-400 mt-2 flex-shrink-0' />
-                      <span className='text-gray-700 text-sm'>{item}</span>
+                      <div className='h-1.5 w-1.5 rounded-full bg-purple-400/60 mt-2 flex-shrink-0' />
+                      <span className='text-white/50 text-sm'>{item}</span>
                     </li>
                   ))}
                 </ul>
-              </div>
+              </GlassCard>
               <div className='order-1 md:order-2'>
-                <p className='text-sm font-semibold text-gray-500 uppercase tracking-widest mb-4'>For Organizations</p>
-                <h2 className='text-3xl md:text-4xl font-bold text-gray-900 mb-6'>
+                <p className='text-sm font-semibold text-purple-400/80 uppercase tracking-[0.15em] mb-4'>For Organizations</p>
+                <h2 className='text-3xl md:text-4xl font-bold text-white mb-6'>
                   Train your AI with qualified human experts
                 </h2>
-                <p className='text-gray-600 mb-6 leading-relaxed'>
+                <p className='text-white/50 mb-6 leading-relaxed'>
                   Post structured AI training projects. Get high-quality human feedback from screened contributors with verified domain expertise.
                 </p>
                 <ul className='space-y-3 mb-8'>
@@ -373,12 +487,12 @@ export default function LandingPage() {
                     'Pay per task or per hour, in SOL',
                   ].map((item) => (
                     <li key={item} className='flex items-start gap-3'>
-                      <CheckCircle className='h-5 w-5 text-green-600 mt-0.5 flex-shrink-0' />
-                      <span className='text-gray-700 text-sm'>{item}</span>
+                      <CheckCircle className='h-5 w-5 text-purple-400/70 mt-0.5 flex-shrink-0' />
+                      <span className='text-white/60 text-sm'>{item}</span>
                     </li>
                   ))}
                 </ul>
-                <Button size='lg' variant='outline' asChild>
+                <Button size='lg' variant='outline' asChild className='border-white/15 text-white/70 hover:bg-white/5 hover:text-white bg-transparent'>
                   <Link href='/app'>
                     Post a Project <ArrowRight className='ml-2 h-5 w-5' />
                   </Link>
@@ -389,68 +503,80 @@ export default function LandingPage() {
         </section>
 
         {/* FAQ */}
-        <section id='faq' className='relative py-24 overflow-hidden'>
-          <div className='absolute right-0 top-0 opacity-[0.05] pointer-events-none hidden lg:block'>
-            <Image src='/images/brand/figure-colorful-circle.png' alt='' width={300} height={300} />
+        <section id='faq' className='relative py-28 overflow-hidden'>
+          <div className='absolute right-0 top-0 pointer-events-none hidden lg:block'>
+            <Image src='/images/brand/figure-colorful-circle.png' alt='' width={250} height={250} className='opacity-10' />
           </div>
           <div className='container mx-auto px-4 md:px-8 max-w-3xl relative z-10'>
             <div className='text-center mb-16'>
-              <h2 className='text-3xl md:text-4xl font-bold text-gray-900 mb-4'>Frequently asked questions</h2>
+              <h2 className='text-3xl md:text-5xl font-bold text-white mb-4'>Frequently asked questions</h2>
             </div>
-            <div>
+            <GlassCard className='px-8 glass-glow' hover={false}>
               {faqItems.map(({ q, a }) => (
                 <FAQItem key={q} q={q} a={a} />
               ))}
-            </div>
+            </GlassCard>
           </div>
         </section>
 
         {/* CTA */}
-        <section className='relative py-24 bg-gray-900 overflow-hidden'>
-          <div className='absolute inset-0 flex justify-center items-center opacity-[0.08] pointer-events-none'>
-            <Image src='/images/brand/head-glitch.png' alt='' width={600} height={600} className='object-contain' />
+        <section className='relative py-28 overflow-hidden'>
+          {/* Large glitch head background */}
+          <div className='absolute inset-0 flex justify-center items-center pointer-events-none'>
+            <Image src='/images/brand/head-glitch.png' alt='' width={700} height={700} className='object-contain opacity-25' />
+            <div className='absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-[#050508]' />
           </div>
+          {/* Glow orbs */}
+          <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[150px] pointer-events-none' />
+          <div className='absolute top-1/2 left-1/3 -translate-y-1/2 w-[400px] h-[400px] bg-cyan-500/8 rounded-full blur-[120px] pointer-events-none' />
+
           <div className='container mx-auto px-4 md:px-8 text-center max-w-3xl relative z-10'>
-            <h2 className='text-3xl md:text-4xl font-bold text-white mb-6'>
-              Ready to start earning?
-            </h2>
-            <p className='text-lg text-gray-400 mb-10'>
-              Connect your wallet, pass a screening, and start completing paid AI training tasks today.
-            </p>
-            <div className='flex flex-col sm:flex-row gap-4 justify-center'>
-              <Button size='lg' asChild className='bg-white text-gray-900 hover:bg-gray-100 text-base px-8'>
-                <Link href='/app'>
-                  Start as Contributor <ArrowRight className='ml-2 h-5 w-5' />
-                </Link>
-              </Button>
-              <Button size='lg' variant='outline' asChild className='border-gray-600 text-gray-300 hover:bg-gray-800 text-base px-8'>
-                <Link href='/app'>
-                  Post a Project
-                </Link>
-              </Button>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className='text-4xl md:text-5xl font-bold text-white mb-6'>
+                Ready to start earning?
+              </h2>
+              <p className='text-lg text-white/40 mb-10'>
+                Connect your wallet, pass a screening, and start completing paid AI training tasks today.
+              </p>
+              <div className='flex flex-col sm:flex-row gap-4 justify-center'>
+                <Button size='lg' asChild className='bg-white text-black hover:bg-white/90 text-base px-8 h-12'>
+                  <Link href='/app'>
+                    Start as Contributor <ArrowRight className='ml-2 h-5 w-5' />
+                  </Link>
+                </Button>
+                <Button size='lg' variant='outline' asChild className='border-white/15 text-white/70 hover:bg-white/5 hover:text-white text-base px-8 h-12 bg-transparent'>
+                  <Link href='/app'>
+                    Post a Project
+                  </Link>
+                </Button>
+              </div>
+            </motion.div>
           </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className='border-t border-gray-200 py-12'>
+      <footer className='border-t border-white/[0.06] py-12'>
         <div className='container mx-auto px-4 md:px-8'>
           <div className='flex flex-col md:flex-row justify-between items-center gap-6'>
             <div className='flex items-center gap-6'>
               <Link href='/' className='flex items-center gap-2'>
                 <Image src='/images/brand/logo.png' alt='HumanLayer' width={24} height={24} className='rounded-sm' />
-                <Image src='/images/brand/wordmark-dark.png' alt='HumanLayer' width={100} height={24} />
+                <Image src='/images/brand/wordmark-light.png' alt='HumanLayer' width={100} height={24} />
               </Link>
               <nav className='flex gap-6'>
                 {['Terms', 'Privacy', 'Trust & Safety'].map((item) => (
-                  <a key={item} href='#' className='text-sm text-gray-500 hover:text-gray-700'>
+                  <a key={item} href='#' className='text-sm text-white/30 hover:text-white/60 transition-colors'>
                     {item}
                   </a>
                 ))}
               </nav>
             </div>
-            <p className='text-sm text-gray-500'>
+            <p className='text-sm text-white/30'>
               &copy; {new Date().getFullYear()} HumanLayer. All rights reserved.
             </p>
           </div>

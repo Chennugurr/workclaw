@@ -13,7 +13,7 @@ const solanaWeb3JsAdapter = new SolanaAdapter({
 
 // 1. Get projectId from https://cloud.reown.com
 const nextPublicProjectId = process.env.NEXT_PUBLIC_PROJECT_ID;
-const defaultProjectId = 'b56e18d47c72ab683b10814fe9495694'; // this is a public projectId only to use on localhost
+const defaultProjectId = '1791966545300c19b6d82a7d1ac7ea17';
 const projectId = nextPublicProjectId || defaultProjectId;
 
 if (!projectId) {

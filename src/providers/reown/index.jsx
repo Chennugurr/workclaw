@@ -24,7 +24,7 @@ if (!projectId) {
 const metadata = {
   name: 'HumanLayer',
   description: 'AI Training Work Platform',
-  url: typeof window !== 'undefined' ? window.location.origin : 'https://workclaw-production.up.railway.app',
+  url: typeof window !== 'undefined' ? window.location.origin : 'https://humanlayer.cloud',
   icons: ['https://avatars.githubusercontent.com/u/179229932'],
 };
 

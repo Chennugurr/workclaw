@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, ArrowRight, Shield, Zap, Brain, Target, Users, CheckCircle, ChevronDown } from 'lucide-react';
+import { Menu, ArrowRight, Shield, Zap, Brain, Target, Users, CheckCircle, ChevronDown, Copy, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -132,6 +132,48 @@ function FAQItem({ q, a }) {
   );
 }
 
+const CA = 'PLACEHOLDER_CONTRACT_ADDRESS';
+const CHART_URL = 'https://dexscreener.com';
+
+function TokenBar() {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard.writeText(CA);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <div className='border-b border-white/[0.06] bg-black/40 backdrop-blur-sm py-2 px-4'>
+      <div className='container mx-auto flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-xs text-white/50'>
+        <span className='font-semibold text-white/30 uppercase tracking-widest text-[10px]'>$WCLAW</span>
+        <div className='flex items-center gap-1.5'>
+          <span className='text-white/30'>CA:</span>
+          <span className='font-mono text-white/60'>{CA.slice(0, 6)}...{CA.slice(-4)}</span>
+          <button onClick={copy} className='hover:text-white transition-colors'>
+            {copied ? <CheckCircle className='h-3 w-3 text-cyan-400' /> : <Copy className='h-3 w-3' />}
+          </button>
+        </div>
+        <a
+          href={CHART_URL}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='flex items-center gap-1 hover:text-cyan-400 transition-colors'
+        >
+          Chart <ExternalLink className='h-3 w-3' />
+        </a>
+        <a
+          href='https://pump.fun'
+          target='_blank'
+          rel='noopener noreferrer'
+          className='flex items-center gap-1 hover:text-cyan-400 transition-colors'
+        >
+          Buy on pump.fun <ExternalLink className='h-3 w-3' />
+        </a>
+      </div>
+    </div>
+  );
+}
+
 export default function LandingPage() {
   return (
     <div className='w-full min-h-screen text-white selection:bg-purple-500/30'>
@@ -181,6 +223,7 @@ export default function LandingPage() {
           </div>
         </nav>
       </header>
+      <TokenBar />
 
       <main>
         {/* Hero */}
@@ -491,12 +534,18 @@ export default function LandingPage() {
                 <Image src='/images/brand/logo.png' alt='HumanLayer' width={24} height={24} className='rounded-sm' />
                 <Image src='/images/brand/wordmark-light.png' alt='HumanLayer' width={100} height={24} />
               </Link>
-              <nav className='flex gap-6'>
+              <nav className='flex gap-6 flex-wrap'>
                 {['Terms', 'Privacy', 'Trust & Safety'].map((item) => (
                   <a key={item} href='#' className='text-sm text-white/30 hover:text-white/60 transition-colors'>
                     {item}
                   </a>
                 ))}
+                <a href={CHART_URL} target='_blank' rel='noopener noreferrer' className='flex items-center gap-1 text-sm text-white/30 hover:text-cyan-400 transition-colors'>
+                  Chart <ExternalLink className='h-3 w-3' />
+                </a>
+                <a href='https://pump.fun' target='_blank' rel='noopener noreferrer' className='flex items-center gap-1 text-sm text-white/30 hover:text-cyan-400 transition-colors'>
+                  Buy $WCLAW <ExternalLink className='h-3 w-3' />
+                </a>
               </nav>
             </div>
             <p className='text-sm text-white/30'>

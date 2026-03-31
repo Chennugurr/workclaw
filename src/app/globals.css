@@ -119,6 +119,57 @@
   mask-composite: exclude;
 }
 
+/* Docs prose styles */
+.prose-docs h2 {
+  @apply text-xl font-semibold mt-10 mb-4 text-white;
+}
+.prose-docs h3 {
+  @apply text-base font-semibold mt-7 mb-3 text-white/90;
+}
+.prose-docs p {
+  @apply text-white/60 leading-relaxed mb-4 text-[15px];
+}
+.prose-docs ul {
+  @apply space-y-2 mb-6;
+}
+.prose-docs ul li {
+  @apply flex items-start gap-2.5 text-[15px] text-white/60 leading-relaxed;
+}
+.prose-docs ul li::before {
+  content: '–';
+  @apply text-cyan-400/60 shrink-0 mt-0.5;
+}
+.prose-docs .callout {
+  @apply rounded-xl border px-5 py-4 text-sm leading-relaxed mb-6;
+}
+.prose-docs .callout-info {
+  @apply bg-cyan-400/[0.04] border-cyan-400/20 text-cyan-400/80;
+}
+.prose-docs .callout-warn {
+  @apply bg-amber-400/[0.04] border-amber-400/20 text-amber-400/80;
+}
+.prose-docs .step-grid {
+  @apply space-y-3 mb-6;
+}
+.prose-docs .step {
+  @apply flex gap-4 p-4 rounded-xl bg-white/[0.03] border border-white/[0.06];
+}
+.prose-docs .step-num {
+  @apply h-7 w-7 rounded-full bg-white/[0.06] flex items-center justify-center text-xs font-bold text-white/60 shrink-0 mt-0.5;
+}
+.prose-docs table {
+  @apply w-full text-sm mb-6;
+}
+.prose-docs th {
+  @apply text-left text-[11px] uppercase tracking-wider text-white/30 pb-2 border-b border-white/[0.06] font-medium;
+}
+.prose-docs td {
+  @apply py-2.5 text-white/55 border-b border-white/[0.04] align-top;
+}
+.prose-docs td:first-child {
+  @apply text-white font-medium pr-6;
+}
+
 /* Scanline overlay for the whole app */
 body::after {
   content: '';

@@ -15,6 +15,7 @@ const navItems = [
   { name: 'For Contributors', href: '#for-contributors' },
   { name: 'For Teams', href: '#for-teams' },
   { name: 'FAQ', href: '#faq' },
+  { name: 'Docs', href: 'https://docs.humanlayer.cloud', external: true },
 ];
 
 const taskTypes = [
@@ -186,10 +187,12 @@ export default function LandingPage() {
           </Link>
 
           <div className='hidden lg:flex items-center gap-x-8'>
-            {navItems.map(({ name, href }) => (
+            {navItems.map(({ name, href, external }) => (
               <a
                 key={name}
                 href={href}
+                target={external ? '_blank' : undefined}
+                rel={external ? 'noopener noreferrer' : undefined}
                 className='text-sm font-medium text-white/50 hover:text-white transition-colors'
               >
                 {name}
@@ -212,8 +215,8 @@ export default function LandingPage() {
               </SheetTrigger>
               <SheetContent side='right' className='bg-[#0a0a0f] border-white/10'>
                 <nav className='flex flex-col gap-4 mt-8'>
-                  {navItems.map(({ name, href }) => (
-                    <a key={name} href={href} className='text-lg font-medium text-white/70 hover:text-white'>
+                  {navItems.map(({ name, href, external }) => (
+                    <a key={name} href={href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined} className='text-lg font-medium text-white/70 hover:text-white'>
                       {name}
                     </a>
                   ))}
@@ -540,6 +543,9 @@ export default function LandingPage() {
                     {item}
                   </a>
                 ))}
+                <a href='https://docs.humanlayer.cloud' target='_blank' rel='noopener noreferrer' className='text-sm text-white/30 hover:text-white/60 transition-colors'>
+                  Docs
+                </a>
                 <a href={CHART_URL} target='_blank' rel='noopener noreferrer' className='flex items-center gap-1 text-sm text-white/30 hover:text-cyan-400 transition-colors'>
                   Chart <ExternalLink className='h-3 w-3' />
                 </a>

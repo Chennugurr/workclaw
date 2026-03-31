@@ -37,5 +37,6 @@ export default function useSIWS() {
   return {
     generateMessage,
     signMessage,
+    isReady: isConnected && !!walletProvider,
   };
 }

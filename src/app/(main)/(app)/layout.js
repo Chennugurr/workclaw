@@ -18,7 +18,7 @@ export default function AppLayout({ children }) {
   const { address, isConnected } = useAppKitAccount();
   const { authenticated } = useAppState();
   const dispatch = useAppDispatch();
-  const { signMessage } = useSIWS();
+  const { signMessage, isReady } = useSIWS();
 
   // Try to restore session from existing tokens on mount
   useEffect(() => {
@@ -45,6 +45,10 @@ export default function AppLayout({ children }) {
     });
     try {
       console.log('Authentication required, initiating SIWS');
+      if (!isReady) {
+        siwsInProgress.current = false;
+        return;
+      }
 
       const { token } = await signMessage();
 
@@ -63,13 +67,13 @@ export default function AppLayout({ children }) {
 
       toast.success('Authentication successful', { id: toastId });
     } catch (error) {
-      disconnect();
       console.error('Authentication failed:', error);
-      toast.error('Authentication failed', { id: toastId });
+      toast.error('Sign in failed. Please try connecting again.', { id: toastId });
+      disconnect();
     } finally {
       siwsInProgress.current = false;
     }
-  }, [dispatch, signMessage, disconnect]);
+  }, [dispatch, signMessage, disconnect, isReady]);
 
   const handleLogout = useCallback(() => {
     if (isConnected || !!address) return;
@@ -90,14 +94,14 @@ export default function AppLayout({ children }) {
       // If we have tokens, wait — wallet may still be reconnecting
       return;
     }
-    // Wallet connected but not authenticated and no tokens — need fresh SIWS
-    if (isConnected && !authenticated) {
+    // Wallet connected and provider ready, not authenticated, no tokens — need fresh SIWS
+    if (isReady && !authenticated) {
       const hasTokens = !!localStorage.getItem('@app/ls/ast');
       if (!hasTokens) {
         handleSIWS();
       }
     }
-  }, [isConnected, authenticated, handleLogout, handleSIWS]);
+  }, [isConnected, isReady, authenticated, handleLogout, handleSIWS]);
 
   return (
     <>

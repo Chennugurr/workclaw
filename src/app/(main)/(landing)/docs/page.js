@@ -167,10 +167,10 @@ export default function DocsPage() {
               <h2 className='text-2xl font-semibold mb-4'>Tasks</h2>
               <div className='text-white/65 space-y-4 leading-relaxed'>
                 <p>
-                  Tasks are the actual work you do on HumanLayer. Each task is a structured unit of AI training work — usually taking a few minutes to complete. The most common type is a pairwise comparison, where you're shown two AI-generated responses and asked to choose the better one.
+                  Tasks are the actual work you do on HumanLayer. Each task is a structured unit of AI training work — usually taking a few minutes to complete. The most common type is a pairwise comparison, where you are shown two AI-generated responses and asked to choose the better one.
                 </p>
                 <p>
-                  When you start a task, it's assigned to you. Complete it before the deadline to have your work counted. If you don't finish in time, the task returns to the pool for another contributor.
+                  When you start a task, it is assigned to you. Complete it before the deadline to have your work counted. If you do not finish in time, the task returns to the pool for another contributor.
                 </p>
                 <div className='bg-white/[0.03] border border-white/[0.06] rounded-xl p-5 space-y-3 mt-2'>
                   <p className='font-medium text-white text-sm'>Task types:</p>
@@ -215,7 +215,7 @@ export default function DocsPage() {
               <h2 className='text-2xl font-semibold mb-4'>Reputation</h2>
               <div className='text-white/65 space-y-4 leading-relaxed'>
                 <p>
-                  Your reputation on HumanLayer is built through your work history and tied to your wallet address. It's portable — you own it, and it doesn't disappear if the platform changes.
+                  Your reputation on HumanLayer is built through your work history and tied to your wallet address. It is portable — you own it, and it does not disappear if the platform changes.
                 </p>
                 <p>
                   Reputation grows when you pass screenings, complete tasks on time, and submit quality work. Higher reputation unlocks access to more projects and better-paying tasks over time.

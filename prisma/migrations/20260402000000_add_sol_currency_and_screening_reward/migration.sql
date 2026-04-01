@@ -1,0 +1,6 @@
+-- Add SOL and USD to Currency enum
+ALTER TYPE "Currency" ADD VALUE IF NOT EXISTS 'SOL';
+ALTER TYPE "Currency" ADD VALUE IF NOT EXISTS 'USD';
+
+-- Add SCREENING_REWARD to LedgerEntryType enum
+ALTER TYPE "LedgerEntryType" ADD VALUE IF NOT EXISTS 'SCREENING_REWARD';

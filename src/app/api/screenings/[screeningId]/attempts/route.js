@@ -115,27 +115,39 @@ export const POST = middleware(
       });
     }
 
-    // Send 1 token reward for passing a screening (first pass only)
+    // Award $1 USD for passing a screening (first pass only)
     let rewardTx = null;
-    if (passed && isRewardsConfigured()) {
-      // Check if user already passed this screening before (don't double-reward)
-      const previousPass = screening.attempts.find((a) => a.passed === true);
-      if (!previousPass) {
+    const previousPass = screening.attempts.find((a) => a.passed === true);
+    if (passed && !previousPass) {
+      // Credit $1 to earnings ledger
+      const ledgerEntry = await prisma.payoutLedgerEntry.create({
+        data: {
+          userId: req.user.id,
+          type: 'SCREENING_REWARD',
+          amount: 1.00,
+          currency: 'USD',
+          reference: screeningId,
+          note: `Screening reward: ${screening.title}`,
+        },
+      });
+
+      await prisma.reputationEvent.create({
+        data: {
+          userId: req.user.id,
+          eventType: 'SCREENING_REWARD',
+          details: { screeningId, screeningTitle: screening.title, usdAmount: 1.00 },
+          scoreDelta: 10,
+        },
+      });
+
+      // Optionally send on-chain SOL if treasury is configured
+      if (isRewardsConfigured()) {
         const reward = await sendSolReward(req.user.address);
         if (reward.success) {
           rewardTx = reward.signature;
-          await prisma.reputationEvent.create({
-            data: {
-              userId: req.user.id,
-              eventType: 'SCREENING_REWARD',
-              details: {
-                screeningId,
-                screeningTitle: screening.title,
-                solAmount: reward.amount,
-                txSignature: reward.signature,
-              },
-              scoreDelta: 10,
-            },
+          await prisma.payoutLedgerEntry.update({
+            where: { id: ledgerEntry.id },
+            data: { note: `Screening reward: ${screening.title} | tx: ${reward.signature}` },
           });
         }
       }

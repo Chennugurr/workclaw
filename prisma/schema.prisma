@@ -157,6 +157,8 @@ enum CryptoExperience {
 
 enum Currency {
   USDC
+  SOL
+  USD
 }
 
 enum TaskType {
@@ -277,6 +279,7 @@ enum PayoutMethodType {
 
 enum LedgerEntryType {
   TASK_EARNING
+  SCREENING_REWARD
   BONUS
   STREAK_INCENTIVE
   QUALITY_BONUS

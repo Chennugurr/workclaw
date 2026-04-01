@@ -1,86 +1,61 @@
 {
   "$schema": "./schema.json",
   "version": "0.2.0",
-  "releaseDate": "2024-09-14T07:31:47.000Z",
-  "description": "MVP release with enhanced functionality and improved user experience",
+  "releaseDate": "2026-04-02T00:00:00.000Z",
+  "description": "HumanLayer rebrand, dark glitch theme, docs site, and wallet auth improvements",
   "updates": [
     {
       "type": "improvement",
-      "date": "2024-09-14T07:31:47.000Z",
-      "description": "Enhanced SEO for better discoverability"
+      "date": "2026-04-02T00:00:00.000Z",
+      "description": "Rebranded to HumanLayer"
     },
     {
       "type": "improvement",
-      "date": "2024-09-14T07:26:00.000Z",
-      "description": "Improved Web3 wallet integration"
+      "date": "2026-04-02T00:00:00.000Z",
+      "description": "New dark glitch glass UI theme applied globally"
+    },
+    {
+      "type": "feature",
+      "date": "2026-04-02T00:00:00.000Z",
+      "description": "Docs site launched at docs.humanlayer.cloud"
     },
     {
       "type": "fix",
-      "date": "2024-09-14T07:20:00.000Z",
-      "description": "Resolved critical server error"
-    },
-    {
-      "type": "fix",
-      "date": "2024-09-14T07:18:00.000Z",
-      "description": "Fixed MDX editor stability issues"
-    },
-    {
-      "type": "fix",
-      "date": "2024-09-14T07:14:00.000Z",
-      "description": "Resolved unexpected session expirations"
+      "date": "2026-04-02T00:00:00.000Z",
+      "description": "Fixed wallet auth: sign request now waits for wallet provider to be ready"
     },
     {
       "type": "improvement",
-      "date": "2024-09-14T07:12:00.000Z",
-      "description": "Enhanced landing page design"
+      "date": "2026-04-02T00:00:00.000Z",
+      "description": "Improved text contrast across the dashboard"
     },
     {
-      "type": "improvement",
-      "date": "2024-09-14T07:10:00.000Z",
-      "description": "Upgraded notification system for better user experience"
-    },
-    {
-      "type": "improvement",
-      "date": "2024-09-14T07:02:00.000Z",
-      "description": "Simplified access to public-facing pages"
+      "type": "feature",
+      "date": "2026-04-02T00:00:00.000Z",
+      "description": "Token bar with $WCLAW contract address and chart links"
     }
   ],
   "features": [
     {
-      "name": "Enhanced SEO",
-      "description": "Improved search engine visibility for easier discovery"
+      "name": "HumanLayer Brand",
+      "description": "Full rebrand with new logo, wordmark, and glitch glass visual identity"
     },
     {
-      "name": "Improved Web3 Integration",
-      "description": "Better interaction with Web3 wallets for seamless blockchain connectivity"
+      "name": "Documentation",
+      "description": "Full product docs at docs.humanlayer.cloud — screenings, tasks, earnings, reputation, FAQ"
     },
     {
-      "name": "Redesigned Landing Page",
-      "description": "Updated menu items and enhanced design for improved user navigation"
+      "name": "$WCLAW Token",
+      "description": "Contract address and chart links now visible on the landing page"
     },
     {
-      "name": "Stable MDX Editor",
-      "description": "Fixed issues to provide a more reliable editing experience"
-    },
-    {
-      "name": "Improved Session Management",
-      "description": "Resolved unexpected session expirations for uninterrupted user experience"
-    },
-    {
-      "name": "Enhanced Notification System",
-      "description": "Upgraded to Sonner for improved user notifications"
-    },
-    {
-      "name": "Simplified Public Access",
-      "description": "Removed authentication requirement for public-facing pages"
+      "name": "Wallet Auth Fix",
+      "description": "Sign-in no longer resets to Connect Wallet before the signature prompt appears"
     }
   ],
   "knownIssues": [
-    "Some API endpoints are still work in progress",
-    "Some features are still under development and may not be fully functional",
-    "Potential instability in newly implemented features",
-    "Session management is not yet fully implemented",
-    "Limited error handling for edge cases"
+    "Project availability is limited during early access",
+    "Earnings page shows placeholder data until tasks are completed"
   ],
-  "deprecations": ["Previous authentication flow for public-facing pages"]
+  "deprecations": []
 }

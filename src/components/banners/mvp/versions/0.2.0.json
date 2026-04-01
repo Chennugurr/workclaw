@@ -32,7 +32,7 @@
     {
       "type": "feature",
       "date": "2026-04-02T00:00:00.000Z",
-      "description": "Token bar with $WCLAW contract address and chart links"
+      "description": "Token bar with $HL contract address and chart links"
     }
   ],
   "features": [
@@ -45,7 +45,7 @@
       "description": "Full product docs at docs.humanlayer.cloud — screenings, tasks, earnings, reputation, FAQ"
     },
     {
-      "name": "$WCLAW Token",
+      "name": "$HL Token",
       "description": "Contract address and chart links now visible on the landing page"
     },
     {

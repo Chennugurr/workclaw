@@ -134,7 +134,7 @@ function FAQItem({ q, a }) {
 }
 
 const CA = 'AzBrensiV6XmMohSRZ8XJQNLeoLFrNFumu1ZGbJqpump';
-const CHART_URL = 'https://dexscreener.com/solana/fpa8tqe5c85mevhpur97j6myjqxuvdikks6qtep1sjk6';
+const CHART_URL = 'https://dexscreener.com/solana/ezd4zbyug89d9syyqfgfy6lrxgykuqnby2rhjuu3drc1';
 
 function TokenBar() {
   const [copied, setCopied] = useState(false);

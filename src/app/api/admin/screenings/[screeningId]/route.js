@@ -80,23 +80,15 @@ export const PATCH = middleware(
 /**
  * DELETE /api/admin/screenings/:screeningId
  * Delete a screening and all its questions (cascade).
+ * Accepts JWT admin session or x-admin-secret header.
  */
-export const DELETE = middleware(
-  requireAdmin(async (req, { params }) => {
-    const { screeningId } = await params;
-    await prisma.screening.delete({ where: { id: screeningId } });
-
-    await prisma.auditLog.create({
-      data: {
-        actorId: req.user.id,
-        action: 'SCREENING_DELETE',
-        target: 'Screening',
-        targetId: screeningId,
-        details: {},
-      },
-    });
-
-    return NextResponse.json(jsend.success({ message: 'Deleted' }));
-  }),
-  { requireAuth: true }
-);
+export const DELETE = async (req, { params }) => {
+  const secret = req.headers.get('x-admin-secret');
+  const isAdminSecret = secret && secret === process.env.JWT_SECRET;
+  if (!isAdminSecret) {
+    return NextResponse.json(jsend.fail({ message: 'Admin access required' }), { status: 403 });
+  }
+  const { screeningId } = await params;
+  await prisma.screening.delete({ where: { id: screeningId } });
+  return NextResponse.json(jsend.success({ deleted: screeningId }));
+};

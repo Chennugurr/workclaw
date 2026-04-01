@@ -200,8 +200,8 @@ export default function CodeReview({ task, submission, onSave, readOnly }) {
               className={cn(
                 'px-4 py-2 rounded-lg text-sm font-medium border transition-colors capitalize',
                 assessment === a
-                  ? 'bg-gray-900 text-white border-gray-900'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                  ? 'bg-white/[0.15] text-white border-white/40'
+                  : 'bg-white/[0.05] text-white/70 border-white/[0.12] hover:border-white/30 hover:bg-white/[0.08]'
               )}
             >
               {a.replace(/_/g, ' ')}

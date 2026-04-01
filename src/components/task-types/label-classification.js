@@ -40,7 +40,7 @@ export default function LabelClassification({ task, submission, onSave, readOnly
               <Badge variant='secondary' className='text-xs'>{contentType}</Badge>
             )}
           </div>
-          <div className='text-sm whitespace-pre-wrap bg-gray-50 p-4 rounded-lg border'>
+          <div className='text-sm whitespace-pre-wrap bg-white/[0.04] p-4 rounded-lg border border-white/[0.08]'>
             {content}
           </div>
         </CardContent>
@@ -63,8 +63,8 @@ export default function LabelClassification({ task, submission, onSave, readOnly
               className={cn(
                 'px-4 py-2 rounded-lg text-sm font-medium border transition-colors',
                 selected.includes(label)
-                  ? 'bg-gray-900 text-white border-gray-900'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                  ? 'bg-white/[0.15] text-white border-white/40'
+                  : 'bg-white/[0.05] text-white/70 border-white/[0.12] hover:border-white/30 hover:bg-white/[0.08]'
               )}
             >
               {label}

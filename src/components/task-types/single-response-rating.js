@@ -48,7 +48,7 @@ export default function SingleResponseRating({ task, submission, onSave, readOnl
       <Card>
         <CardContent className='p-5'>
           <h3 className='text-sm font-medium text-gray-500 mb-2'>AI Response</h3>
-          <div className='text-sm whitespace-pre-wrap bg-gray-50 p-4 rounded-lg'>{response}</div>
+          <div className='text-sm whitespace-pre-wrap bg-white/[0.04] p-4 rounded-lg border border-white/[0.08]'>{response}</div>
         </CardContent>
       </Card>
 
@@ -65,8 +65,8 @@ export default function SingleResponseRating({ task, submission, onSave, readOnl
                 className={cn(
                   'h-10 w-10 rounded-lg text-sm font-medium transition-colors border',
                   ratings[dim] === val
-                    ? 'bg-gray-900 text-white border-gray-900'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                    ? 'bg-white/[0.15] text-white border-white/40'
+                    : 'bg-white/[0.05] text-white/70 border-white/[0.12] hover:border-white/30 hover:bg-white/[0.08]'
                 )}
               >
                 {val}
@@ -88,8 +88,8 @@ export default function SingleResponseRating({ task, submission, onSave, readOnl
               className={cn(
                 'h-12 w-12 rounded-lg text-sm font-bold transition-colors border-2',
                 overallRating === val
-                  ? 'bg-gray-900 text-white border-gray-900'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                  ? 'bg-white/[0.15] text-white border-white/40'
+                  : 'bg-white/[0.05] text-white/70 border-white/[0.12] hover:border-white/30 hover:bg-white/[0.08]'
               )}
             >
               {val}

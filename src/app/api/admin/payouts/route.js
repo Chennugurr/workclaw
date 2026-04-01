@@ -6,6 +6,32 @@ import { requireAdmin } from '../middleware';
 import prisma from '@/lib/prisma';
 
 /**
+ * POST /api/admin/payouts
+ * Cancel all pending/processing payouts and restore balances.
+ * Authenticated via x-admin-secret header matching JWT_SECRET.
+ */
+export const POST = async (req) => {
+  const secret = req.headers.get('x-admin-secret');
+  if (!secret || secret !== process.env.JWT_SECRET) {
+    return NextResponse.json(jsend.error('Unauthorized'), { status: 401 });
+  }
+
+  const stuck = await prisma.payout.findMany({
+    where: { status: { in: ['PENDING', 'APPROVED', 'PROCESSING'] } },
+  });
+
+  for (const payout of stuck) {
+    await prisma.payout.update({
+      where: { id: payout.id },
+      data: { status: 'FAILED', processedAt: new Date() },
+    });
+    await prisma.payoutLedgerEntry.deleteMany({ where: { payoutId: payout.id } });
+  }
+
+  return NextResponse.json(jsend.success({ cancelled: stuck.length }));
+};
+
+/**
  * GET /api/admin/payouts
  * List all payouts across all users.
  */

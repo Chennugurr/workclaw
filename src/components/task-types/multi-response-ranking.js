@@ -58,7 +58,7 @@ export default function MultiResponseRanking({ task, submission, onSave, readOnl
               <Card key={id} className='group'>
                 <CardContent className='p-4 flex items-start gap-3'>
                   <div className='flex flex-col items-center gap-1 pt-1'>
-                    <span className='text-xs font-bold text-gray-400 w-6 h-6 flex items-center justify-center bg-gray-100 rounded'>
+                    <span className='text-xs font-bold text-white/60 w-6 h-6 flex items-center justify-center bg-white/[0.08] rounded'>
                       {index + 1}
                     </span>
                     {!readOnly && (
@@ -85,7 +85,7 @@ export default function MultiResponseRanking({ task, submission, onSave, readOnl
                     )}
                   </div>
                   <div className='flex-1 min-w-0'>
-                    <div className='text-sm whitespace-pre-wrap bg-gray-50 p-3 rounded'>
+                    <div className='text-sm whitespace-pre-wrap bg-white/[0.04] p-3 rounded border border-white/[0.06]'>
                       {resp.text}
                     </div>
                   </div>

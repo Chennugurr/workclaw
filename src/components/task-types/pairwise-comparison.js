@@ -60,7 +60,7 @@ export default function PairwiseComparison({ task, submission, onSave, readOnly 
                 <span className='text-xs bg-gray-900 text-white px-2 py-0.5 rounded'>Preferred</span>
               )}
             </div>
-            <div className='text-sm whitespace-pre-wrap bg-gray-50 p-3 rounded'>{responseA}</div>
+            <div className='text-sm whitespace-pre-wrap bg-white/[0.04] p-3 rounded border border-white/[0.06]'>{responseA}</div>
           </CardContent>
         </Card>
 
@@ -78,7 +78,7 @@ export default function PairwiseComparison({ task, submission, onSave, readOnly 
                 <span className='text-xs bg-gray-900 text-white px-2 py-0.5 rounded'>Preferred</span>
               )}
             </div>
-            <div className='text-sm whitespace-pre-wrap bg-gray-50 p-3 rounded'>{responseB}</div>
+            <div className='text-sm whitespace-pre-wrap bg-white/[0.04] p-3 rounded border border-white/[0.06]'>{responseB}</div>
           </CardContent>
         </Card>
       </div>
@@ -90,8 +90,8 @@ export default function PairwiseComparison({ task, submission, onSave, readOnly 
         className={cn(
           'w-full py-2 rounded-lg text-sm font-medium border transition-colors',
           preferred === 'TIE'
-            ? 'bg-gray-900 text-white border-gray-900'
-            : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+            ? 'bg-white/[0.15] text-white border-white/40'
+            : 'bg-white/[0.05] text-white/70 border-white/[0.12] hover:border-white/30 hover:bg-white/[0.08]'
         )}
       >
         Tie — Both are equal
@@ -113,8 +113,8 @@ export default function PairwiseComparison({ task, submission, onSave, readOnly 
                     className={cn(
                       'px-3 py-1 rounded text-xs font-medium border transition-colors',
                       dimPrefs[dim] === c
-                        ? 'bg-gray-900 text-white border-gray-900'
-                        : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400'
+                        ? 'bg-white/[0.15] text-white border-white/40'
+                        : 'bg-white/[0.05] text-white/70 border-white/[0.12] hover:border-white/30 hover:bg-white/[0.08]'
                     )}
                   >
                     {c}

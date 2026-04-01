@@ -130,8 +130,8 @@ export default function Page({ params: paramsPromise }) {
   if (isLoading || !task) {
     return (
       <div className='space-y-4'>
-        <div className='h-6 bg-gray-200 rounded w-48 animate-pulse' />
-        <div className='h-64 bg-gray-100 rounded animate-pulse' />
+        <div className='h-6 bg-white/[0.08] rounded w-48 animate-pulse' />
+        <div className='h-64 bg-white/[0.05] rounded animate-pulse' />
       </div>
     );
   }
@@ -147,7 +147,7 @@ export default function Page({ params: paramsPromise }) {
         <div className='flex items-center gap-3'>
           <Link
             href='/app/contributor/my-tasks'
-            className='text-gray-400 hover:text-gray-900'
+            className='text-white/50 hover:text-white'
           >
             <ArrowLeft className='h-5 w-5' />
           </Link>
@@ -231,7 +231,7 @@ export default function Page({ params: paramsPromise }) {
             >
               <div className='space-y-3'>
                 {task.examples.map((ex, i) => (
-                  <div key={i} className='text-xs bg-gray-50 p-3 rounded'>
+                  <div key={i} className='text-xs bg-white/[0.04] p-3 rounded border border-white/[0.06]'>
                     <pre className='whitespace-pre-wrap'>{JSON.stringify(ex, null, 2)}</pre>
                   </div>
                 ))}
@@ -332,7 +332,7 @@ function CollapsiblePanel({ title, icon: Icon, open, onToggle, children }) {
     <Card>
       <button
         onClick={onToggle}
-        className='w-full flex items-center justify-between p-4 text-sm font-medium hover:bg-gray-50 transition-colors'
+        className='w-full flex items-center justify-between p-4 text-sm font-medium hover:bg-white/[0.04] transition-colors'
       >
         <span className='flex items-center gap-2'>
           <Icon className='h-4 w-4 text-gray-500' />

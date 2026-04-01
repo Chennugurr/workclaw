@@ -35,42 +35,44 @@ export const POST = async (req) => {
  * GET /api/admin/payouts
  * List all payouts across all users.
  */
-export const GET = middleware(
-  requireAdmin(async (req) => {
-    const url = new URL(req.url);
-    const page = parseInt(url.searchParams.get('page') || '1', 10);
-    const limit = parseInt(url.searchParams.get('limit') || '50', 10);
-    const status = url.searchParams.get('status');
-    const skip = (page - 1) * limit;
+export const GET = async (req) => {
+  const secret = req.headers.get('x-admin-secret');
+  if (!secret || secret !== process.env.JWT_SECRET) {
+    return NextResponse.json(jsend.error('Unauthorized'), { status: 401 });
+  }
 
-    const where = {};
-    if (status) where.status = status;
+  const url = new URL(req.url);
+  const page = parseInt(url.searchParams.get('page') || '1', 10);
+  const limit = parseInt(url.searchParams.get('limit') || '50', 10);
+  const status = url.searchParams.get('status');
+  const skip = (page - 1) * limit;
 
-    const [payouts, total] = await Promise.all([
-      prisma.payout.findMany({
-        where,
-        include: {
-          user: {
-            select: {
-              id: true, address: true,
-              profile: { select: { firstName: true, lastName: true } },
-            },
+  const where = {};
+  if (status) where.status = status;
+
+  const [payouts, total] = await Promise.all([
+    prisma.payout.findMany({
+      where,
+      include: {
+        user: {
+          select: {
+            id: true, address: true,
+            profile: { select: { firstName: true, lastName: true } },
           },
-          method: { select: { type: true, details: true } },
         },
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take: limit,
-      }),
-      prisma.payout.count({ where }),
-    ]);
+        method: { select: { type: true, details: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit,
+    }),
+    prisma.payout.count({ where }),
+  ]);
 
-    return NextResponse.json(
-      jsend.success({
-        data: payouts,
-        pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
-      })
-    );
-  }),
-  { requireAuth: true }
-);
+  return NextResponse.json(
+    jsend.success({
+      data: payouts,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    })
+  );
+};

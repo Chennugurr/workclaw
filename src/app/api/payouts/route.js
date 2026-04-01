@@ -3,6 +3,7 @@ import jsend from 'jsend';
 import { NextResponse } from 'next/server';
 import { middleware } from '@/api/middleware';
 import prisma from '@/lib/prisma';
+import { sendSolReward, isRewardsConfigured } from '@/lib/token-rewards';
 
 const MINIMUM_PAYOUT = {
   SOLANA_WALLET: 10,
@@ -110,14 +111,23 @@ export const POST = middleware(
       );
     }
 
-    // Create payout
+    // Get recipient wallet address from payout method
+    const recipientAddress = method.details?.address;
+    if (!recipientAddress) {
+      return NextResponse.json(
+        jsend.fail({ message: 'Payout method has no wallet address.' }),
+        { status: 400 }
+      );
+    }
+
+    // Create payout record
     const payout = await prisma.payout.create({
       data: {
         userId,
         methodId,
         amount: payoutAmount,
-        currency: 'USDC',
-        status: 'PENDING',
+        currency: 'SOL',
+        status: 'PROCESSING',
       },
     });
 
@@ -128,11 +138,34 @@ export const POST = middleware(
         payoutId: payout.id,
         type: 'PAYOUT_DEBIT',
         amount: -payoutAmount,
-        currency: 'USDC',
+        currency: 'SOL',
         reference: payout.id,
         note: `Payout request #${payout.id.slice(0, 8)}`,
       },
     });
+
+    // Execute on-chain SOL transfer if configured
+    if (isRewardsConfigured()) {
+      // Convert USD amount to SOL — use a fixed rate of 1 USD = 0.005 SOL (~$200/SOL)
+      // In production this should use a live price feed
+      const SOL_PER_USD = 0.005;
+      const solAmount = payoutAmount * SOL_PER_USD;
+
+      const result = await sendSolReward(recipientAddress, solAmount);
+
+      if (result.success) {
+        await prisma.payout.update({
+          where: { id: payout.id },
+          data: { status: 'COMPLETED', txHash: result.signature, processedAt: new Date() },
+        });
+        return NextResponse.json(jsend.success({ ...payout, status: 'COMPLETED', txHash: result.signature }), { status: 201 });
+      } else {
+        // Transfer failed — reverse the debit and mark payout failed
+        await prisma.payout.update({ where: { id: payout.id }, data: { status: 'FAILED' } });
+        await prisma.payoutLedgerEntry.deleteMany({ where: { payoutId: payout.id } });
+        return NextResponse.json(jsend.fail({ message: `Transfer failed: ${result.error}` }), { status: 500 });
+      }
+    }
 
     return NextResponse.json(jsend.success(payout), { status: 201 });
   },

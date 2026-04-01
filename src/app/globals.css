@@ -39,6 +39,23 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Override gray scale for dark background — prevent invisible text */
+  .text-gray-100 { color: rgba(255,255,255,0.90) !important; }
+  .text-gray-200 { color: rgba(255,255,255,0.82) !important; }
+  .text-gray-300 { color: rgba(255,255,255,0.72) !important; }
+  .text-gray-400 { color: rgba(255,255,255,0.62) !important; }
+  .text-gray-500 { color: rgba(255,255,255,0.55) !important; }
+  .text-gray-600 { color: rgba(255,255,255,0.50) !important; }
+  .text-gray-700 { color: rgba(255,255,255,0.45) !important; }
+  .text-gray-800 { color: rgba(255,255,255,0.40) !important; }
+  .text-gray-900 { color: rgba(255,255,255,0.35) !important; }
+
+  /* Boost low-opacity white text that falls below readable threshold */
+  .text-white\/10 { color: rgba(255,255,255,0.35) !important; }
+  .text-white\/20 { color: rgba(255,255,255,0.42) !important; }
+  .text-white\/30 { color: rgba(255,255,255,0.50) !important; }
+  .text-white\/40 { color: rgba(255,255,255,0.58) !important; }
 }
 
 /* Global glitch utilities */

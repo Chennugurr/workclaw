@@ -56,6 +56,52 @@
   .text-white\/20 { color: rgba(255,255,255,0.42) !important; }
   .text-white\/30 { color: rgba(255,255,255,0.50) !important; }
   .text-white\/40 { color: rgba(255,255,255,0.58) !important; }
+
+  /* Light backgrounds → dark glass equivalents */
+  .bg-white { background-color: rgba(255,255,255,0.06) !important; }
+  .bg-gray-50 { background-color: rgba(255,255,255,0.03) !important; }
+  .bg-gray-100 { background-color: rgba(255,255,255,0.06) !important; }
+  .bg-gray-200 { background-color: rgba(255,255,255,0.09) !important; }
+
+  /* Light borders → subtle dark borders */
+  .border-gray-200 { border-color: rgba(255,255,255,0.10) !important; }
+  .border-gray-300 { border-color: rgba(255,255,255,0.15) !important; }
+
+  /* Light hover backgrounds */
+  .hover\:bg-gray-50:hover { background-color: rgba(255,255,255,0.04) !important; }
+  .hover\:bg-gray-100:hover { background-color: rgba(255,255,255,0.06) !important; }
+  .hover\:bg-gray-200:hover { background-color: rgba(255,255,255,0.09) !important; }
+
+  /* Status badge colors — remap *-100 bg to dark tinted versions, *-700 text to lighter */
+  .bg-green-100 { background-color: rgba(34,197,94,0.15) !important; }
+  .text-green-700 { color: rgba(134,239,172,0.90) !important; }
+  .bg-green-50 { background-color: rgba(34,197,94,0.08) !important; }
+
+  .bg-red-100 { background-color: rgba(239,68,68,0.15) !important; }
+  .text-red-700 { color: rgba(252,165,165,0.90) !important; }
+  .bg-red-50 { background-color: rgba(239,68,68,0.08) !important; }
+
+  .bg-blue-100 { background-color: rgba(59,130,246,0.15) !important; }
+  .text-blue-700 { color: rgba(147,197,253,0.90) !important; }
+  .bg-blue-50 { background-color: rgba(59,130,246,0.08) !important; }
+
+  .bg-yellow-100 { background-color: rgba(234,179,8,0.15) !important; }
+  .text-yellow-700 { color: rgba(253,224,71,0.90) !important; }
+  .bg-yellow-50 { background-color: rgba(234,179,8,0.08) !important; }
+
+  .bg-purple-100 { background-color: rgba(168,85,247,0.15) !important; }
+  .text-purple-700 { color: rgba(216,180,254,0.90) !important; }
+  .bg-purple-50 { background-color: rgba(168,85,247,0.08) !important; }
+
+  .bg-orange-100 { background-color: rgba(249,115,22,0.15) !important; }
+  .text-orange-700 { color: rgba(253,186,116,0.90) !important; }
+  .bg-orange-50 { background-color: rgba(249,115,22,0.08) !important; }
+
+  .bg-pink-100 { background-color: rgba(236,72,153,0.15) !important; }
+  .text-pink-700 { color: rgba(249,168,212,0.90) !important; }
+
+  .bg-cyan-100 { background-color: rgba(6,182,212,0.15) !important; }
+  .text-cyan-700 { color: rgba(103,232,249,0.90) !important; }
 }
 
 /* Global glitch utilities */

@@ -54,6 +54,19 @@ const updateSchema = z.object({
 });
 
 /**
+ * DELETE /api/admin/users/:userId?entryId=xxx
+ * Delete a specific ledger entry.
+ */
+export const DELETE = async (req, { params }) => {
+  if (!authCheck(req)) return NextResponse.json(jsend.error('Unauthorized'), { status: 401 });
+  const { userId } = await params;
+  const entryId = new URL(req.url).searchParams.get('entryId');
+  if (!entryId) return NextResponse.json(jsend.fail({ message: 'entryId required' }), { status: 400 });
+  await prisma.payoutLedgerEntry.deleteMany({ where: { id: entryId, userId } });
+  return NextResponse.json(jsend.success({ deleted: entryId }));
+};
+
+/**
  * PATCH /api/admin/users/:userId
  * Update user role, tier, KYC status, or badges.
  */

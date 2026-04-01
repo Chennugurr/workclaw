@@ -115,10 +115,16 @@ export const POST = middleware(
       });
     }
 
-    // Award $1 USD for passing a screening (first pass only)
+    // Award $5 USD for passing a screening (first pass only)
     let rewardTx = null;
     const previousPass = screening.attempts.find((a) => a.passed === true);
-    if (passed && !previousPass) {
+    // Double-check at DB level to prevent race conditions
+    const existingReward = passed && !previousPass
+      ? await prisma.payoutLedgerEntry.findFirst({
+          where: { userId: req.user.id, type: 'SCREENING_REWARD', reference: screeningId },
+        })
+      : true;
+    if (passed && !previousPass && !existingReward) {
       // Credit $1 to earnings ledger
       const ledgerEntry = await prisma.payoutLedgerEntry.create({
         data: {

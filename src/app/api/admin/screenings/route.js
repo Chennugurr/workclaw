@@ -108,5 +108,5 @@ export const POST = middleware(
 
     return NextResponse.json(jsend.success(screening), { status: 201 });
   }),
-  { requireAuth: true, bodySchema: createSchema }
+  { withAuth: true, bodySchema: createSchema }
 );

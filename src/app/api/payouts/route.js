@@ -72,15 +72,16 @@ export const POST = middleware(
       );
     }
 
-    // Calculate available balance (credits not yet in a payout)
+    // Calculate available balance (net of all credits and debits)
     const entries = await prisma.payoutLedgerEntry.findMany({
       where: { userId },
-      select: { amount: true, payoutId: true },
+      select: { amount: true },
     });
 
-    const availableBalance = entries
-      .filter((e) => !e.payoutId && parseFloat(e.amount) > 0)
-      .reduce((sum, e) => sum + parseFloat(e.amount), 0);
+    const availableBalance = Math.max(
+      0,
+      entries.reduce((sum, e) => sum + parseFloat(e.amount), 0)
+    );
 
     const payoutAmount = requestedAmount || availableBalance;
     const minimum = MINIMUM_PAYOUT[method.type] || 10;
@@ -120,18 +121,20 @@ export const POST = middleware(
       );
     }
 
-    // Create payout record
+    // Create payout record — stays PENDING for 14 hours before processing
+    const scheduledAt = new Date(Date.now() + 14 * 60 * 60 * 1000);
     const payout = await prisma.payout.create({
       data: {
         userId,
         methodId,
         amount: payoutAmount,
         currency: 'SOL',
-        status: 'PROCESSING',
+        status: 'PENDING',
+        note: `Scheduled for processing after ${scheduledAt.toISOString()}`,
       },
     });
 
-    // Create debit ledger entry
+    // Create debit ledger entry to reserve the funds
     await prisma.payoutLedgerEntry.create({
       data: {
         userId,
@@ -140,34 +143,14 @@ export const POST = middleware(
         amount: -payoutAmount,
         currency: 'SOL',
         reference: payout.id,
-        note: `Payout request #${payout.id.slice(0, 8)}`,
+        note: `Payout request #${payout.id.slice(0, 8)} — processes in ~14h`,
       },
     });
 
-    // Execute on-chain SOL transfer if configured
-    if (isRewardsConfigured()) {
-      // Convert USD amount to SOL — use a fixed rate of 1 USD = 0.005 SOL (~$200/SOL)
-      // In production this should use a live price feed
-      const SOL_PER_USD = 0.005;
-      const solAmount = payoutAmount * SOL_PER_USD;
-
-      const result = await sendSolReward(recipientAddress, solAmount);
-
-      if (result.success) {
-        await prisma.payout.update({
-          where: { id: payout.id },
-          data: { status: 'COMPLETED', txHash: result.signature, processedAt: new Date() },
-        });
-        return NextResponse.json(jsend.success({ ...payout, status: 'COMPLETED', txHash: result.signature }), { status: 201 });
-      } else {
-        // Transfer failed — reverse the debit and mark payout failed
-        await prisma.payout.update({ where: { id: payout.id }, data: { status: 'FAILED' } });
-        await prisma.payoutLedgerEntry.deleteMany({ where: { payoutId: payout.id } });
-        return NextResponse.json(jsend.fail({ message: `Transfer failed: ${result.error}` }), { status: 500 });
-      }
-    }
-
-    return NextResponse.json(jsend.success(payout), { status: 201 });
+    return NextResponse.json(jsend.success({
+      ...payout,
+      message: 'Payout scheduled. Funds will be sent within 14 hours.',
+    }), { status: 201 });
   },
   {
     requireAuth: true,

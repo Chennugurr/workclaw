@@ -65,13 +65,23 @@ export const GET = middleware(
   { requireAuth: true }
 );
 
+function adminSecretAuth(req) {
+  const secret = req.headers.get('x-admin-secret');
+  return secret && secret === process.env.JWT_SECRET;
+}
+
 /**
  * POST /api/admin/screenings
  * Create a new screening with optional inline questions.
+ * Accepts either JWT admin session or x-admin-secret header.
  */
 export const POST = middleware(
-  requireAdmin(async (req) => {
+  async (req) => {
+    if (!adminSecretAuth(req) && (!req.user || req.user.role !== 'ADMIN')) {
+      return NextResponse.json(jsend.fail({ message: 'Admin access required' }), { status: 403 });
+    }
     const { questions, ...screeningData } = req.dto;
+    const actorId = req.user?.id || 'system';
 
     const screening = await prisma.screening.create({
       data: {
@@ -88,7 +98,7 @@ export const POST = middleware(
 
     await prisma.auditLog.create({
       data: {
-        actorId: req.user.id,
+        actorId: actorId,
         action: 'SCREENING_CREATE',
         target: 'Screening',
         targetId: screening.id,

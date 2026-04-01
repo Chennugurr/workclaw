@@ -107,6 +107,6 @@ export const POST = middleware(
     });
 
     return NextResponse.json(jsend.success(screening), { status: 201 });
-  }),
+  },
   { withAuth: true, bodySchema: createSchema }
 );

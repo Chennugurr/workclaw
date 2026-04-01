@@ -146,7 +146,7 @@ function TokenBar() {
   return (
     <div className='border-b border-white/[0.06] bg-black/40 backdrop-blur-sm py-2 px-4'>
       <div className='container mx-auto flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-xs text-white/50'>
-        <span className='font-semibold text-white/30 uppercase tracking-widest text-[10px]'>$WCLAW</span>
+        <span className='font-semibold text-white/30 uppercase tracking-widest text-[10px]'>$HL</span>
         <div className='flex items-center gap-1.5'>
           <span className='text-white/30'>CA:</span>
           <span className='font-mono text-white/60'>{CA.slice(0, 6)}...{CA.slice(-4)}</span>
@@ -550,7 +550,7 @@ export default function LandingPage() {
                   Chart <ExternalLink className='h-3 w-3' />
                 </a>
                 <a href='https://pump.fun/coin/AzBrensiV6XmMohSRZ8XJQNLeoLFrNFumu1ZGbJqpump' target='_blank' rel='noopener noreferrer' className='flex items-center gap-1 text-sm text-white/30 hover:text-cyan-400 transition-colors'>
-                  Buy $WCLAW <ExternalLink className='h-3 w-3' />
+                  Buy $HL <ExternalLink className='h-3 w-3' />
                 </a>
               </nav>
             </div>

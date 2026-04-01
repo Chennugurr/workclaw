@@ -133,8 +133,8 @@ function FAQItem({ q, a }) {
   );
 }
 
-const CA = 'PLACEHOLDER_CONTRACT_ADDRESS';
-const CHART_URL = 'https://dexscreener.com';
+const CA = 'AzBrensiV6XmMohSRZ8XJQNLeoLFrNFumu1ZGbJqpump';
+const CHART_URL = 'https://dexscreener.com/solana/fpa8tqe5c85mevhpur97j6myjqxuvdikks6qtep1sjk6';
 
 function TokenBar() {
   const [copied, setCopied] = useState(false);
@@ -163,7 +163,7 @@ function TokenBar() {
           Chart <ExternalLink className='h-3 w-3' />
         </a>
         <a
-          href='https://pump.fun'
+          href='https://pump.fun/coin/AzBrensiV6XmMohSRZ8XJQNLeoLFrNFumu1ZGbJqpump'
           target='_blank'
           rel='noopener noreferrer'
           className='flex items-center gap-1 hover:text-cyan-400 transition-colors'
@@ -549,7 +549,7 @@ export default function LandingPage() {
                 <a href={CHART_URL} target='_blank' rel='noopener noreferrer' className='flex items-center gap-1 text-sm text-white/30 hover:text-cyan-400 transition-colors'>
                   Chart <ExternalLink className='h-3 w-3' />
                 </a>
-                <a href='https://pump.fun' target='_blank' rel='noopener noreferrer' className='flex items-center gap-1 text-sm text-white/30 hover:text-cyan-400 transition-colors'>
+                <a href='https://pump.fun/coin/AzBrensiV6XmMohSRZ8XJQNLeoLFrNFumu1ZGbJqpump' target='_blank' rel='noopener noreferrer' className='flex items-center gap-1 text-sm text-white/30 hover:text-cyan-400 transition-colors'>
                   Buy $WCLAW <ExternalLink className='h-3 w-3' />
                 </a>
               </nav>

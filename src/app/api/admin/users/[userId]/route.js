@@ -5,14 +5,17 @@ import { middleware } from '@/api/middleware';
 import { requireAdmin } from '../../middleware';
 import prisma from '@/lib/prisma';
 
+function authCheck(req) {
+  const secret = req.headers.get('x-admin-secret');
+  return secret && secret === process.env.JWT_SECRET;
+}
+
 /**
- * GET /api/admin/users/:userId — full user details + ledger entries
+ * GET /api/admin/users/:userId
+ * Returns ledger entries + net balance for a user.
  */
 export const GET = async (req, { params }) => {
-  const secret = req.headers.get('x-admin-secret');
-  if (!secret || secret !== process.env.JWT_SECRET) {
-    return NextResponse.json(jsend.error('Unauthorized'), { status: 401 });
-  }
+  if (!authCheck(req)) return NextResponse.json(jsend.error('Unauthorized'), { status: 401 });
   const { userId } = await params;
   const entries = await prisma.payoutLedgerEntry.findMany({
     where: { userId },
@@ -23,16 +26,13 @@ export const GET = async (req, { params }) => {
 };
 
 /**
- * POST /api/admin/users/:userId — add a manual ledger adjustment for a user.
+ * POST /api/admin/users/:userId
+ * Add a manual ledger adjustment for a user.
  */
 export const POST = async (req, { params }) => {
-  const secret = req.headers.get('x-admin-secret');
-  if (!secret || secret !== process.env.JWT_SECRET) {
-    return NextResponse.json(jsend.error('Unauthorized'), { status: 401 });
-  }
+  if (!authCheck(req)) return NextResponse.json(jsend.error('Unauthorized'), { status: 401 });
   const { userId } = await params;
   const { amount, note } = await req.json();
-
   const entry = await prisma.payoutLedgerEntry.create({
     data: {
       userId,
@@ -43,7 +43,6 @@ export const POST = async (req, { params }) => {
       note: note || 'Manual adjustment',
     },
   });
-
   return NextResponse.json(jsend.success(entry), { status: 201 });
 };
 
@@ -53,42 +52,6 @@ const updateSchema = z.object({
   kycStatus: z.enum(['NONE', 'PENDING', 'VERIFIED', 'REJECTED']).optional(),
   badges: z.array(z.string()).optional(),
 });
-
-/**
- * GET /api/admin/users/:userId
- * Get full user details.
- */
-export const GET = middleware(
-  requireAdmin(async (req, { params }) => {
-    const { userId } = await params;
-
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: {
-        profile: true,
-        contributorScores: true,
-        reputationEvents: { orderBy: { createdAt: 'desc' }, take: 20 },
-        fraudFlags: { orderBy: { createdAt: 'desc' } },
-        payoutMethods: true,
-        _count: {
-          select: {
-            taskSubmissions: true,
-            applications: true,
-            payouts: true,
-            screeningAttempts: true,
-          },
-        },
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json(jsend.fail({ message: 'User not found' }), { status: 404 });
-    }
-
-    return NextResponse.json(jsend.success(user));
-  }),
-  { requireAuth: true }
-);
 
 /**
  * PATCH /api/admin/users/:userId
@@ -106,7 +69,6 @@ export const PATCH = middleware(
       },
     });
 
-    // Log audit event
     await prisma.auditLog.create({
       data: {
         actorId: req.user.id,

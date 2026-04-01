@@ -56,9 +56,8 @@ export const GET = middleware(
     const totalBalance = allEntries.reduce(
       (sum, e) => sum + parseFloat(e.amount), 0
     );
-    const pendingBalance = allEntries
-      .filter((e) => !e.payoutId && parseFloat(e.amount) > 0)
-      .reduce((sum, e) => sum + parseFloat(e.amount), 0);
+    // Available to withdraw = net balance (earnings minus debits/payouts)
+    const pendingBalance = Math.max(0, totalBalance);
     const paidOut = allEntries
       .filter((e) => e.type === 'PAYOUT_DEBIT')
       .reduce((sum, e) => sum + Math.abs(parseFloat(e.amount)), 0);

@@ -103,6 +103,7 @@ export const GET = middleware(
           total,
           totalPages: Math.ceil(total / limit),
         },
+        _debug: { userId, allEntryCount: allEntries.length, totalBalance },
       })
     );
   },

@@ -78,13 +78,25 @@ export const POST = middleware(
 
     const project = await prisma.project.findFirst({
       where: { id: projectId, orgId, status: { in: ['OPEN', 'INVITE_ONLY'] } },
-      select: { id: true },
+      select: { id: true, capacity: true, _count: { select: { applications: { where: { status: 'APPROVED' } } } } },
     });
 
     if (!project) {
       return NextResponse.json(
         jsend.fail({ message: 'Project not found or not accepting applications' }),
         { status: 404 }
+      );
+    }
+
+    // Enforce 50-spot cap
+    const maxSpots = project.capacity ?? 50;
+    const approvedCount = project._count.applications;
+    if (approvedCount >= maxSpots) {
+      // Auto-mark project as FULL
+      await prisma.project.update({ where: { id: projectId }, data: { status: 'FULL' } });
+      return NextResponse.json(
+        jsend.fail({ message: 'This project is full. No more spots available.' }),
+        { status: 409 }
       );
     }
 
@@ -116,6 +128,11 @@ export const POST = middleware(
         },
       },
     });
+
+    // If this approval fills the last spot, mark project FULL
+    if (autoApprove && approvedCount + 1 >= maxSpots) {
+      await prisma.project.update({ where: { id: projectId }, data: { status: 'FULL' } });
+    }
 
     return NextResponse.json(jsend.success(application), { status: 201 });
   },

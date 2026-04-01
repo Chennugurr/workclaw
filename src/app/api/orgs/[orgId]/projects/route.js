@@ -32,7 +32,7 @@ const projectSchema = z.object({
   difficulty: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT']).default('INTERMEDIATE'),
   qualityThreshold: z.number().min(0).max(1).default(0.8),
   qualityBonusEligible: z.boolean().default(false),
-  capacity: z.number().int().positive().optional().nullable(),
+  capacity: z.number().int().positive().max(50).optional().nullable(),
   taskVolume: z.number().int().positive().optional().nullable(),
   goldTaskRatio: z.number().min(0).max(1).default(0.05),
   startDate: z.string().datetime().optional().nullable(),

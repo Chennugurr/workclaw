@@ -5,6 +5,32 @@ import { middleware } from '@/api/middleware';
 import { requireAdmin } from '../../middleware';
 import prisma from '@/lib/prisma';
 
+/**
+ * POST /api/admin/users/:userId/ledger
+ * Add a manual ledger adjustment for a user.
+ */
+export const POST = async (req, { params }) => {
+  const secret = req.headers.get('x-admin-secret');
+  if (!secret || secret !== process.env.JWT_SECRET) {
+    return NextResponse.json(jsend.error('Unauthorized'), { status: 401 });
+  }
+  const { userId } = await params;
+  const { amount, note } = await req.json();
+
+  const entry = await prisma.payoutLedgerEntry.create({
+    data: {
+      userId,
+      type: 'MANUAL_ADJUSTMENT',
+      amount: parseFloat(amount),
+      currency: 'USD',
+      reference: userId,
+      note: note || 'Manual adjustment',
+    },
+  });
+
+  return NextResponse.json(jsend.success(entry), { status: 201 });
+};
+
 const updateSchema = z.object({
   role: z.enum(['CONTRIBUTOR', 'CUSTOMER', 'REVIEWER', 'ADMIN']).optional(),
   tier: z.enum(['NEW', 'VERIFIED', 'SKILLED', 'TRUSTED', 'EXPERT', 'ELITE_REVIEWER']).optional(),

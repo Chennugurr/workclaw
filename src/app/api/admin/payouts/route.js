@@ -1,7 +1,7 @@
 import jsend from 'jsend';
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { sendSolReward, isRewardsConfigured } from '@/lib/token-rewards';
+import { processMaturedPayouts } from '@/lib/process-payouts';
 
 /**
  * POST /api/admin/payouts
@@ -78,7 +78,7 @@ export const GET = async (req) => {
 /**
  * PATCH /api/admin/payouts
  * Process all PENDING payouts that are at least 14 hours old.
- * Called by cron or manually by admin.
+ * Also triggered automatically from the earnings endpoint on every load.
  */
 export const PATCH = async (req) => {
   const secret = req.headers.get('x-admin-secret');
@@ -86,47 +86,6 @@ export const PATCH = async (req) => {
     return NextResponse.json(jsend.error('Unauthorized'), { status: 401 });
   }
 
-  const DELAY_MS = 14 * 60 * 60 * 1000;
-  const cutoff = new Date(Date.now() - DELAY_MS);
-
-  const pending = await prisma.payout.findMany({
-    where: { status: 'PENDING', createdAt: { lte: cutoff } },
-    include: { method: { select: { type: true, details: true } } },
-  });
-
-  const results = [];
-
-  for (const payout of pending) {
-    const recipientAddress = payout.method?.details?.address;
-
-    if (!recipientAddress) {
-      await prisma.payout.update({ where: { id: payout.id }, data: { status: 'FAILED', processedAt: new Date() } });
-      results.push({ id: payout.id, status: 'FAILED', reason: 'No wallet address' });
-      continue;
-    }
-
-    if (isRewardsConfigured()) {
-      const SOL_PER_USD = 0.005;
-      const solAmount = parseFloat(payout.amount) * SOL_PER_USD;
-      const result = await sendSolReward(recipientAddress, solAmount);
-
-      if (result.success) {
-        await prisma.payout.update({
-          where: { id: payout.id },
-          data: { status: 'COMPLETED', txHash: result.signature, processedAt: new Date() },
-        });
-        results.push({ id: payout.id, status: 'COMPLETED', txHash: result.signature });
-      } else {
-        await prisma.payout.update({ where: { id: payout.id }, data: { status: 'FAILED', processedAt: new Date() } });
-        await prisma.payoutLedgerEntry.deleteMany({ where: { payoutId: payout.id } });
-        results.push({ id: payout.id, status: 'FAILED', reason: result.error });
-      }
-    } else {
-      // Rewards not configured — mark as PROCESSING for manual handling
-      await prisma.payout.update({ where: { id: payout.id }, data: { status: 'PROCESSING', processedAt: new Date() } });
-      results.push({ id: payout.id, status: 'PROCESSING', reason: 'Rewards not configured' });
-    }
-  }
-
-  return NextResponse.json(jsend.success({ processed: results.length, results }));
+  await processMaturedPayouts();
+  return NextResponse.json(jsend.success({ triggered: true }));
 };

@@ -2,6 +2,7 @@ import jsend from 'jsend';
 import { NextResponse } from 'next/server';
 import { middleware } from '@/api/middleware';
 import prisma from '@/lib/prisma';
+import { processMaturedPayouts } from '@/lib/process-payouts';
 
 /**
  * GET /api/earnings
@@ -17,6 +18,9 @@ export const GET = middleware(
     const skip = (page - 1) * limit;
 
     const userId = req.user.id;
+
+    // Fire-and-forget: process any matured payouts automatically
+    processMaturedPayouts().catch(() => {});
 
     // Period filter
     const now = new Date();

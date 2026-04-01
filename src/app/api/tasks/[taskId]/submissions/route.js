@@ -27,6 +27,7 @@ export const POST = middleware(
     // Verify task exists and is assigned to user
     const task = await prisma.task.findUnique({
       where: { id: taskId },
+      include: { project: { select: { rateAmount: true, title: true } } },
     });
 
     if (!task) {
@@ -103,6 +104,21 @@ export const POST = middleware(
             eventType: isCorrect ? 'GOLD_TASK_CORRECT' : 'GOLD_TASK_INCORRECT',
             details: { taskId, projectId: task.projectId },
             scoreDelta: isCorrect ? 0.5 : -1,
+          },
+        });
+      }
+
+      // Credit earnings to ledger immediately on submission
+      const rateAmount = parseFloat(task.project?.rateAmount || 0);
+      if (rateAmount > 0) {
+        await prisma.payoutLedgerEntry.create({
+          data: {
+            userId: req.user.id,
+            type: 'TASK_EARNING',
+            amount: rateAmount,
+            currency: 'USD',
+            reference: taskId,
+            note: `Task completed: ${task.project?.title || 'Project'}`,
           },
         });
       }

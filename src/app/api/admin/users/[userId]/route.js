@@ -6,8 +6,24 @@ import { requireAdmin } from '../../middleware';
 import prisma from '@/lib/prisma';
 
 /**
- * POST /api/admin/users/:userId/ledger
- * Add a manual ledger adjustment for a user.
+ * GET /api/admin/users/:userId — full user details + ledger entries
+ */
+export const GET = async (req, { params }) => {
+  const secret = req.headers.get('x-admin-secret');
+  if (!secret || secret !== process.env.JWT_SECRET) {
+    return NextResponse.json(jsend.error('Unauthorized'), { status: 401 });
+  }
+  const { userId } = await params;
+  const entries = await prisma.payoutLedgerEntry.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+  });
+  const total = entries.reduce((sum, e) => sum + parseFloat(e.amount), 0);
+  return NextResponse.json(jsend.success({ entries, total: total.toFixed(2), count: entries.length }));
+};
+
+/**
+ * POST /api/admin/users/:userId — add a manual ledger adjustment for a user.
  */
 export const POST = async (req, { params }) => {
   const secret = req.headers.get('x-admin-secret');

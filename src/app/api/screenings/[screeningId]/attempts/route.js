@@ -124,7 +124,7 @@ export const POST = middleware(
         data: {
           userId: req.user.id,
           type: 'SCREENING_REWARD',
-          amount: 1.00,
+          amount: 5.00,
           currency: 'USD',
           reference: screeningId,
           note: `Screening reward: ${screening.title}`,
@@ -135,7 +135,7 @@ export const POST = middleware(
         data: {
           userId: req.user.id,
           eventType: 'SCREENING_REWARD',
-          details: { screeningId, screeningTitle: screening.title, usdAmount: 1.00 },
+          details: { screeningId, screeningTitle: screening.title, usdAmount: 5.00 },
           scoreDelta: 10,
         },
       });

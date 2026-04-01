@@ -44,15 +44,16 @@ const PERIODS = [
 ];
 
 const ENTRY_TYPE_CONFIG = {
-  TASK_EARNING: { label: 'Task Earning', icon: CheckCircle2, color: 'text-green-600' },
-  BONUS: { label: 'Bonus', icon: TrendingUp, color: 'text-blue-600' },
-  STREAK_INCENTIVE: { label: 'Streak Bonus', icon: TrendingUp, color: 'text-purple-600' },
-  QUALITY_BONUS: { label: 'Quality Bonus', icon: TrendingUp, color: 'text-green-600' },
-  REFERRAL_CREDIT: { label: 'Referral', icon: ArrowUpRight, color: 'text-blue-500' },
-  MANUAL_ADJUSTMENT: { label: 'Adjustment', icon: DollarSign, color: 'text-gray-600' },
-  PAYOUT_DEBIT: { label: 'Payout', icon: ArrowDownRight, color: 'text-red-500' },
-  REVERSAL: { label: 'Reversal', icon: ArrowDownRight, color: 'text-red-600' },
-  HOLD: { label: 'Hold', icon: Clock, color: 'text-orange-500' },
+  TASK_EARNING: { label: 'Task Reward', icon: CheckCircle2, color: 'text-green-400' },
+  SCREENING_REWARD: { label: 'Screening Reward', icon: CheckCircle2, color: 'text-cyan-400' },
+  BONUS: { label: 'Bonus', icon: TrendingUp, color: 'text-blue-400' },
+  STREAK_INCENTIVE: { label: 'Streak Bonus', icon: TrendingUp, color: 'text-purple-400' },
+  QUALITY_BONUS: { label: 'Quality Bonus', icon: TrendingUp, color: 'text-green-400' },
+  REFERRAL_CREDIT: { label: 'Referral', icon: ArrowUpRight, color: 'text-blue-400' },
+  MANUAL_ADJUSTMENT: { label: 'Adjustment', icon: DollarSign, color: 'text-white/50' },
+  PAYOUT_DEBIT: { label: 'Payout', icon: ArrowDownRight, color: 'text-red-400' },
+  REVERSAL: { label: 'Reversal', icon: ArrowDownRight, color: 'text-red-400' },
+  HOLD: { label: 'Hold', icon: Clock, color: 'text-orange-400' },
 };
 
 const PAYOUT_STATUS_CONFIG = {
@@ -66,8 +67,8 @@ const PAYOUT_STATUS_CONFIG = {
 };
 
 const METHOD_LABELS = {
-  SOLANA_WALLET: 'Solana Wallet (USDC)',
-  ETHEREUM_WALLET: 'Ethereum Wallet (USDC)',
+  SOLANA_WALLET: 'Solana Wallet (SOL)',
+  ETHEREUM_WALLET: 'Ethereum Wallet',
   FIAT_PLACEHOLDER: 'Bank Transfer',
   PAYPAL_PLACEHOLDER: 'PayPal',
 };
@@ -156,8 +157,7 @@ export default function Page() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value='SOLANA_WALLET'>Solana Wallet (USDC)</SelectItem>
-                      <SelectItem value='ETHEREUM_WALLET'>Ethereum Wallet (USDC)</SelectItem>
+                      <SelectItem value='SOLANA_WALLET'>Solana Wallet (SOL)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -225,15 +225,15 @@ export default function Page() {
       </div>
 
       {/* Period Selector */}
-      <div className='flex gap-1 mb-6 bg-gray-100 rounded-lg p-1 w-fit'>
+      <div className='flex gap-1 mb-6 bg-white/[0.05] rounded-lg p-1 w-fit'>
         {PERIODS.map((p) => (
           <button
             key={p.key}
             onClick={() => setPeriod(p.key)}
             className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
               period === p.key
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-white/[0.12] text-white shadow-sm'
+                : 'text-white/50 hover:text-white'
             }`}
           >
             {p.label}
@@ -354,7 +354,7 @@ export default function Page() {
                     </div>
                     <div className='text-right'>
                       <p className={`text-sm font-medium ${isPositive ? 'text-green-600' : 'text-red-500'}`}>
-                        {isPositive ? '+' : ''}{amount.toFixed(2)} USDC
+                        {isPositive ? '+' : ''}${amount.toFixed(2)}
                       </p>
                       <p className='text-xs text-gray-400'>
                         {dayjs(entry.createdAt).format('MMM D, h:mm A')}

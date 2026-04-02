@@ -85,6 +85,11 @@ const MENU = deepFreeze({
         href: '/app/contributor/profile',
       },
       {
+        icon: <Shield className='h-5 w-5 mr-3' />,
+        name: 'Verify Identity',
+        href: '/app/contributor/verify',
+      },
+      {
         icon: <Settings className='h-5 w-5 mr-3' />,
         name: 'Settings',
         href: '/app/contributor/settings',

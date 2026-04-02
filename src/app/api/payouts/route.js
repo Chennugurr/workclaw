@@ -60,6 +60,19 @@ export const POST = middleware(
     const { methodId, amount: requestedAmount } = req.dto;
     const userId = req.user.id;
 
+    // Require KYC verification before payout
+    const userKyc = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { kycStatus: true },
+    });
+
+    if (userKyc?.kycStatus !== 'VERIFIED') {
+      return NextResponse.json(
+        jsend.fail({ message: 'Identity verification required before withdrawal. Please complete KYC in your profile settings.', code: 'KYC_REQUIRED' }),
+        { status: 403 }
+      );
+    }
+
     // Verify method belongs to user
     const method = await prisma.payoutMethod.findFirst({
       where: { id: methodId, userId },

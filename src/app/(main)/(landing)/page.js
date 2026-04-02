@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, ArrowRight, Shield, Zap, Brain, Target, Users, CheckCircle, ChevronDown, Copy, ExternalLink } from 'lucide-react';
@@ -176,6 +176,15 @@ function TokenBar() {
 }
 
 export default function LandingPage() {
+  const [userCount, setUserCount] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/stats')
+      .then((r) => r.json())
+      .then((res) => setUserCount(res?.data?.userCount ?? null))
+      .catch(() => {});
+  }, []);
+
   return (
     <div className='w-full min-h-screen text-white selection:bg-purple-500/30'>
       {/* Header */}
@@ -280,7 +289,7 @@ export default function LandingPage() {
         <section className='border-y border-white/[0.06] bg-white/[0.02]'>
           <div className='container mx-auto px-4 md:px-8 py-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-center'>
             {[
-              { label: 'Task Types', value: '14+' },
+              { label: 'Contributors', value: userCount !== null ? `${userCount}+` : '—' },
               { label: 'Expertise Domains', value: '20+' },
               { label: 'Languages', value: '16+' },
               { label: 'Payment', value: 'SOL' },

@@ -107,9 +107,9 @@ export default function VerifyPage() {
         <div className='flex items-start gap-4'>
           <Shield className='h-8 w-8 text-purple-500 mt-1 shrink-0' />
           <div>
-            <h3 className='font-semibold mb-1'>What you'll need</h3>
+            <h3 className='font-semibold mb-1'>What you&apos;ll need</h3>
             <ul className='text-sm text-gray-600 space-y-1'>
-              <li>• A government-issued ID (passport, driver's license, or national ID)</li>
+              <li>• A government-issued ID (passport, driver&apos;s license, or national ID)</li>
               <li>• A device with a camera</li>
               <li>• 2–5 minutes of your time</li>
             </ul>

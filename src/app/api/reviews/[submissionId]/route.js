@@ -39,7 +39,7 @@ export const POST = middleware(
     const hasAccess = await prisma.reviewerAssignment.findFirst({
       where: {
         projectId: submission.task.projectId,
-        staff: { userId: req.user.id },
+        userId: req.user.id,
       },
     });
 

@@ -19,9 +19,7 @@ export const GET = middleware(
 
     // Find projects where user is a reviewer
     const assignments = await prisma.reviewerAssignment.findMany({
-      where: {
-        staff: { userId: req.user.id },
-      },
+      where: { userId: req.user.id },
       select: { projectId: true },
     });
 

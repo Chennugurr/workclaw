@@ -15,7 +15,7 @@ function authCheck(req) {
 export const POST = async (req) => {
   if (!authCheck(req)) return NextResponse.json(jsend.error('Unauthorized'), { status: 401 });
 
-  const { userId, projectId, taskCount = 10 } = await req.json();
+  const { userId, projectId } = await req.json();
 
   // Upsert application as APPROVED
   const application = await prisma.application.upsert({
@@ -24,19 +24,13 @@ export const POST = async (req) => {
     update: { status: 'APPROVED' },
   });
 
-  // Reset tasks to AVAILABLE (unassign submitted/completed ones)
+  // Reset ALL non-AVAILABLE tasks in the project back to AVAILABLE
+  // (unassign from everyone so they can be claimed fresh)
   const reset = await prisma.task.updateMany({
     where: {
       projectId,
-      status: { in: ['SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'] },
-      assignedTo: userId,
+      status: { not: 'AVAILABLE' },
     },
-    data: { status: 'AVAILABLE', assignedTo: null, assignedAt: null },
-  });
-
-  // Also reset any stuck ASSIGNED tasks for this user in this project
-  await prisma.task.updateMany({
-    where: { projectId, status: { in: ['ASSIGNED', 'IN_PROGRESS'] }, assignedTo: userId },
     data: { status: 'AVAILABLE', assignedTo: null, assignedAt: null },
   });
 

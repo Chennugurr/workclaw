@@ -17,7 +17,22 @@ export const POST = async (req) => {
     return NextResponse.json(jsend.error('Unauthorized'), { status: 401 });
   }
 
-  const { userId, projectId } = await req.json();
+  const { userId, projectId, allProjects } = await req.json();
+
+  // Assign to all projects if allProjects flag is set
+  if (allProjects) {
+    const projects = await prisma.project.findMany({ select: { id: true } });
+    const assignments = [];
+    for (const project of projects) {
+      const a = await prisma.reviewerAssignment.upsert({
+        where: { userId_projectId: { userId, projectId: project.id } },
+        create: { userId, projectId: project.id },
+        update: {},
+      });
+      assignments.push(a);
+    }
+    return NextResponse.json(jsend.success({ assignments, count: assignments.length }));
+  }
 
   const assignment = await prisma.reviewerAssignment.upsert({
     where: { userId_projectId: { userId, projectId } },

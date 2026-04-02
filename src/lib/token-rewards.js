@@ -7,6 +7,7 @@ import {
   LAMPORTS_PER_SOL,
   sendAndConfirmTransaction,
 } from '@solana/web3.js';
+import bs58 from 'bs58';
 
 const REWARD_AMOUNT_SOL = 0.01; // SOL per screening completion
 
@@ -21,16 +22,22 @@ function getConnection() {
 
 /**
  * Load the treasury keypair from environment variable.
- * Expects TREASURY_PRIVATE_KEY as a JSON array of bytes, e.g. [12,34,56,...]
+ * Accepts TREASURY_PRIVATE_KEY as either:
+ *   - Base58 string (e.g. "3fehaK6j...")
+ *   - JSON byte array (e.g. [12,34,56,...])
  */
 function getTreasuryKeypair() {
   const key = process.env.TREASURY_PRIVATE_KEY;
   if (!key) throw new Error('TREASURY_PRIVATE_KEY not configured');
+
   try {
-    const secretKey = Uint8Array.from(JSON.parse(key));
-    return Keypair.fromSecretKey(secretKey);
+    if (key.trim().startsWith('[')) {
+      return Keypair.fromSecretKey(Uint8Array.from(JSON.parse(key)));
+    } else {
+      return Keypair.fromSecretKey(bs58.decode(key.trim()));
+    }
   } catch {
-    throw new Error('TREASURY_PRIVATE_KEY must be a JSON array of bytes');
+    throw new Error('TREASURY_PRIVATE_KEY must be a base58 string or JSON byte array');
   }
 }
 

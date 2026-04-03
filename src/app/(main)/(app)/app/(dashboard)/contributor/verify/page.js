@@ -5,7 +5,7 @@ import { Shield, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAppState, useAppDispatch } from '@/store';
 import { ACTIONS } from '@/store/constants';
-import axios from 'axios';
+import axios from '@/lib/axios';
 
 export default function VerifyPage() {
   const sdkContainerRef = useRef(null);

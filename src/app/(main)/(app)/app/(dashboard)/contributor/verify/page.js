@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Shield, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import useAppSWR from '@/hooks/use-app-swr';
+import { useAppState, useAppDispatch } from '@/store';
+import { ACTIONS } from '@/store/constants';
 import axios from 'axios';
 
 export default function VerifyPage() {
@@ -11,8 +12,8 @@ export default function VerifyPage() {
   const [sdkLoaded, setSdkLoaded] = useState(false);
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState(null);
-  const { data: result, mutate } = useAppSWR('/users/me');
-  const user = result?.data;
+  const user = useAppState((s) => s.user);
+  const dispatch = useAppDispatch();
 
   // Load Sumsub WebSDK script
   useEffect(() => {
@@ -43,7 +44,7 @@ export default function VerifyPage() {
         .on('idCheck.onStepCompleted', () => {})
         .on('idCheck.onApplicantStatusChanged', (payload) => {
           if (payload?.reviewResult?.reviewAnswer === 'GREEN' || payload?.reviewStatus === 'completed') {
-            mutate(); // refresh user data
+            dispatch({ type: ACTIONS.USER.FETCH }); // refresh user data
           }
         })
         .on('idCheck.onError', (err) => {

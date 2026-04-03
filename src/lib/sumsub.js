@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 
 const SUMSUB_BASE_URL = 'https://api.sumsub.com';
+const SUMSUB_LEVEL_NAME = process.env.SUMSUB_LEVEL_NAME || 'basic-kyc-level';
 
 /**
  * Sign a Sumsub API request.
@@ -44,7 +45,7 @@ async function sumsubRequest(method, path, body = null) {
  * externalUserId should be the HumanLayer user ID.
  */
 export async function createApplicant(externalUserId) {
-  return sumsubRequest('POST', '/resources/applicants?levelName=basic-kyc-level', {
+  return sumsubRequest('POST', '/resources/applicants?levelName=${SUMSUB_LEVEL_NAME}', {
     externalUserId,
     type: 'individual',
   });
@@ -54,7 +55,7 @@ export async function createApplicant(externalUserId) {
  * Generate a short-lived access token for the Sumsub WebSDK.
  */
 export async function generateSdkToken(externalUserId) {
-  const path = `/resources/accessTokens?userId=${externalUserId}&levelName=basic-kyc-level&ttlInSecs=1800`;
+  const path = `/resources/accessTokens?userId=${externalUserId}&levelName=${SUMSUB_LEVEL_NAME}&ttlInSecs=1800`;
   const ts = Math.floor(Date.now() / 1000).toString();
   const signature = signRequest('POST', path, ts);
 

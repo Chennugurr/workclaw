@@ -22,6 +22,7 @@ export const POST = async (req) => {
   });
 
   const results = { verified: 0, pending: 0, rejected: 0, notFound: 0, failed: 0, unchanged: 0 };
+  const errors = [];
 
   for (const user of users) {
     try {
@@ -47,10 +48,16 @@ export const POST = async (req) => {
       if (kycStatus === 'VERIFIED') results.verified++;
       else if (kycStatus === 'PENDING') results.pending++;
       else if (kycStatus === 'REJECTED') results.rejected++;
-    } catch {
-      results.failed++;
+    } catch (e) {
+      // 404 means user never started KYC on Sumsub — not a real error
+      if (e.message?.includes('404')) {
+        results.notFound++;
+      } else {
+        results.failed++;
+        if (errors.length < 3) errors.push({ userId: user.id, error: e.message });
+      }
     }
   }
 
-  return NextResponse.json(jsend.success({ total: users.length, ...results }));
+  return NextResponse.json(jsend.success({ total: users.length, ...results, sampleErrors: errors }));
 };

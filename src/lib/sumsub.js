@@ -84,7 +84,7 @@ export async function generateSdkToken(externalUserId) {
  */
 export function verifyWebhookSignature(rawBody, signature) {
   const expected = crypto
-    .createHmac('sha256', process.env.SUMSUB_SECRET_KEY)
+    .createHmac('sha256', process.env.SUMSUB_WEBHOOK_SECRET)
     .update(rawBody)
     .digest('hex');
   return expected === signature;

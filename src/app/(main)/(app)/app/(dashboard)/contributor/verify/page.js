@@ -5,7 +5,6 @@ import { Shield, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAppState, useAppDispatch } from '@/store';
 import { ACTIONS } from '@/store/constants';
-import axios from '@/lib/axios';
 
 export default function VerifyPage() {
   const sdkContainerRef = useRef(null);
@@ -28,17 +27,27 @@ export default function VerifyPage() {
     document.head.appendChild(script);
   }, []);
 
+  const fetchKycToken = async () => {
+    const jwt = localStorage.getItem('@app/ls/ast');
+    const res = await fetch('/api/kyc/token', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${jwt}` },
+    });
+    if (!res.ok) throw new Error(`KYC token request failed: ${res.status}`);
+    const json = await res.json();
+    return json?.data?.token;
+  };
+
   const startVerification = async () => {
     setStarting(true);
     setError(null);
     try {
-      const res = await axios.post('/api/kyc/token');
-      const token = res.data?.data?.token;
+      const token = await fetchKycToken();
 
       if (!token) throw new Error('Failed to get verification token');
 
       const snsWebSdkInstance = window.snsWebSdk
-        .init(token, () => axios.post('/api/kyc/token').then(r => r.data?.data?.token))
+        .init(token, () => fetchKycToken())
         .withConf({ lang: 'en' })
         .withOptions({ addViewportTag: false, adaptIframeHeight: true })
         .on('idCheck.onStepCompleted', () => {})

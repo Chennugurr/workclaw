@@ -41,6 +41,13 @@ async function sumsubRequest(method, path, body = null) {
 }
 
 /**
+ * Get applicant status by externalUserId.
+ */
+export async function getApplicantByExternalId(externalUserId) {
+  return sumsubRequest('GET', `/resources/applicants/-;externalUserId=${externalUserId}/one`);
+}
+
+/**
  * Create or retrieve a Sumsub applicant for a user.
  * externalUserId should be the HumanLayer user ID.
  */

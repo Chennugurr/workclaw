@@ -9,8 +9,15 @@ import { generateSdkToken } from '@/lib/sumsub';
  */
 export const POST = middleware(
   async (req) => {
-    const token = await generateSdkToken(req.user.id);
-    return NextResponse.json(jsend.success({ token: token.token }));
+    try {
+      const token = await generateSdkToken(req.user.id);
+      return NextResponse.json(jsend.success({ token: token.token }));
+    } catch (err) {
+      return NextResponse.json(
+        jsend.error(err.message || 'Failed to generate KYC token'),
+        { status: 500 }
+      );
+    }
   },
   { requireAuth: true }
 );
